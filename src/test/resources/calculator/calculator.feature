@@ -40,7 +40,7 @@ Feature: Integer Arithmetic Expressions
     Given an integer operation '/'
     When I provide a first number 7
     And I provide a second number 0
-    Then the operation evaluates to 1
+    Then the operation returns infinity
 
   Scenario: Printing the sum of two integer numbers
     Given the sum of two numbers 8 and 6
@@ -97,3 +97,18 @@ Feature: Integer Arithmetic Expressions
       | "-" | 8  | 5  | 3      |
       | "*" | 7  | 2  | 14     |
       | "/" | 6  | 2  | 3      |
+
+  Scenario Outline: Testing different notations for arithmetic operations
+    Given an integer operation <op>
+    When I provide a first number <n1>
+    And I provide a second number <n2>
+    Then its INFIX notation is <infix>
+    And its PREFIX notation is <prefix>
+    And its POSTFIX notation is <postfix>
+
+    Examples:
+      | op  | n1 | n2 | infix         | prefix       | postfix       |
+      | "+" | 8  | 6  | ( 8 + 6 )     | + (8, 6)     | (8, 6) +      |
+      | "-" | 8  | 6  | ( 8 - 6 )     | - (8, 6)     | (8, 6) -      |
+      | "*" | 8  | 6  | ( 8 * 6 )     | * (8, 6)     | (8, 6) *      |
+      | "/" | 8  | 6  | ( 8 / 6 )     | / (8, 6)     | (8, 6) /      |
