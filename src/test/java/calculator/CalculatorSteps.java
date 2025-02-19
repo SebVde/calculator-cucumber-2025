@@ -117,11 +117,6 @@ public class CalculatorSteps {
 		assertEquals(Integer.MAX_VALUE, c.eval(op));
 	}
 
-	@Then("the operation returns infinity")
-	public void thenTheOperationReturnsInfinity() {
-		assertEquals(Integer.MAX_VALUE, c.eval(op));
-	}
-
 	@Then("its INFIX notation is {string}")
 	public void thenItsINFIXNotationIs(String s) {
 		op.notation = Notation.INFIX;
