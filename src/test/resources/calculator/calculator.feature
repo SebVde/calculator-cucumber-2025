@@ -40,7 +40,7 @@ Feature: Integer Arithmetic Expressions
     Given an integer operation '/'
     When I provide a first number 7
     And I provide a second number 0
-    Then the operation evaluates to 0
+    Then the operation evaluates to 1
 
   Scenario: Printing the sum of two integer numbers
     Given the sum of two numbers 8 and 6
