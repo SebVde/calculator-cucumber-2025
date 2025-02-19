@@ -47,5 +47,11 @@ public final class Divides extends Operation
      * @return The integer that is the result of the division
      */
   public int op(int l, int r)
-    { return (l/r); }
+    {
+        try {
+            return l / r;
+        } catch (ArithmeticException e) {
+            return Integer.MAX_VALUE;
+        }
+    }
 }

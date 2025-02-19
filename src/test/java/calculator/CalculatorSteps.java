@@ -112,4 +112,9 @@ public class CalculatorSteps {
 		assertEquals(val, c.eval(op));
 	}
 
+	@Then("the operation returns infinity")
+	public void thenTheOperationReturnsInfinity() {
+		assertEquals(Integer.MAX_VALUE, c.eval(op));
+	}
+
 }
