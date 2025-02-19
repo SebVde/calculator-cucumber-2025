@@ -1,5 +1,6 @@
 package calculator;
 
+import visitor.OutputVisitor;
 import visitor.Visitor;
 
 import java.util.ArrayList;
@@ -159,21 +160,14 @@ public abstract class Operation implements Expression
    * @return	The String that is the result of the conversion.
    */
   public final String toString(Notation n) {
-	   Stream<String> s = args.stream().map(Object::toString);
-	   return switch (n) {
-		   case INFIX -> "( " +
-				   s.reduce((s1, s2) -> s1 + " " + symbol + " " + s2).get() +
-				   " )";
-		   case PREFIX -> symbol + " " +
-				   "(" +
-				   s.reduce((s1, s2) -> s1 + ", " + s2).get() +
-				   ")";
-		   case POSTFIX -> "(" +
-				   s.reduce((s1, s2) -> s1 + ", " + s2).get() +
-				   ")" +
-				   " " + symbol;
-	   };
+	  OutputVisitor outputVisitor = new OutputVisitor();
+	  accept(outputVisitor);
+	  return outputVisitor.getOutput();
   }
+
+	public String getSymbol() {
+		return symbol;
+	}
 
 	/**
 	 * Two operation objects are equal if their list of arguments is equal and they correspond to the same operation.
