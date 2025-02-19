@@ -117,6 +117,11 @@ public class CalculatorSteps {
 		assertEquals(Integer.MAX_VALUE, c.eval(op));
 	}
 
+	@Then("the operation is undefined")
+	public void thenTheOperationIsUndefined() {
+		assertEquals(0, c.eval(op));
+	}
+
 	@Then("its INFIX notation is {string}")
 	public void thenItsINFIXNotationIs(String s) {
 		op.notation = Notation.INFIX;
