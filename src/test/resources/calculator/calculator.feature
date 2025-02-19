@@ -36,6 +36,12 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 5
     Then the operation evaluates to 1
 
+  Scenario: Dividing two integer numbers
+    Given an integer operation '/'
+    When I provide a first number 7
+    And I provide a second number 0
+    Then the operation evaluates to 0
+
   Scenario: Printing the sum of two integer numbers
     Given the sum of two numbers 8 and 6
     Then its INFIX notation is ( 8 + 6 )
@@ -63,9 +69,9 @@ Feature: Integer Arithmetic Expressions
     Then the operation evaluates to <result>
 
     Examples:
-      |n1|n2|result|
-      |4|5|9|
-      |5|3|8|
+      | n1 | n2 | result |
+      | 4  | 5  | 9      |
+      | 5  | 3  | 8      |
 
   Scenario Outline: Dividing two integer numbers
     Given an integer operation '/'
@@ -74,10 +80,10 @@ Feature: Integer Arithmetic Expressions
     Then the operation evaluates to <result>
 
     Examples:
-      |n1|n2|result|
-      |35|5|7|
-      |7|5|1|
-      |5|7|0|
+      | n1 | n2 | result |
+      | 35 | 5  | 7      |
+      | 7  | 5  | 1      |
+      | 5  | 7  | 0      |
 
   Scenario Outline: Evaluating arithmetic operations with two integer parameters
     Given an integer operation <op>
@@ -86,8 +92,8 @@ Feature: Integer Arithmetic Expressions
     Then the operation evaluates to <result>
 
     Examples:
-      | op  |n1|n2|result|
-      | "+" | 4| 5|     9|
-      | "-" | 8| 5|     3|
-      | "*" | 7| 2|    14|
-      | "/" | 6| 2|     3|
+      | op  | n1 | n2 | result |
+      | "+" | 4  | 5  | 9      |
+      | "-" | 8  | 5  | 3      |
+      | "*" | 7  | 2  | 14     |
+      | "/" | 6  | 2  | 3      |
