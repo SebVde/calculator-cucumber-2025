@@ -2,6 +2,8 @@ package calculator;
 
 import java.util.List;
 
+import static java.lang.Float.NaN;
+
 /** This class represents the arithmetic division operation "/".
  * The class extends an abstract superclass Operation.
  * Other subclasses of Operation represent other arithmetic operations.
@@ -48,10 +50,12 @@ public final class Divides extends Operation
      */
   public int op(int l, int r)
     {
-        try {
-            return l / r;
-        } catch (ArithmeticException e) {
+        if (r == 0 && l != 0) {
             return Integer.MAX_VALUE;
+        } else if (r == 0) {
+            return 0;
+        } else {
+            return l / r;
         }
     }
 }
