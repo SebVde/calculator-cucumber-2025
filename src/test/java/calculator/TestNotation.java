@@ -14,7 +14,6 @@ class TestNotation {
     /* This is an auxilary method to avoid code duplication.
      */
 	void testNotation(String s,Operation o,Notation n) {
-		assertEquals(s, o.toString(n));
 		o.notation = n;
 		assertEquals(s, o.toString());
 	}
@@ -41,6 +40,7 @@ class TestNotation {
 		try {
 			//construct another type of operation depending on the input value
 			//of the parameterised test
+
 			switch (symbol) {
 				case "+"	->	op = new Plus(params);
 				case "-"	->	op = new Minus(params);
@@ -48,6 +48,7 @@ class TestNotation {
 				case "/"	->	op = new Divides(params);
 				default		->	fail();
 			}
+
 		} catch (IllegalConstruction e) {
 			fail();
 		}

@@ -23,16 +23,11 @@ public class OutputVisitor extends Visitor {
         Stream<String> s = o.args.stream().map(Object::toString);
         output = switch (o.notation) {
             case INFIX -> "( " +
-                    s.reduce((s1, s2) -> s1 + " " + o.getSymbol() + " " + s2).get() +
-                    " )";
-            case PREFIX -> o.getSymbol() + " " +
-                    "(" +
-                    s.reduce((s1, s2) -> s1 + ", " + s2).get() +
-                    ")";
+                    s.reduce((s1, s2) -> s1 + " " + o.getSymbol() + " " + s2).get() + " )";
+            case PREFIX ->
+                    o.getSymbol() + " " + "(" + s.reduce((s1, s2) -> s1 + ", " + s2).get() + ")";
             case POSTFIX -> "(" +
-                    s.reduce((s1, s2) -> s1 + ", " + s2).get() +
-                    ")" +
-                    " " + o.getSymbol();
+                    s.reduce((s1, s2) -> s1 + ", " + s2).get() + ")" + " " + o.getSymbol();
         };
     }
 

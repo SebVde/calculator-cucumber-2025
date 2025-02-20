@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import visitor.CountVisitor;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
@@ -38,6 +40,7 @@ class TestCounting {
     @ValueSource(strings = {"*", "+", "/", "-"})
     void testOperationCounting(String symbol) {
         List<Expression> params = Arrays.asList(new MyNumber(value1),new MyNumber(value2));
+        CountVisitor countVisitor = new CountVisitor();
         //Operation op = null;
         try {
             //construct another type of operation depending on the input value
@@ -52,12 +55,13 @@ class TestCounting {
         } catch (IllegalConstruction e) {
             fail();
         }
+        e.accept(countVisitor);
         //test whether a binary operation has depth 1
-        assertEquals(1, e.countDepth(),"counting depth of an Operation");
+        assertEquals(1, countVisitor.getDepthCount(),"counting depth of an Operation");
         //test whether a binary operation contains 1 operation
-        assertEquals(1, e.countOps());
+        assertEquals(1, countVisitor.getOpsCount());
         //test whether a binary operation contains 2 numbers
-        assertEquals(2, e.countNbs());
+        assertEquals(2, countVisitor.getNbCount());
     }
 
 }
