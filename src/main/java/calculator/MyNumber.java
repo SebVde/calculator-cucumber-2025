@@ -1,5 +1,6 @@
 package calculator;
 
+import visitor.CountVisitor;
 import visitor.Visitor;
 
 /**
@@ -44,7 +45,9 @@ public class MyNumber implements Expression
      * @return The depth of a number expression
      */
   public int countDepth() {
-	  return 0;
+      CountVisitor v = new CountVisitor();
+      v.visit(this);
+      return v.getDepthCount();
   }
 
     /** The number of operations contained in a number expression is always 0
@@ -52,7 +55,9 @@ public class MyNumber implements Expression
      * @return The number of operations contained in a number expression
      */
   public int countOps() {
-	  return 0;
+      CountVisitor v = new CountVisitor();
+      v.visit(this);
+      return v.getOpsCount();
   }
 
     /** The number of numbers contained in a number expression is always 1
@@ -60,7 +65,9 @@ public class MyNumber implements Expression
      * @return The number of numbers contained in  a number expression
      */
   public int countNbs() {
-	  return 1;
+      CountVisitor v = new CountVisitor();
+      v.visit(this);
+      return v.getNbCount();
   }
 
     /**
