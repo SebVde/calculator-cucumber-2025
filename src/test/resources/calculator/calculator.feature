@@ -42,6 +42,12 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 0
     Then the operation returns infinity
 
+  Scenario: Dividing two integer numbers
+    Given an integer operation '/'
+    When I provide a first number 0
+    And I provide a second number 0
+    Then the operation is undefined
+
   Scenario: Printing the sum of two integer numbers
     Given the sum of two numbers 8 and 6
     Then its INFIX notation is ( 8 + 6 )
