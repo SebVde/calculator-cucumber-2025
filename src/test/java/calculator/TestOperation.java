@@ -17,9 +17,9 @@ class TestOperation {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		List<Expression> params1 = Arrays.asList(new MyNumber(3), new MyNumber(4), new MyNumber(5));
-		List<Expression> params2 = Arrays.asList(new MyNumber(5), new MyNumber(4));
-		List<Expression> params3 = Arrays.asList(new Plus(params1), new Minus(params2), new MyNumber(7));
+		List<Expression> params1 = Arrays.asList(new MyInteger(3), new MyInteger(4), new MyInteger(5));
+		List<Expression> params2 = Arrays.asList(new MyInteger(5), new MyInteger(4));
+		List<Expression> params3 = Arrays.asList(new Plus(params1), new Minus(params2), new MyInteger(7));
 		countVisitor1 = new CountVisitor();
 		countVisitor2 = new CountVisitor();
 		o = new Divides(params3);

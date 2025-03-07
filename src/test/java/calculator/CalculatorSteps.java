@@ -55,7 +55,7 @@ public class CalculatorSteps {
 		params = new ArrayList<>();
 		// Since we only use one line of input, we use get(0) to take the first line of the list,
 		// which is a list of strings, that we will manually convert to integers:
-		numbers.get(0).forEach(n -> params.add(new MyNumber(Integer.parseInt(n))));
+		numbers.get(0).forEach(n -> params.add(new MyInteger(Integer.parseInt(n))));
 	    params.forEach(n -> System.out.println("value ="+ n));
 		op = null;
 	}
@@ -68,8 +68,8 @@ public class CalculatorSteps {
 	public void givenTheSum(int n1, int n2) {
 		try {
 			params = new ArrayList<>();
-		    params.add(new MyNumber(n1));
-		    params.add(new MyNumber(n2));
+		    params.add(new MyInteger(n1));
+		    params.add(new MyInteger(n2));
 		    op = new Plus(params);}
 		catch(IllegalConstruction e) { fail(); }
 	}
@@ -87,7 +87,7 @@ public class CalculatorSteps {
 	public void whenIProvideANumber(String s, int val) {
 		//add extra parameter to the operation
 		params = new ArrayList<>();
-		params.add(new MyNumber(val));
+		params.add(new MyInteger(val));
 		op.addMoreParams(params);
 	}
 
