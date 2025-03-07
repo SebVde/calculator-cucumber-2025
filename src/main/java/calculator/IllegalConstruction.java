@@ -5,4 +5,6 @@ package calculator;
  */
 public class IllegalConstruction extends Exception {
 
+    public IllegalConstruction(String msg) {
+    }
 }
