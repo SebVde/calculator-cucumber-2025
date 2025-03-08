@@ -12,28 +12,44 @@ import java.util.Objects;
  * @see Expression
  * @see Operation
  */
-public abstract class MyNumber implements Expression {
-
-    /**
-     * getter method to obtain the value contained in the object
-     *
-     * @return The integer number contained in the object
-     */
+public class MyNumber implements Expression {
     private static final String realRegEx = "^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?$";
     private static final String intRegEx = "(\\d+)";
 
-    public static MyNumber parseNumber(String s) throws IllegalConstruction {
+    public static MyNumber parseNumber(String s) throws IllegalConstruction, NumberFormatException {
         if (s.matches(intRegEx)) {
-            return new MyInteger(s);
+            return new MyNumber(Integer.parseInt(s));
         } else if (s.matches(realRegEx)) {
-            return new MyReal(s);
+            if (s.contains("E")) {
+                String[] split = s.split("E");
+                if (split.length != 2)
+                    throw new IllegalConstruction("Invalid scientific notation format");
+
+                double first = Double.parseDouble(split[0]);
+                double second = Double.parseDouble(split[1]);
+                return new MyNumber(first * Math.pow(10, second));
+
+            } else {
+                return new MyNumber(Double.parseDouble(s));
+            }
         } else {
             throw new IllegalConstruction("Couldn't parse number");
         }
     }
-    public abstract Integer getIntegerValue();
 
-    public abstract Double getRealValue();
+    private final NumberValue value;
+
+    public MyNumber(double value) {
+        this.value = new NumberValue((int) value, value % 1);
+    }
+
+    public MyNumber(int value) {
+        this.value = new NumberValue(value, null);
+    }
+
+    public NumberValue getValue() {
+        return this.value;
+    }
 
     /**
      * accept method to implement the visitor design pattern to traverse arithmetic expressions.
@@ -95,16 +111,14 @@ public abstract class MyNumber implements Expression {
             return true;
         }
 
-        //TODO Fix this method somehow
-
         // If the object is of another type then return false
         if (!(o instanceof MyNumber)) {
             return false;
         }
-        return Objects.equals(this.getRealValue(), ((MyNumber) o).getRealValue());
+
+        return Objects.equals(this.getValue(), ((MyNumber) o).getValue());
         // Used == since the contained value is a primitive value
         // If it had been a Java object, .equals() would be needed
-
     }
 
     /**
@@ -116,7 +130,11 @@ public abstract class MyNumber implements Expression {
      */
     @Override
     public int hashCode() {
-        return getRealValue().hashCode();
+        return getValue().hashCode();
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(this.value);
+    }
 }
