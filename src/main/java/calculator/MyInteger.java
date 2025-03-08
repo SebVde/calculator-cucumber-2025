@@ -12,6 +12,10 @@ public class MyInteger extends MyNumber {
         this.value = v;
     }
 
+    protected MyInteger(String s) {
+        this.value = Integer.parseInt(s);
+    }
+
     @Override
     public Integer getIntegerValue() {
         return this.value;
@@ -20,5 +24,10 @@ public class MyInteger extends MyNumber {
     @Override
     public Double getRealValue() {
         return (double) this.value;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.value);
     }
 }

@@ -19,9 +19,17 @@ public abstract class MyNumber implements Expression {
      *
      * @return The integer number contained in the object
      */
+    private static final String realRegEx = "^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?$";
+    private static final String intRegEx = "(\\d+)";
 
-    public static MyNumber parseNumber(String s) {
-        return new MyInteger(0);
+    public static MyNumber parseNumber(String s) throws IllegalConstruction {
+        if (s.matches(intRegEx)) {
+            return new MyInteger(s);
+        } else if (s.matches(realRegEx)) {
+            return new MyReal(s);
+        } else {
+            throw new IllegalConstruction("Couldn't parse number");
+        }
     }
     public abstract Integer getIntegerValue();
 
