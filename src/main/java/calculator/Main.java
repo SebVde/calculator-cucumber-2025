@@ -27,18 +27,18 @@ public class Main {
 
 	try{
 
-		e = new MyNumber(8);
+		e = new MyInteger(8);
 		c.print(e);
 		c.eval(e);
 
 	    List<Expression> params = new ArrayList<>();
-	    Collections.addAll(params, new MyNumber(3), new MyNumber(4), new MyNumber(5));
+	    Collections.addAll(params, new MyInteger(3), new MyInteger(4), new MyInteger(5));
 	    e = new Plus(params,Notation.PREFIX);
 		c.printExpressionDetails(e);
 		c.eval(e);
 	
 		List<Expression> params2 = new ArrayList<>();
-		Collections.addAll(params2, new MyNumber(5), new MyNumber(3));
+		Collections.addAll(params2, new MyInteger(5), new MyInteger(3));
 		e = new Minus(params2, Notation.INFIX);
 		c.print(e);
 		c.eval(e);
@@ -50,7 +50,7 @@ public class Main {
 		c.eval(e);
 
 		List<Expression> params4 = new ArrayList<>();
-		Collections.addAll(params4, new Plus(params), new Minus(params2), new MyNumber(5));
+		Collections.addAll(params4, new Plus(params), new Minus(params2), new MyInteger(5));
 		e = new Divides(params4,Notation.POSTFIX);
 		c.print(e);
 		c.eval(e);
