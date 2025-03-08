@@ -61,6 +61,16 @@ public class MyNumber implements Expression {
         v.visit(this);
     }
 
+    public NumberValue convertToRadians() {
+        double conversion = Math.toRadians(this.value.asDouble());
+        return new NumberValue((int) conversion, conversion % 1);
+    }
+
+    public NumberValue convertToDegrees() {
+        double conversion = Math.toDegrees(this.value.asDouble());
+        return new NumberValue((int) conversion, conversion % 1);
+    }
+
 
     /**
      * The depth of a number expression is always 0
