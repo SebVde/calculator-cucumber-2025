@@ -36,7 +36,7 @@ class TestNotation {
 		int value2 = 6;
 		Operation op = null;
 		//List<Expression> params = new ArrayList<>(Arrays.asList(new MyNumber(value1),new MyNumber(value2)));
-		List<Expression> params = Arrays.asList(new MyInteger(value1),new MyInteger(value2));
+		List<Expression> params = Arrays.asList(new MyNumber(value1),new MyNumber(value2));
 		try {
 			//construct another type of operation depending on the input value
 			//of the parameterised test

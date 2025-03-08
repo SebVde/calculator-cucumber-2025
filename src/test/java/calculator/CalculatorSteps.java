@@ -110,7 +110,6 @@ public class CalculatorSteps {
         op.addMoreParams(params);
     }
 
-    // TODO only compares the integer part of the operation, add decimal
     @Then("the {word} is {word}")
     public void thenTheOperationIs(String s, String val) {
         try {

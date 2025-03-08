@@ -64,9 +64,9 @@ public final class Divides extends Operation {
 
     private NumberValue op(int l, int r) {
         if (l == 0 && r == 0) {
-            return NumberValue.MAX;
-        } else if (r == 0) {
             return NumberValue.ZERO;
+        } else if (r == 0) {
+            return NumberValue.MAX;
         } else {
             return new NumberValue(l / r, null);
         }
@@ -74,9 +74,9 @@ public final class Divides extends Operation {
 
     private NumberValue op(double l, double r) {
         if (l == 0 && r == 0) {
-            return NumberValue.MAX;
-        } else if (r == 0) {
             return NumberValue.ZERO;
+        } else if (r == 0) {
+            return NumberValue.MAX;
         } else {
             double result = l / r;
             return new NumberValue((int) result, result % 1);

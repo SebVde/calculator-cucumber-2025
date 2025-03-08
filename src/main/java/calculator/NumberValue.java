@@ -22,4 +22,12 @@ public record NumberValue(Integer integerPart, Double decimalPart) {
     public double asDouble() {
         return integerPart + (decimalPart == null ? 0.0 : decimalPart);
     }
+
+    public int asInt() throws IllegalConstruction {
+        if (isDecimal()) {
+            throw new IllegalConstruction("Number has decimal part");
+        } else {
+            return integerPart;
+        }
+    }
 }
