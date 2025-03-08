@@ -19,6 +19,10 @@ public abstract class MyNumber implements Expression {
      *
      * @return The integer number contained in the object
      */
+
+    public static MyNumber parseNumber(String s) {
+        return new MyInteger(0);
+    }
     public abstract Integer getIntegerValue();
 
     public abstract Double getRealValue();
