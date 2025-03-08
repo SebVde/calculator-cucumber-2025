@@ -18,11 +18,23 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 5
     Then the operation evaluates to 9
 
+  Scenario: Adding two decimal numbers
+    Given an operation '+'
+    When I provide a first number 4.0
+    And I provide a second number 5.1
+    Then the operation evaluates to 9.1
+
   Scenario: Subtracting two integer numbers
     Given an operation '-'
     When I provide a first number 7
     And I provide a second number 5
     Then the operation evaluates to 2
+
+  Scenario: Subtracting two decimal numbers
+    Given an operation '-'
+    When I provide a first number 7.0
+    And I provide a second number 5.0
+    Then the operation evaluates to 2.0
 
   Scenario: Multiplying two integer numbers
     Given an operation '*'
@@ -30,11 +42,23 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 5
     Then the operation evaluates to 35
 
+  Scenario: Multiplying two decimal numbers
+    Given an operation '*'
+    When I provide a first number 7.0
+    And I provide a second number 5.0
+    Then the operation evaluates to 35.0
+
   Scenario: Dividing two integer numbers
     Given an operation '/'
     When I provide a first number 7
     And I provide a second number 5
     Then the operation evaluates to 1
+
+  Scenario: Dividing two decimal numbers
+    Given an operation '/'
+    When I provide a first number 5.0
+    And I provide a second number 2.0
+    Then the operation evaluates to 2.5
 
   Scenario: Dividing two integer numbers
     Given an operation '/'
@@ -54,6 +78,12 @@ Feature: Integer Arithmetic Expressions
     And its PREFIX notation is + (8, 6)
     And its POSTFIX notation is (8, 6) +
 
+  Scenario: Printing the sum of two decimal numbers
+    Given the sum of two numbers 8.0 and 6.0
+    Then its INFIX notation is ( 8.0 + 6.0 )
+    And its PREFIX notation is + (8.0, 6.0)
+    And its POSTFIX notation is (8.0, 6.0) +
+
   # This is an example of a scenario in which we provide a list of numbers as input.
   # (In fact, this is not entirely true, since what is given as input is a table of
   # strings. In this case, the table is of dimension 1 * 3 (1 line and three columns).
@@ -68,18 +98,20 @@ Feature: Integer Arithmetic Expressions
   # A scenario outline (or template) is a scenario that is parameterised
   # with different values. The outline comes with a set of examples.
   # The scenario will be executed with each of the provided inputs.
-  Scenario Outline: Adding two integer numbers
+  Scenario Outline: Adding two numbers
     Given an operation '+'
     When I provide a first number <n1>
     And I provide a second number <n2>
     Then the operation evaluates to <result>
 
     Examples:
-      | n1 | n2 | result |
-      | 4  | 5  | 9      |
-      | 5  | 3  | 8      |
+      | n1    | n2 | result |
+      | 4     | 5  | 9      |
+      | 5     | 3  | 8      |
+      | 4.0E2 | 5  | 405.0  |
+      | 5E-2  | 3  | 3.05   |
 
-  Scenario Outline: Dividing two integer numbers
+  Scenario Outline: Dividing two numbers
     Given an operation '/'
     When I provide a first number <n1>
     And I provide a second number <n2>
@@ -90,6 +122,8 @@ Feature: Integer Arithmetic Expressions
       | 35 | 5  | 7      |
       | 7  | 5  | 1      |
       | 5  | 7  | 0      |
+      | 7. | 2  | 3.5    |
+      | .1 | 2  | 0.05   |
 
   Scenario Outline: Evaluating arithmetic operations with two integer parameters
     Given an operation <op>
@@ -98,11 +132,15 @@ Feature: Integer Arithmetic Expressions
     Then the operation evaluates to <result>
 
     Examples:
-      | op  | n1 | n2 | result |
-      | "+" | 4  | 5  | 9      |
-      | "-" | 8  | 5  | 3      |
-      | "*" | 7  | 2  | 14     |
-      | "/" | 6  | 2  | 3      |
+      | op  | n1  | n2  | result |
+      | "+" | 4   | 5   | 9      |
+      | "-" | 8   | 5   | 3      |
+      | "*" | 7   | 2   | 14     |
+      | "/" | 6   | 2   | 3      |
+      | "+" | 4.0 | 5.0 | 9.0    |
+      | "-" | 8.0 | 5   | 3.0    |
+      | "*" | 7   | 2.0 | 14.0   |
+      | "/" | 6.0 | 2.0 | 3.0    |
 
   Scenario Outline: Testing different notations for arithmetic operations
     Given an operation <op>
@@ -113,8 +151,10 @@ Feature: Integer Arithmetic Expressions
     And its POSTFIX notation is <postfix>
 
     Examples:
-      | op  | n1 | n2 | infix         | prefix       | postfix       |
-      | "+" | 8  | 6  | ( 8 + 6 )     | + (8, 6)     | (8, 6) +      |
-      | "-" | 8  | 6  | ( 8 - 6 )     | - (8, 6)     | (8, 6) -      |
-      | "*" | 8  | 6  | ( 8 * 6 )     | * (8, 6)     | (8, 6) *      |
-      | "/" | 8  | 6  | ( 8 / 6 )     | / (8, 6)     | (8, 6) /      |
+      | op  | n1   | n2  | infix           | prefix         | postfix        |
+      | "+" | 8    | 6   | ( 8 + 6 )       | + (8, 6)       | (8, 6) +       |
+      | "-" | 8    | 6   | ( 8 - 6 )       | - (8, 6)       | (8, 6) -       |
+      | "*" | 8    | 6   | ( 8 * 6 )       | * (8, 6)       | (8, 6) *       |
+      | "/" | 8    | 6   | ( 8 / 6 )       | / (8, 6)       | (8, 6) /       |
+      | "*" | 8E2  | 6.0 | ( 800.0 * 6.0 ) | * (800.0, 6.0) | (800.0, 6.0) * |
+      | "/" | 8E-2 | 6.1 | ( 0.08 / 6.1 )  | / (0.08, 6.1)  | (0.08, 6.1) /  |
