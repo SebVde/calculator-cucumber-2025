@@ -13,40 +13,40 @@ Feature: Integer Arithmetic Expressions
   # implemented in a Java mapping file (CalculatorSteps.Java)
 
   Scenario: Adding two integer numbers
-    Given an integer operation '+'
+    Given an operation '+'
     When I provide a first number 4
     And I provide a second number 5
     Then the operation evaluates to 9
 
   Scenario: Subtracting two integer numbers
-    Given an integer operation '-'
+    Given an operation '-'
     When I provide a first number 7
     And I provide a second number 5
     Then the operation evaluates to 2
 
   Scenario: Multiplying two integer numbers
-    Given an integer operation '*'
+    Given an operation '*'
     When I provide a first number 7
     And I provide a second number 5
     Then the operation evaluates to 35
 
   Scenario: Dividing two integer numbers
-    Given an integer operation '/'
+    Given an operation '/'
     When I provide a first number 7
     And I provide a second number 5
     Then the operation evaluates to 1
 
   Scenario: Dividing two integer numbers
-    Given an integer operation '/'
+    Given an operation '/'
     When I provide a first number 7
     And I provide a second number 0
     Then the operation returns infinity
 
   Scenario: Dividing two integer numbers
-    Given an integer operation '/'
+    Given an operation '/'
     When I provide a first number 0
     And I provide a second number 0
-    Then the operation is undefined
+    Then the undefined operation is equal to 0
 
   Scenario: Printing the sum of two integer numbers
     Given the sum of two numbers 8 and 6
@@ -58,7 +58,7 @@ Feature: Integer Arithmetic Expressions
   # (In fact, this is not entirely true, since what is given as input is a table of
   # strings. In this case, the table is of dimension 1 * 3 (1 line and three columns).
   Scenario: Evaluation arithmetic operations over a list of integer numbers
-    Given the following list of integer numbers
+    Given the following list of numbers
       | 8 | 2 | 2 |
     Then the sum is 12
     And the product is 32
@@ -69,7 +69,7 @@ Feature: Integer Arithmetic Expressions
   # with different values. The outline comes with a set of examples.
   # The scenario will be executed with each of the provided inputs.
   Scenario Outline: Adding two integer numbers
-    Given an integer operation '+'
+    Given an operation '+'
     When I provide a first number <n1>
     And I provide a second number <n2>
     Then the operation evaluates to <result>
@@ -80,7 +80,7 @@ Feature: Integer Arithmetic Expressions
       | 5  | 3  | 8      |
 
   Scenario Outline: Dividing two integer numbers
-    Given an integer operation '/'
+    Given an operation '/'
     When I provide a first number <n1>
     And I provide a second number <n2>
     Then the operation evaluates to <result>
@@ -92,7 +92,7 @@ Feature: Integer Arithmetic Expressions
       | 5  | 7  | 0      |
 
   Scenario Outline: Evaluating arithmetic operations with two integer parameters
-    Given an integer operation <op>
+    Given an operation <op>
     When I provide a first number <n1>
     And I provide a second number <n2>
     Then the operation evaluates to <result>
@@ -105,7 +105,7 @@ Feature: Integer Arithmetic Expressions
       | "/" | 6  | 2  | 3      |
 
   Scenario Outline: Testing different notations for arithmetic operations
-    Given an integer operation <op>
+    Given an operation <op>
     When I provide a first number <n1>
     And I provide a second number <n2>
     Then its INFIX notation is <infix>
