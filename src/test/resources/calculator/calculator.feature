@@ -60,13 +60,13 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 2.0
     Then the operation evaluates to 2.5
 
-  Scenario: Dividing two integer numbers
+  Scenario: Dividing an integer by zero
     Given an operation '/'
     When I provide a first number 7
     And I provide a second number 0
     Then the operation returns infinity
 
-  Scenario: Dividing two integer numbers
+  Scenario: Dividing zero by zero
     Given an operation '/'
     When I provide a first number 0
     And I provide a second number 0

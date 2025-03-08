@@ -121,7 +121,7 @@ public class CalculatorSteps {
                 case "difference" -> op = new Minus(params);
                 default -> fail();
             }
-            assertEquals(MyNumber.parseNumber(val).getIntegerValue(), c.eval(op));
+            assertEquals(MyNumber.parseNumber(val).getValue(), c.eval(op));
         } catch (IllegalConstruction e) {
             fail();
         }
@@ -130,7 +130,7 @@ public class CalculatorSteps {
     @Then("the operation evaluates to {word}")
     public void thenTheOperationEvaluatesTo(String val) {
         try {
-            assertEquals(MyNumber.parseNumber(val).getIntegerValue(), c.eval(op));
+            assertEquals(MyNumber.parseNumber(val).getValue(), c.eval(op));
         } catch (IllegalConstruction e) {
             fail(e.getMessage());
         }
@@ -138,12 +138,12 @@ public class CalculatorSteps {
 
     @Then("the operation returns infinity")
     public void thenTheOperationReturnsInfinity() {
-        assertEquals(Integer.MAX_VALUE, c.eval(op));
+        assertEquals(NumberValue.MAX, c.eval(op));
     }
 
     @Then("the undefined operation is equal to 0")
     public void thenTheOperationIsUndefined() {
-        assertEquals(0, c.eval(op));
+        assertEquals(NumberValue.ZERO, c.eval(op));
     }
 
     @Then("its INFIX notation is {}")
