@@ -20,7 +20,7 @@ public final class Plus extends Operation
    * @throws IllegalConstruction    If an empty list of expressions if passed as parameter
    * @see #Plus(List<Expression>,Notation)
    */
-  public /*constructor*/ Plus(List<Expression> elist) throws IllegalConstruction {
+  public Plus(List<Expression> elist) throws IllegalConstruction {
 	this(elist, null);
   }
 
@@ -46,7 +46,20 @@ public final class Plus extends Operation
    * @param r The second integer that should be added to the first
    * @return The integer that is the result of the addition
    */
-  public int op(int l, int r) {
-  	return (l+r);
+  public NumberValue op(NumberValue l, NumberValue r) {
+  	if (l.isDecimal() || r.isDecimal()) {
+          return op(l.asDouble(), r.asDouble());
+    } else {
+          return op(l.integerPart(), r.integerPart());
+    }
+  }
+
+ public NumberValue op(int l, int r) {
+     return new NumberValue(l + r, null);
+ }
+
+  public NumberValue op(double l, double r) {
+      double result = l + r;
+      return new NumberValue((int) result, result % 1);
   }
 }
