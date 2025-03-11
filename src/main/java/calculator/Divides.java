@@ -44,13 +44,15 @@ public final class Divides extends Operation {
     }
 
     /**
-     * The actual computation of the (binary) arithmetic division of two integers
+     * The actual computation of the (binary) arithmetic division of two numbers
      *
-     * @param l The first integer
-     * @param r The second integer that should divide the first
-     * @return The integer that is the result of the division
+     * @param l The first number
+     * @param r The second number that should divide the first
+     * @return The number that is the result of the division
      */
     public NumberValue op(NumberValue l, NumberValue r) {
+        // If a number is decimal we treat both of them as decimal
+        // and the resulting value will be as well
         if (l.isDecimal() || r.isDecimal()) {
             double lReal = l.asDouble();
             double rReal = r.asDouble();

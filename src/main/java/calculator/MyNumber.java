@@ -13,7 +13,14 @@ import java.util.Objects;
  * @see Operation
  */
 public class MyNumber implements Expression {
+    /**
+     * Regex for real numbers, it accepts numbers in the following form
+     * 12 | 12.0 | 12. | +12 | -12 | 12E-2 | +12E2
+     */
     private static final String realRegEx = "^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?$";
+    /**
+     * Regex for integers
+     */
     private static final String intRegEx = "(\\d+)";
 
     public static MyNumber parseNumber(String s) throws IllegalConstruction, NumberFormatException {

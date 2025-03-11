@@ -42,13 +42,15 @@ public final class Minus extends Operation {
     }
 
     /**
-     * The actual computation of the (binary) arithmetic subtraction of two integers
+     * The actual computation of the (binary) arithmetic subtraction of two numbers
      *
-     * @param l The first integer
-     * @param r The second integer that should be subtracted from the first
-     * @return The integer that is the result of the subtraction
+     * @param l The first number
+     * @param r The second number that should be subtracted from the first
+     * @return The number that is the result of the subtraction
      */
     public NumberValue op(NumberValue l, NumberValue r) {
+        // If a number is decimal we treat both of them as decimal
+        // and the resulting value will be as well
         if (l.isDecimal() || r.isDecimal()) {
             return op(l.asDouble(), r.asDouble());
         } else {

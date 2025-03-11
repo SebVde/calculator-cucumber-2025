@@ -41,13 +41,15 @@ public final class Times extends Operation {
     }
 
     /**
-     * The actual computation of the (binary) arithmetic multiplication of two integers
+     * The actual computation of the (binary) arithmetic multiplication of two numbers
      *
-     * @param l The first integer
-     * @param r The second integer that should be multiplied with the first
-     * @return The integer that is the result of the multiplication
+     * @param l The first number
+     * @param r The second number that should be multiplied with the first
+     * @return The number that is the result of the multiplication
      */
     public NumberValue op(NumberValue l, NumberValue r) {
+        // If a number is decimal we treat both of them as decimal
+        // and the resulting value will be as well
         if (l.isDecimal() || r.isDecimal()) {
             return op(l.asDouble(), r.asDouble());
         } else {
