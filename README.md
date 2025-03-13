@@ -5,6 +5,8 @@ Code quality: ![Maven Build](https://github.com/University-of-Mons/calculator-cu
 Test coverage: ![Coverage](.github/badges/jacoco.svg)
 ![Branches](.github/badges/branches.svg)
 
+PMD Analysis: ![PMD Analysis](https://github.com/SebVde/calculator-cucumber-2025/actions/workflows/pmd-analysis.yml/badge.svg)
+Scorecard: ![ScoreCard](https://github.com/SebVde/calculator-cucumber-2025/actions/workflows/scorecard.yml/badge.svg)
 
 # Calculating arithmetic expressions
 
