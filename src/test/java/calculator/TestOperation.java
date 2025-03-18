@@ -13,15 +13,14 @@ class TestOperation {
 	private Operation o;
 	private Operation o2;
 	private CountVisitor countVisitor1;
-	private CountVisitor countVisitor2;
 
-	@BeforeEach
+    @BeforeEach
 	void setUp() throws Exception {
 		List<Expression> params1 = Arrays.asList(new MyNumber(3), new MyNumber(4), new MyNumber(5));
 		List<Expression> params2 = Arrays.asList(new MyNumber(5), new MyNumber(4));
 		List<Expression> params3 = Arrays.asList(new Plus(params1), new Minus(params2), new MyNumber(7));
 		countVisitor1 = new CountVisitor();
-		countVisitor2 = new CountVisitor();
+        CountVisitor countVisitor2 = new CountVisitor();
 		o = new Divides(params3);
 		o2 = new Divides(params3);
 

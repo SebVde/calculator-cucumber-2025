@@ -16,7 +16,7 @@ public class OutputVisitor extends Visitor {
     }
 
     public void visit(MyNumber n) {
-        output = Integer.toString(n.getValue());
+        output = n.toString();
     }
 
     public void visit(Operation o) {
