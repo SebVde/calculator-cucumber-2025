@@ -41,7 +41,7 @@ public record NumberValue(Integer integerRealPart, Double decimalRealPart, Integ
      * @throws IllegalConstruction If the number is complex and the method would lead to loss of information
      */
     public double asDouble() throws IllegalConstruction{
-        if (isComplex()) {
+        if (isComplex() && (integerImaginaryPart != 0 || (decimalImaginaryPart != null && decimalImaginaryPart != 0))) {
             throw new IllegalConstruction("Number is complex");
         }
         else {
@@ -55,11 +55,11 @@ public record NumberValue(Integer integerRealPart, Double decimalRealPart, Integ
      * @throws IllegalConstruction If the number is decimal or complex and the method would lead to loss of information
      */
     public int asInt() throws IllegalConstruction {
-        if (isDecimal()) {
-            throw new IllegalConstruction("Number has decimal part");
-        }
-        else if (isComplex()) {
+        if (isComplex() && (integerImaginaryPart != 0 || (decimalImaginaryPart != null && decimalImaginaryPart != 0))) {
             throw new IllegalConstruction("Number is complex");
+        }
+        else if (decimalRealPart != 0) {
+            throw new IllegalConstruction("Number has decimal part");
         }
         else {
             return integerRealPart;
