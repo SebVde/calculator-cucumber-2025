@@ -53,7 +53,7 @@ public final class Times extends Operation {
         if (l.isDecimal() || r.isDecimal()) {
             return op(l.asDouble(), r.asDouble());
         } else {
-            return op(l.integerPart(), r.integerPart());
+            return op(l.integerRealPart(), r.integerRealPart());
         }
     }
 

@@ -47,11 +47,15 @@ public class MyNumber implements Expression {
     private final NumberValue value;
 
     public MyNumber(double value) {
-        this.value = new NumberValue((int) value, value % 1);
+        this.value = new NumberValue((int) value, value % 1, null, null);
     }
 
     public MyNumber(int value) {
-        this.value = new NumberValue(value, null);
+        this.value = new NumberValue(value, null, null, null);
+    }
+
+    public MyNumber(double realPart, double imaginaryPart) {
+        this.value = new NumberValue((int) realPart, realPart % 1, (int) imaginaryPart, imaginaryPart % 1);
     }
 
     public NumberValue getValue() {
