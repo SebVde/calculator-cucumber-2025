@@ -23,6 +23,11 @@ public class MyNumber implements Expression {
      */
     private static final String intRegEx = "(\\d+)";
 
+    /**
+     * Regex for complex numbers
+     */
+    private static final String complexRegEx = "^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?[-+](?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?i$";
+
     public static MyNumber parseNumber(String s) throws IllegalConstruction, NumberFormatException {
         if (s.matches(intRegEx)) {
             return new MyNumber(Integer.parseInt(s));
@@ -39,8 +44,53 @@ public class MyNumber implements Expression {
             } else {
                 return new MyNumber(Double.parseDouble(s));
             }
+        } else if (s.matches(complexRegEx)) {
+            if (s.contains("E")) {
+                String[] split = s.split("E");
+                if (split.length == 2) {
+                    return parseComplexWithSingleExponent(split);
+                } else if (split.length == 3){
+                    return parseComplexWithDoubleExponent(split);
+                } else {
+                    throw new IllegalConstruction("Invalid scientific notation format");
+                }
+            } else {
+                
+            }
         } else {
             throw new IllegalConstruction("Couldn't parse number");
+        }
+        return null;
+    }
+
+    private static MyNumber parseComplexWithSingleExponent(String[] splitted) {
+        // TODO: implement this
+        return null;
+    }
+
+    private static MyNumber parseComplexWithDoubleExponent(String[] splitted) {
+        double first = Double.parseDouble(splitted[0]);
+        double fourth = Double.parseDouble(splitted[2].replace("i", ""));
+        String[] splitImaginary = splitted[1].split("\\+");
+
+        if (splitImaginary.length == 2) { // _E_+_E_i
+            double second = Double.parseDouble(splitImaginary[0]);
+            double third = Double.parseDouble(splitImaginary[1]);
+            return new MyNumber(first * Math.pow(10, second), third * Math.pow(10, fourth));
+        }
+
+        else if (splitImaginary[0].length() - splitImaginary[0].replace("-", "").length() == 2) { // _E-_-_E_i
+            splitImaginary = splitted[1].split("-");
+            double second = Double.parseDouble(splitImaginary[0]);
+            double third = Double.parseDouble(splitImaginary[1]);
+            return new MyNumber(first * Math.pow(10, -second), -third * Math.pow(10, fourth));
+        }
+
+        else { // _E_-_E_i
+            splitImaginary = splitted[1].split("-");
+            double second = Double.parseDouble(splitImaginary[0]);
+            double third = Double.parseDouble(splitImaginary[1]);
+            return new MyNumber(first * Math.pow(10, second), -third * Math.pow(10, fourth));
         }
     }
 
