@@ -68,7 +68,7 @@ public final class Divides extends Operation {
         } else if (r == 0) {
             return NumberValue.MAX;
         } else {
-            return new NumberValue(l / r, null);
+            return new NumberValue(l / r, null, null, null);
         }
     }
 
@@ -79,7 +79,7 @@ public final class Divides extends Operation {
             return NumberValue.MAX;
         } else {
             double result = l / r;
-            return new NumberValue((int) result, result % 1);
+            return new NumberValue((int) result, result % 1, null, null);
         }
     }
 }

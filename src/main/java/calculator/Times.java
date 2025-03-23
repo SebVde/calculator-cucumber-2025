@@ -58,11 +58,11 @@ public final class Times extends Operation {
     }
 
     public NumberValue op(int l, int r) {
-        return new NumberValue(l * r, null);
+        return new NumberValue(l * r, null, null, null);
     }
 
     public NumberValue op(double l, double r) {
         double result = l * r;
-        return new NumberValue((int) result, result % 1);
+        return new NumberValue((int) result, result % 1, null, null);
     }
 }

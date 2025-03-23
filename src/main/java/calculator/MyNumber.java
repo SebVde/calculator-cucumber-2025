@@ -124,12 +124,12 @@ public class MyNumber implements Expression {
 
     public NumberValue convertToRadians() {
         double conversion = Math.toRadians(this.value.asDouble());
-        return new NumberValue((int) conversion, conversion % 1);
+        return new NumberValue((int) conversion, conversion % 1, null, null);
     }
 
     public NumberValue convertToDegrees() {
         double conversion = Math.toDegrees(this.value.asDouble());
-        return new NumberValue((int) conversion, conversion % 1);
+        return new NumberValue((int) conversion, conversion % 1, null, null);
     }
 
 
