@@ -70,8 +70,19 @@ public final class Minus extends Operation {
     }
 
     public NumberValue opComplex(NumberValue l, NumberValue r) {
-        double realPart = l.integerPart() - r.integerPart() - l.decimalPart() - r.decimalPart();
-        double imaginaryPart = l.integerImaginaryPart() - r.integerImaginaryPart() - l.decimalImaginaryPart() - r.decimalImaginaryPart();
+        double realPart = l.integerPart() - r.integerPart() - r.decimalPart();
+        if (l.integerPart() >= 0) {
+            realPart += l.decimalPart();
+        } else {
+            realPart -= l.decimalPart();
+        }
+
+        double imaginaryPart = l.integerImaginaryPart() - r.integerImaginaryPart() - r.decimalImaginaryPart();
+        if (l.integerImaginaryPart() >= 0) {
+            imaginaryPart += l.integerImaginaryPart();
+        } else {
+            imaginaryPart -= l.integerImaginaryPart();
+        }
         return new NumberValue((int) realPart, realPart % 1, (int) imaginaryPart, imaginaryPart % 1);
     }
 }
