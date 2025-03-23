@@ -53,17 +53,25 @@ public final class Minus extends Operation {
         // and the resulting value will be as well
         if (l.isDecimal() || r.isDecimal()) {
             return op(l.asDouble(), r.asDouble());
+        } else if (l.isComplex() && r.isComplex()) {
+            return opComplex(l, r);
         } else {
             return op(l.integerPart(), r.integerPart());
         }
     }
 
     public NumberValue op(int l, int r) {
-        return new NumberValue(l - r, null);
+        return new NumberValue(l - r, null, null, null);
     }
 
     public NumberValue op(double l, double r) {
         double result = l - r;
-        return new NumberValue((int) result, result % 1);
+        return new NumberValue((int) result, result % 1, null, null);
+    }
+
+    public NumberValue opComplex(NumberValue l, NumberValue r) {
+        double realPart = l.integerPart() - r.integerPart() - l.decimalPart() - r.decimalPart();
+        double imaginaryPart = l.integerImaginaryPart() - r.integerImaginaryPart() - l.decimalImaginaryPart() - r.decimalImaginaryPart();
+        return new NumberValue((int) realPart, realPart % 1, (int) imaginaryPart, imaginaryPart % 1);
     }
 }
