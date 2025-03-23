@@ -38,15 +38,9 @@ public record NumberValue(Integer integerRealPart, Double decimalRealPart, Integ
     /**
      * Transforms  the number into a double
      * @return The number value as a double
-     * @throws IllegalConstruction If the number is complex and the method would lead to loss of information
      */
-    public double asDouble() throws IllegalConstruction{
-        if (isComplex() && (integerImaginaryPart != 0 || (decimalImaginaryPart != null && decimalImaginaryPart != 0))) {
-            throw new IllegalConstruction("Number is complex");
-        }
-        else {
-            return integerRealPart + (decimalRealPart == null ? 0.0 : decimalRealPart);
-        }
+    public double asDouble() {
+        return integerRealPart + (decimalRealPart == null ? 0.0 : decimalRealPart);
     }
 
     /**
