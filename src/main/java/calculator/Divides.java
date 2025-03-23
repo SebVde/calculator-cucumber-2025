@@ -56,8 +56,8 @@ public final class Divides extends Operation {
             double rReal = r.asDouble();
             return op(lReal, rReal);
         } else {
-            int lInt = l.integerRealPart();
-            int rInt = r.integerRealPart();
+            int lInt = l.integerPart();
+            int rInt = r.integerPart();
             return op(lInt, rInt);
         }
     }

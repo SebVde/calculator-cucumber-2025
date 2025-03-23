@@ -56,7 +56,7 @@ public final class Plus extends Operation {
         } else if (l.isComplex() && r.isComplex()) {
             return opComplex(l, r);
         } else {
-            return op(l.integerRealPart(), r.integerRealPart());
+            return op(l.integerPart(), r.integerPart());
         }
     }
 
@@ -70,7 +70,7 @@ public final class Plus extends Operation {
     }
 
     public NumberValue opComplex(NumberValue l, NumberValue r) {
-        double realPart = l.integerRealPart() + r.integerRealPart() + l.decimalRealPart() + r.decimalRealPart();
+        double realPart = l.integerPart() + r.integerPart() + l.decimalPart() + r.decimalPart();
         double imaginaryPart = l.integerImaginaryPart() + r.integerImaginaryPart() + l.decimalImaginaryPart() + r.decimalImaginaryPart();
         return new NumberValue((int) realPart, realPart % 1, (int) imaginaryPart, imaginaryPart % 1);
     }
