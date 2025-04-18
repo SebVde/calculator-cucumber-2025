@@ -12,7 +12,7 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
     public static final NumberValue MAX = new NumberValue(Integer.MAX_VALUE, 0.0, Integer.MAX_VALUE, 0.0);
 
     public boolean isDecimal() {
-        return this.decimalPart != null && this.integerImaginaryPart != null && this.decimalImaginaryPart != null;
+        return this.decimalPart != null && this.integerImaginaryPart == null && this.decimalImaginaryPart == null;
     }
 
     public boolean isComplex() { return this.integerImaginaryPart != null; }
