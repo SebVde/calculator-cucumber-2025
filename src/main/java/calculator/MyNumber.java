@@ -3,6 +3,7 @@ package calculator;
 import visitor.CountVisitor;
 import visitor.Visitor;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -105,7 +106,15 @@ public class MyNumber implements Expression {
     }
 
     public MyNumber(double realPart, double imaginaryPart) {
-        this.value = new NumberValue((int) realPart, realPart % 1, (int) imaginaryPart, imaginaryPart % 1);
+        int scaleReal = BigDecimal.valueOf(realPart).scale();
+        long factorReal = (long) Math.pow(10, scaleReal);
+        double realDecimalPart = (double) Math.round(factorReal * (realPart % 1)) / factorReal;
+
+        int scaleImaginary = BigDecimal.valueOf(imaginaryPart).scale();
+        long factorImaginary = (long) Math.pow(10, scaleImaginary);
+        double imaginaryDecimalPart = (double) Math.round(factorImaginary * (imaginaryPart % 1)) / factorImaginary;
+
+        this.value = new NumberValue((int) realPart, realDecimalPart , (int) imaginaryPart, imaginaryDecimalPart);
     }
 
     public NumberValue getValue() {
