@@ -1,5 +1,6 @@
 package calculator;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -71,7 +72,11 @@ public final class Plus extends Operation {
 
     public NumberValue opComplex(NumberValue l, NumberValue r) {
         double realPart = l.integerPart() + r.integerPart() + l.decimalPart() + r.decimalPart();
+        double realDecimalPart = roundDecimal(l.decimalPart(), r.decimalPart(), realPart);
+
         double imaginaryPart = l.integerImaginaryPart() + r.integerImaginaryPart() + l.decimalImaginaryPart() + r.decimalImaginaryPart();
-        return new NumberValue((int) realPart, realPart % 1, (int) imaginaryPart, imaginaryPart % 1);
+        double imaginaryDecimalPart = roundDecimal(l.decimalImaginaryPart(), r.decimalImaginaryPart(), imaginaryPart);
+
+        return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
     }
 }

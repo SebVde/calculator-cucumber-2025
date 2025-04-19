@@ -7,6 +7,7 @@ import visitor.Visitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import java.math.BigDecimal;
 
 /**
  * Operation is an abstract class that represents arithmetic operations,
@@ -137,6 +138,12 @@ public abstract class Operation implements Expression {
         CountVisitor v = new CountVisitor();
         v.visit(this);
         return v.getNbCount();
+    }
+
+    protected static double roundDecimal(double leftDecimal, double rightDecimal, double result) {
+        int scale = Math.max(BigDecimal.valueOf(leftDecimal).scale(), BigDecimal.valueOf(rightDecimal).scale());
+        long factor = (long) Math.pow(10, scale);
+        return (double) Math.round(factor * (result % 1)) / factor;
     }
 
     /**
