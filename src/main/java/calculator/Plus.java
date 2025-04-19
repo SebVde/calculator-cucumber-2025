@@ -90,7 +90,9 @@ public final class Plus extends Operation {
             }
 
             else {
-                return new NumberValue(l.integerPart() + r.integerPart(), l.decimalPart(), l.integerImaginaryPart(), l.decimalImaginaryPart());
+                double realPart = l.integerPart() + l.decimalPart() + r.integerPart();
+                double realDecimalPart = roundDecimal(l.decimalPart(), 0, realPart);
+                return new NumberValue((int) realPart, realDecimalPart, l.integerImaginaryPart(), l.decimalImaginaryPart());
             }
         }
 
@@ -102,7 +104,9 @@ public final class Plus extends Operation {
             }
 
             else {
-                return new NumberValue(l.integerPart() + r.integerPart(), r.decimalPart(), r.integerImaginaryPart(), r.decimalImaginaryPart());
+                double realPart = l.integerPart() + r.integerPart() + r.decimalPart();
+                double realDecimalPart = roundDecimal(0, r.decimalPart(), realPart);
+                return new NumberValue((int) realPart, realDecimalPart, r.integerImaginaryPart(), r.decimalImaginaryPart());
             }
         }
     }
