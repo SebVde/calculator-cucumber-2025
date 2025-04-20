@@ -25,9 +25,9 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
     public String toString() {
         if (isDecimal()) return String.valueOf(integerPart + decimalPart);
         else if (isComplex()) {
-            return String.valueOf(integerPart + (decimalPart == null ? 0 : decimalPart))
+            return integerPart + (decimalPart == null ? "" : decimalPart.toString())
                     + (integerImaginaryPart >= 0 ? "+" : "")
-                    + String.valueOf(integerImaginaryPart + (decimalImaginaryPart == null ? 0 : decimalImaginaryPart))
+                    + integerImaginaryPart + (decimalImaginaryPart == null ? "" : decimalImaginaryPart.toString())
                     + "i";
         }
 
