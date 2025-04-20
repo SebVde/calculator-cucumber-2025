@@ -72,24 +72,12 @@ public final class Divides extends Operation {
     }
 
     private NumberValue op(int l, int r) {
-        if (l == 0 && r == 0) {
-            return NumberValue.ZERO;
-        } else if (r == 0) {
-            return NumberValue.MAX;
-        } else {
-            return new NumberValue(l / r, null, null, null);
-        }
+        return new NumberValue(l / r, null, null, null);
     }
 
     private NumberValue op(double l, double r) {
-        if (l == 0 && r == 0) {
-            return NumberValue.ZERO;
-        } else if (r == 0) {
-            return NumberValue.MAX;
-        } else {
-            double result = l / r;
-            return new NumberValue((int) result, result % 1, null, null);
-        }
+        double result = l / r;
+        return new NumberValue((int) result, result % 1, null, null);
     }
 
     private NumberValue getConjugate(NumberValue complexNumber) {
