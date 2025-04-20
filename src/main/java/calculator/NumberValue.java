@@ -9,7 +9,7 @@ package calculator;
  */
 public record NumberValue(Integer integerPart, Double decimalPart, Integer integerImaginaryPart, Double decimalImaginaryPart) {
     public static final NumberValue ZERO = new NumberValue(0, null, null, null);
-    public static final NumberValue MAX = new NumberValue(Integer.MAX_VALUE, 0.0, Integer.MAX_VALUE, 0.0);
+    public static final NumberValue MAX = new NumberValue(Integer.MAX_VALUE, null, null, null);
 
     public boolean isDecimal() {
         return this.decimalPart != null && this.integerImaginaryPart == null && this.decimalImaginaryPart == null;
