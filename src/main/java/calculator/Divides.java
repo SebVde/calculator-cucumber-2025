@@ -94,7 +94,7 @@ public final class Divides extends Operation {
                     + (l.integerImaginaryPart() + l.getDecimalImaginaryPart()) * (r.integerPart() + r.getDecimalPart());
             double imaginaryDecimalPart = roundDecimal(l.getDecimalImaginaryPart(), r.getDecimalImaginaryPart(), imaginaryPart);
 
-            return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , ((int) imaginaryPart == 0 ? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
+            return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
         } else {
             double realPart = (l.integerPart() + l.getDecimalPart()) * (r.integerPart() + r.getDecimalPart());
             double realDecimalPart = roundDecimal((l.isDecimal() ? 0.000000001 : 0), (l.isDecimal() ? 0.000000001 : r.getDecimalPart()), realPart);
