@@ -25,13 +25,11 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
     public String toString() {
         if (isDecimal()) return String.valueOf(integerPart + decimalPart);
         else if (isComplex()) {
-            return integerPart + (decimalPart == null ? "" : String.valueOf(decimalPart).substring(1))
-                    + (integerImaginaryPart >= 0 ? "+" : "")
-                    + integerImaginaryPart + (decimalImaginaryPart == null ? "" : String.valueOf(decimalImaginaryPart).substring(1))
+            return integerPart + this.getDecimalPart()
+                    + (integerImaginaryPart >= 0 && this.getDecimalImaginaryPart() >= 0 ? "+" : "")
+                    + (integerImaginaryPart + this.getDecimalImaginaryPart())
                     + "i";
-        }
-
-        else
+        } else
             return String.valueOf(integerPart);
     }
 
