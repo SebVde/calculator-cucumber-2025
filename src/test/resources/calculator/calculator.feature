@@ -24,6 +24,12 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 5.1
     Then the operation evaluates to 9.1
 
+  Scenario: Adding two complex numbers
+    Given an operation '+'
+    When I provide a first number 2+3i
+    And I provide a second number 6+1i
+    Then the operation evaluates to 8+4i
+
   Scenario: Subtracting two integer numbers
     Given an operation '-'
     When I provide a first number 7
@@ -35,6 +41,12 @@ Feature: Integer Arithmetic Expressions
     When I provide a first number 7.0
     And I provide a second number 5.0
     Then the operation evaluates to 2.0
+
+  Scenario: Subtracting two complex numbers
+    Given an operation '-'
+    When I provide a first number 6+1i
+    And I provide a second number 2+6i
+    Then the operation evaluates to 4-5i
 
   Scenario: Multiplying two integer numbers
     Given an operation '*'
@@ -48,6 +60,12 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 5.0
     Then the operation evaluates to 35.0
 
+  Scenario: Multiplying two complex numbers
+    Given an operation '*'
+    When I provide a first number 2+3i
+    And I provide a second number 6+1i
+    Then the operation evaluates to 9+20i
+
   Scenario: Dividing two integer numbers
     Given an operation '/'
     When I provide a first number 7
@@ -59,6 +77,12 @@ Feature: Integer Arithmetic Expressions
     When I provide a first number 5.0
     And I provide a second number 2.0
     Then the operation evaluates to 2.5
+
+  Scenario: Dividing two complex numbers
+    Given an operation '/'
+    When I provide a first number 20-4i
+    And I provide a second number 3+2i
+    Then the operation evaluates to 4-4i
 
   Scenario: Dividing an integer by zero
     Given an operation '/'
