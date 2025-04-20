@@ -8,7 +8,7 @@ package calculator;
  * @param decimalImaginaryPart
  */
 public record NumberValue(Integer integerPart, Double decimalPart, Integer integerImaginaryPart, Double decimalImaginaryPart) {
-    public static final NumberValue ZERO = new NumberValue(0, 0.0, 0, 0.0);
+    public static final NumberValue ZERO = new NumberValue(0, null, null, null);
     public static final NumberValue MAX = new NumberValue(Integer.MAX_VALUE, 0.0, Integer.MAX_VALUE, 0.0);
 
     public boolean isDecimal() {
@@ -18,7 +18,7 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
     public boolean isComplex() { return this.integerImaginaryPart != null; }
 
     public boolean isZero() {
-        return this.decimalPart == 0 && this.integerPart == 0 && this.integerImaginaryPart == 0 && this.decimalImaginaryPart == 0;
+        return this.integerPart == 0 && (this.decimalPart == null || this.decimalPart == 0) && (this.integerImaginaryPart == null || this.integerImaginaryPart == 0) && (this.decimalImaginaryPart == null || this.decimalImaginaryPart == 0);
     }
 
     @Override
