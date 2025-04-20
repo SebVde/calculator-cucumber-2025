@@ -71,7 +71,7 @@ public final class Times extends Operation {
         return new NumberValue((int) result, result % 1, null, null);
     }
 
-    public NumberValue opComplex(NumberValue l, NumberValue r) {
+    private NumberValue opComplex(NumberValue l, NumberValue r) {
         if (l.isComplex()) {
             if (r.isComplex()) {
                 double realPart = (l.integerPart() + l.getDecimalPart()) * (r.integerPart() + r.getDecimalPart())

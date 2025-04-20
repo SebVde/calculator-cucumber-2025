@@ -70,7 +70,7 @@ public final class Minus extends Operation {
         return new NumberValue((int) result, result % 1, null, null);
     }
 
-    public NumberValue opComplex(NumberValue l, NumberValue r) {
+    private NumberValue opComplex(NumberValue l, NumberValue r) {
         double realPart = l.integerPart() + l.getDecimalPart() - r.integerPart() - r.getDecimalPart();
         double realDecimalPart = roundDecimal(l.getDecimalPart(), r.getDecimalPart(), realPart);
         if (l.isComplex()) {

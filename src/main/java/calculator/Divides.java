@@ -105,7 +105,7 @@ public final class Divides extends Operation {
         }
     }
 
-    public NumberValue opComplex(NumberValue l, NumberValue r) {
+    private NumberValue opComplex(NumberValue l, NumberValue r) {
         if (l.isComplex()) {
             if (r.isComplex()) {
                 NumberValue rConjugate = getConjugate(r);
