@@ -1,5 +1,7 @@
 package calculator;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,9 +51,16 @@ public final class Divides extends Operation {
      * @return The number that is the result of the division
      */
     public NumberValue op(NumberValue l, NumberValue r) {
+        if (l.isZero() && r.isZero()) {
+            return NumberValue.ZERO;
+        } else if (r.isZero()) {
+            return NumberValue.MAX;
+        } else if (l.isComplex() || r.isComplex()) {
+            return opComplex(l, r);
+        }
         // If a number is decimal we treat both of them as decimal
         // and the resulting value will be as well
-        if (l.isDecimal() || r.isDecimal()) {
+        else if (l.isDecimal() || r.isDecimal()) {
             double lReal = l.asDouble();
             double rReal = r.asDouble();
             return op(lReal, rReal);
@@ -80,6 +89,53 @@ public final class Divides extends Operation {
         } else {
             double result = l / r;
             return new NumberValue((int) result, result % 1, null, null);
+        }
+    }
+
+    private NumberValue getConjugate(NumberValue complexNumber) {
+        return new NumberValue(complexNumber.integerPart(), complexNumber.decimalPart(), -complexNumber.integerImaginaryPart(), complexNumber.decimalImaginaryPart());
+    }
+
+    private NumberValue multiply(NumberValue l, NumberValue r) {
+        if (l.isComplex()) {
+            double realPart = (l.integerPart() + l.getDecimalPart()) * (r.integerPart() + r.getDecimalPart())
+                    - (l.integerImaginaryPart() + l.getDecimalImaginaryPart()) * (r.integerImaginaryPart() + r.getDecimalImaginaryPart());
+            double realDecimalPart = roundDecimal(l.getDecimalPart(), r.getDecimalPart(), realPart);
+
+            double imaginaryPart = (l.integerPart() + l.getDecimalPart()) * (r.integerImaginaryPart() + r.getDecimalImaginaryPart())
+                    + (l.integerImaginaryPart() + l.getDecimalImaginaryPart()) * (r.integerPart() + r.getDecimalPart());
+            double imaginaryDecimalPart = roundDecimal(l.getDecimalImaginaryPart(), r.getDecimalImaginaryPart(), imaginaryPart);
+
+            return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , ((int) imaginaryPart == 0 ? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
+        } else {
+            double realPart = (l.integerPart() + l.getDecimalPart()) * (r.integerPart() + r.getDecimalPart());
+            double realDecimalPart = roundDecimal((l.isDecimal() ? 0.000000001 : 0), (l.isDecimal() ? 0.000000001 : r.getDecimalPart()), realPart);
+
+            double imaginaryPart = (l.integerPart() + l.getDecimalPart()) * (r.integerImaginaryPart() + r.getDecimalImaginaryPart());
+            double imaginaryDecimalPart = roundDecimal((l.isDecimal() ? 0.000000001 : 0), (l.isDecimal() ? 0.000000001 : r.getDecimalImaginaryPart()), imaginaryPart);
+            return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (int) imaginaryPart, (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
+        }
+    }
+
+    public NumberValue opComplex(NumberValue l, NumberValue r) {
+        if (l.isComplex()) {
+            if (r.isComplex()) {
+                NumberValue rConjugate = getConjugate(r);
+                NumberValue numerator = multiply(l, rConjugate);
+                NumberValue denominator = multiply(r, rConjugate);
+                return op(numerator, denominator);
+            } else {
+                double realPart = (l.integerPart() + l.getDecimalPart()) / (r.integerPart() + r.getDecimalPart());
+                double realDecimalPart = roundDecimal(0.000000001, 0.000000001, realPart);
+                double imaginaryPart = (l.integerImaginaryPart() + l.getDecimalImaginaryPart()) / (r.integerPart() + r.getDecimalPart());
+                double imaginaryDecimalPart = roundDecimal(0.000000001, 0.000000001, imaginaryPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (int) imaginaryPart, (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
+            }
+        } else {
+            NumberValue rConjugate = getConjugate(r);
+            NumberValue numerator = multiply(l, rConjugate);
+            NumberValue denominator = multiply(r, rConjugate);
+            return op(numerator, denominator);
         }
     }
 }
