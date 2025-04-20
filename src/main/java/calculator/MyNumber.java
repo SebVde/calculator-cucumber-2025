@@ -5,6 +5,8 @@ import visitor.Visitor;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * MyNumber is a concrete class that represents arithmetic numbers,
@@ -27,71 +29,35 @@ public class MyNumber implements Expression {
     /**
      * Regex for complex numbers
      */
-    private static final String complexRegEx = "^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?[-+](?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?i$";
+    private static final String complexRegEx = "([+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)" +
+            "([+-](?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)i|" +
+            "([+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)i";
 
     public static MyNumber parseNumber(String s) throws IllegalConstruction, NumberFormatException {
         if (s.matches(intRegEx)) {
             return new MyNumber(Integer.parseInt(s));
         } else if (s.matches(realRegEx)) {
-            if (s.contains("E")) {
-                String[] split = s.split("E");
-                if (split.length != 2)
-                    throw new IllegalConstruction("Invalid scientific notation format");
+            return new MyNumber(Double.parseDouble(s));
+        }
 
-                double first = Double.parseDouble(split[0]);
-                double second = Double.parseDouble(split[1]);
-                return new MyNumber(first * Math.pow(10, second));
+        Pattern pattern = Pattern.compile(complexRegEx);
+        Matcher matcher = pattern.matcher(s);
 
-            } else {
-                return new MyNumber(Double.parseDouble(s));
+        if (matcher.find()) {
+            double real = 0;
+            double imaginary = 0;
+
+            if (matcher.group(1) != null) {
+                real = Double.parseDouble(matcher.group(1));
+            } if (matcher.group(2) != null) {
+                imaginary = Double.parseDouble(matcher.group(2));
+            } if (matcher.group(3) != null) {
+                imaginary = Double.parseDouble(matcher.group(3));
             }
-        } else if (s.matches(complexRegEx)) {
-            if (s.contains("E")) {
-                String[] split = s.split("E");
-                if (split.length == 2) {
-                    return parseComplexWithSingleExponent(split);
-                } else if (split.length == 3){
-                    return parseComplexWithDoubleExponent(split);
-                } else {
-                    throw new IllegalConstruction("Invalid scientific notation format");
-                }
-            } else {
-                
-            }
+
+            return new MyNumber(real, imaginary);
         } else {
             throw new IllegalConstruction("Couldn't parse number");
-        }
-        return null;
-    }
-
-    private static MyNumber parseComplexWithSingleExponent(String[] splitted) {
-        // TODO: implement this
-        return null;
-    }
-
-    private static MyNumber parseComplexWithDoubleExponent(String[] splitted) {
-        double first = Double.parseDouble(splitted[0]);
-        double fourth = Double.parseDouble(splitted[2].replace("i", ""));
-        String[] splitImaginary = splitted[1].split("\\+");
-
-        if (splitImaginary.length == 2) { // _E_+_E_i
-            double second = Double.parseDouble(splitImaginary[0]);
-            double third = Double.parseDouble(splitImaginary[1]);
-            return new MyNumber(first * Math.pow(10, second), third * Math.pow(10, fourth));
-        }
-
-        else if (splitImaginary[0].length() - splitImaginary[0].replace("-", "").length() == 2) { // _E-_-_E_i
-            splitImaginary = splitted[1].split("-");
-            double second = Double.parseDouble(splitImaginary[0]);
-            double third = Double.parseDouble(splitImaginary[1]);
-            return new MyNumber(first * Math.pow(10, -second), -third * Math.pow(10, fourth));
-        }
-
-        else { // _E_-_E_i
-            splitImaginary = splitted[1].split("-");
-            double second = Double.parseDouble(splitImaginary[0]);
-            double third = Double.parseDouble(splitImaginary[1]);
-            return new MyNumber(first * Math.pow(10, second), -third * Math.pow(10, fourth));
         }
     }
 
