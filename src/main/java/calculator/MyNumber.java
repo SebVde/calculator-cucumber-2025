@@ -114,7 +114,7 @@ public class MyNumber implements Expression {
         long factorImaginary = (long) Math.pow(10, scaleImaginary);
         double imaginaryDecimalPart = (double) Math.round(factorImaginary * (imaginaryPart % 1)) / factorImaginary;
 
-        this.value = new NumberValue((int) realPart, realDecimalPart , (int) imaginaryPart, imaginaryDecimalPart);
+        this.value = new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (int) imaginaryPart, (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
     }
 
     public NumberValue getValue() {
