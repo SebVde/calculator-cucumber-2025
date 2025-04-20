@@ -79,8 +79,7 @@ public final class Times extends Operation {
                 double imaginaryPart = (l.integerPart() + l.decimalPart()) * (r.integerImaginaryPart() + r.decimalImaginaryPart())
                                      + (l.integerImaginaryPart() + l.decimalImaginaryPart()) * (r.integerPart() + r.decimalPart());
                 double imaginaryDecimalPart = roundDecimal(l.decimalImaginaryPart(), r.decimalImaginaryPart(), imaginaryPart);
-
-                return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
             }
 
             else if (r.isDecimal()) {
@@ -89,7 +88,7 @@ public final class Times extends Operation {
 
                 double imaginaryPart = (l.integerImaginaryPart() + l.decimalImaginaryPart()) * (r.integerPart() + r.decimalPart());
                 double imaginaryDecimalPart = roundDecimal(0.0000000001, 0.0000000001, imaginaryPart);
-                return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
             }
 
             else {
@@ -98,7 +97,7 @@ public final class Times extends Operation {
 
                 double imaginaryPart = (l.integerImaginaryPart() + l.decimalImaginaryPart()) * r.integerPart();
                 double imaginaryDecimalPart = roundDecimal(l.decimalPart(), 0, imaginaryPart);
-                return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
             }
         }
 
@@ -109,7 +108,7 @@ public final class Times extends Operation {
 
                 double imaginaryPart = (l.integerPart() + l.decimalPart()) * (r.integerImaginaryPart() + r.decimalImaginaryPart());
                 double imaginaryDecimalPart = roundDecimal(0.0000000001, 0.0000000001, imaginaryPart);
-                return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
             }
 
             else {
@@ -118,7 +117,7 @@ public final class Times extends Operation {
 
                 double imaginaryPart = l.integerPart() * (r.integerImaginaryPart() + r.decimalImaginaryPart());
                 double imaginaryDecimalPart = roundDecimal(0, r.decimalPart(), imaginaryPart);
-                return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
             }
         }
     }
