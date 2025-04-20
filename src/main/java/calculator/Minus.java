@@ -71,42 +71,20 @@ public final class Minus extends Operation {
     }
 
     public NumberValue opComplex(NumberValue l, NumberValue r) {
+        double realPart = l.integerPart() + l.getDecimalPart() - r.integerPart() - r.getDecimalPart();
+        double realDecimalPart = roundDecimal(l.getDecimalPart(), r.getDecimalPart(), realPart);
         if (l.isComplex()) {
             if (r.isComplex()) {
-                double realPart = l.integerPart() + l.decimalPart() - r.integerPart() - r.decimalPart();
-                double realDecimalPart = roundDecimal(l.decimalPart(), r.decimalPart(), realPart);
+                double imaginaryPart = l.integerImaginaryPart() + l.getDecimalImaginaryPart() - r.integerImaginaryPart() - r.getDecimalImaginaryPart();
+                double imaginaryDecimalPart = roundDecimal(l.getDecimalImaginaryPart(), r.getDecimalImaginaryPart(), imaginaryPart);
 
-                double imaginaryPart = l.integerImaginaryPart() + l.decimalImaginaryPart() - r.integerImaginaryPart() - r.decimalImaginaryPart();
-                double imaginaryDecimalPart = roundDecimal(l.decimalImaginaryPart(), r.decimalImaginaryPart(), imaginaryPart);
-
-                return new NumberValue((int) realPart, realDecimalPart, (int) imaginaryPart, imaginaryDecimalPart);
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart) , (imaginaryPart == 0 && imaginaryDecimalPart == 0? null : (int) imaginaryPart), (imaginaryDecimalPart == 0 ? null : imaginaryDecimalPart));
+            } else {
+                return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart), l.integerImaginaryPart(), l.getDecimalImaginaryPart());
             }
+        } else {
+            return new NumberValue((int) realPart, (realDecimalPart == 0 ? null : realDecimalPart), -r.integerImaginaryPart(), -r.getDecimalImaginaryPart());
 
-            else if (r.isDecimal()) {
-                double realPart = l.integerPart() + l.decimalPart() - r.integerPart() - r.decimalPart();
-                double realDecimalPart = roundDecimal(l.decimalPart(), r.decimalPart(), realPart);
-                return new NumberValue((int) realPart, realDecimalPart, l.integerImaginaryPart(), l.decimalImaginaryPart());
-            }
-
-            else {
-                double realPart = l.integerPart() + l.decimalPart() - r.integerPart();
-                double realDecimalPart = roundDecimal(l.decimalPart(), 0, realPart);
-                return new NumberValue((int) realPart, realDecimalPart, l.integerImaginaryPart(), l.decimalImaginaryPart());
-            }
-        }
-
-        else {
-            if (l.isDecimal()) {
-                double realPart = l.integerPart() + l.decimalPart() - r.integerPart() - r.decimalPart();
-                double realDecimalPart = roundDecimal(l.decimalPart(), r.decimalPart(), realPart);
-                return new NumberValue((int) realPart, realDecimalPart, -r.integerImaginaryPart(), -r.decimalImaginaryPart());
-            }
-
-            else {
-                double realPart = l.integerPart() - r.integerPart() - r.decimalPart();
-                double realDecimalPart = roundDecimal(0, r.decimalPart(), realPart);
-                return new NumberValue((int) realPart, realDecimalPart, -r.integerImaginaryPart(), -r.decimalImaginaryPart());
-            }
         }
     }
 }
