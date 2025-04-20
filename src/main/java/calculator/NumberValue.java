@@ -50,7 +50,7 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
         if (isComplex() && (integerImaginaryPart != 0 || (decimalImaginaryPart != null && decimalImaginaryPart != 0))) {
             throw new IllegalConstruction("Number is complex");
         }
-        else if (decimalPart != 0) {
+        else if (decimalPart != null && decimalPart != 0) {
             throw new IllegalConstruction("Number has decimal part");
         }
         else {
