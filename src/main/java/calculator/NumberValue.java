@@ -38,7 +38,7 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
 
     private String realPartToString() {
         if (this.getDecimalPart() != 0) {
-            return String.valueOf(integerImaginaryPart + this.getDecimalImaginaryPart());
+            return String.valueOf(integerPart + this.getDecimalPart());
         } else {
             return String.valueOf(integerPart);
         }
