@@ -27,7 +27,8 @@ public class MyNumber implements Expression {
     private static final String intRegEx = "(\\d+)";
 
     /**
-     * Regex for complex numbers
+     * Regex for complex numbers, it accepts numbers in the following form
+     * 2+3i | 2-3i | 2.6+3.7i | +2+3i | -2-3i | 2E-2+3E2i | +2E+2-3E-4i | 3.7i
      */
     private static final String complexRegEx = "([+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)" +
             "([+-](?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)i|" +
@@ -71,7 +72,14 @@ public class MyNumber implements Expression {
         this.value = new NumberValue(value, null, null, null);
     }
 
+    /**
+     * Constructs a MyNumber object to represent a complex number with the specified real and imaginary parts.
+     *
+     * @param realPart
+     * @param imaginaryPart
+     */
     public MyNumber(double realPart, double imaginaryPart) {
+        // Rounding the decimal part of the real and imaginary parts to avoid floating point precision issues
         int scaleReal = BigDecimal.valueOf(realPart).scale();
         long factorReal = (long) Math.pow(10, scaleReal);
         double realDecimalPart = (double) Math.round(factorReal * (realPart % 1)) / factorReal;

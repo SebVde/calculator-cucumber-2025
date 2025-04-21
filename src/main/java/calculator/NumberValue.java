@@ -25,6 +25,7 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
     public String toString() {
         if (isDecimal()) return String.valueOf(integerPart + decimalPart);
         else if (isComplex()) {
+            // If the real part is 0, we only show the imaginary part
             if (integerPart == 0 && this.getDecimalPart() == 0) {
                 return imaginaryToString();
             } else {

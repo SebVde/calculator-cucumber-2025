@@ -84,6 +84,13 @@ public final class Divides extends Operation {
         return new NumberValue(complexNumber.integerPart(), complexNumber.decimalPart(), -complexNumber.integerImaginaryPart(), complexNumber.decimalImaginaryPart());
     }
 
+    /**
+     * Performs the multiplication of two numbers, with the right one at least to be a complex number.
+     * 
+     * @param l
+     * @param r
+     * @return A NumberValue object representing the result of the multiplication.
+     */
     private NumberValue multiply(NumberValue l, NumberValue r) {
         if (l.isComplex()) {
             double realPart = (l.integerPart() + l.getDecimalPart()) * (r.integerPart() + r.getDecimalPart())
@@ -105,6 +112,13 @@ public final class Divides extends Operation {
         }
     }
 
+    /**
+     * Performs the division of two numbers, one of them at least being a complex number.
+     *
+     * @param l 
+     * @param r 
+     * @return A NumberValue object representing the result of the division.
+     */
     private NumberValue opComplex(NumberValue l, NumberValue r) {
         if (l.isComplex()) {
             if (r.isComplex()) {

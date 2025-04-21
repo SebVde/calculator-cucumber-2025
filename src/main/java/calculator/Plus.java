@@ -71,6 +71,13 @@ public final class Plus extends Operation {
         return new NumberValue((int) result, result % 1, null, null);
     }
 
+    /**
+     * Performs the addition of two numbers, one of them at least being a complex number.
+     *
+     * @param l 
+     * @param r 
+     * @return A NumberValue object representing the result of the addition.
+     */
     private NumberValue opComplex(NumberValue l, NumberValue r) {
         double realPart = l.integerPart() + l.getDecimalPart() + r.integerPart() + r.getDecimalPart();
         double realDecimalPart = roundDecimal(l.getDecimalPart(), r.getDecimalPart(), realPart);

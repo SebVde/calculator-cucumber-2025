@@ -140,6 +140,15 @@ public abstract class Operation implements Expression {
         return v.getNbCount();
     }
 
+    /**
+     * Round the decimal part of the result of an arithmetic operation to the same scale 
+     * as the max number of decimals between the left and right operands.
+     *
+     * @param leftDecimal  
+     * @param rightDecimal
+     * @param result       The result to round
+     * @return The rounded result
+     */
     protected static double roundDecimal(double leftDecimal, double rightDecimal, double result) {
         int scale = Math.max(BigDecimal.valueOf(leftDecimal).scale(), BigDecimal.valueOf(rightDecimal).scale());
         long factor = (long) Math.pow(10, scale);

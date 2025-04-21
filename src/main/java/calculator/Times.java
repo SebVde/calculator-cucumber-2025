@@ -71,6 +71,13 @@ public final class Times extends Operation {
         return new NumberValue((int) result, result % 1, null, null);
     }
 
+    /**
+     * Performs the multiplication of two numbers, one of them at least being a complex number.
+     *
+     * @param l 
+     * @param r 
+     * @return A NumberValue object representing the result of the multiplication.
+     */
     private NumberValue opComplex(NumberValue l, NumberValue r) {
         if (l.isComplex()) {
             if (r.isComplex()) {
