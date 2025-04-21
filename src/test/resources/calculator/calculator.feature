@@ -26,9 +26,9 @@ Feature: Integer Arithmetic Expressions
 
   Scenario: Adding two complex numbers
     Given an operation '+'
-    When I provide a first number 2+3i
-    And I provide a second number 6+1i
-    Then the operation evaluates to 8+4i
+    When I provide a first number 2+3.4i
+    And I provide a second number 6.06+1i
+    Then the operation evaluates to 8.06+4.4i
 
   Scenario: Subtracting two integer numbers
     Given an operation '-'
@@ -44,9 +44,9 @@ Feature: Integer Arithmetic Expressions
 
   Scenario: Subtracting two complex numbers
     Given an operation '-'
-    When I provide a first number 6+1i
-    And I provide a second number 2+6i
-    Then the operation evaluates to 4-5i
+    When I provide a first number 6+1.0i
+    And I provide a second number -2.4+6i
+    Then the operation evaluates to 8.4-5i
 
   Scenario: Multiplying two integer numbers
     Given an operation '*'
@@ -65,6 +65,12 @@ Feature: Integer Arithmetic Expressions
     When I provide a first number 2+3i
     And I provide a second number 6+1i
     Then the operation evaluates to 9+20i
+
+  Scenario: Multiplying a complex and its conjugate
+    Given an operation '*'
+    When I provide a first number 2+3i
+    And I provide a second number 2-3i
+    Then the operation evaluates to 13
 
   Scenario: Dividing two integer numbers
     Given an operation '/'
@@ -108,6 +114,12 @@ Feature: Integer Arithmetic Expressions
     And its PREFIX notation is + (8.0, 6.0)
     And its POSTFIX notation is (8.0, 6.0) +
 
+  Scenario: Printing the sum of two complex numbers
+    Given the sum of two numbers 2+3i and 6+1i
+    Then its INFIX notation is ( 2+3i + 6+1i )
+    And its PREFIX notation is + (2+3i, 6+1i)
+    And its POSTFIX notation is (2+3i, 6+1i) +
+
   # This is an example of a scenario in which we provide a list of numbers as input.
   # (In fact, this is not entirely true, since what is given as input is a table of
   # strings. In this case, the table is of dimension 1 * 3 (1 line and three columns).
@@ -129,11 +141,12 @@ Feature: Integer Arithmetic Expressions
     Then the operation evaluates to <result>
 
     Examples:
-      | n1    | n2 | result |
-      | 4     | 5  | 9      |
-      | 5     | 3  | 8      |
-      | 4.0E2 | 5  | 405.0  |
-      | 5E-2  | 3  | 3.05   |
+      | n1    | n2   | result |
+      | 4     | 5    | 9      |
+      | 5     | 3    | 8      |
+      | 4.0E2 | 5    | 405.0  |
+      | 5E-2  | 3    | 3.05   |
+      | 2+4i  | 9+3i | 11+7i  |
 
   Scenario Outline: Dividing two numbers
     Given an operation '/'
@@ -142,12 +155,13 @@ Feature: Integer Arithmetic Expressions
     Then the operation evaluates to <result>
 
     Examples:
-      | n1 | n2 | result |
-      | 35 | 5  | 7      |
-      | 7  | 5  | 1      |
-      | 5  | 7  | 0      |
-      | 7. | 2  | 3.5    |
-      | .1 | 2  | 0.05   |
+      | n1    | n2   | result |
+      | 35    | 5    | 7      |
+      | 7     | 5    | 1      |
+      | 5     | 7    | 0      |
+      | 7.    | 2    | 3.5    |
+      | .1    | 2    | 0.05   |
+      | 20-4i | 3+2i | 4-4i   |
 
   Scenario Outline: Evaluating arithmetic operations with two integer parameters
     Given an operation <op>
