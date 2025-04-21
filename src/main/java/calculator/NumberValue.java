@@ -25,12 +25,32 @@ public record NumberValue(Integer integerPart, Double decimalPart, Integer integ
     public String toString() {
         if (isDecimal()) return String.valueOf(integerPart + decimalPart);
         else if (isComplex()) {
-            return integerPart + this.getDecimalPart()
-                    + (integerImaginaryPart >= 0 && this.getDecimalImaginaryPart() >= 0 ? "+" : "")
-                    + (integerImaginaryPart + this.getDecimalImaginaryPart())
-                    + "i";
+            if (integerPart == 0 && this.getDecimalPart() == 0) {
+                return imaginaryToString();
+            } else {
+                return realPartToString()
+                        + (integerImaginaryPart >= 0 && this.getDecimalImaginaryPart() >= 0 ? "+" : "")
+                        + imaginaryToString();
+            }
         } else
             return String.valueOf(integerPart);
+    }
+
+    private String realPartToString() {
+        if (this.getDecimalPart() != 0) {
+            return String.valueOf(integerImaginaryPart + this.getDecimalImaginaryPart());
+        } else {
+            return String.valueOf(integerPart);
+        }
+    }
+
+    private String imaginaryToString() {
+        if (this.getDecimalImaginaryPart() != 0) {
+            return (integerImaginaryPart + this.getDecimalImaginaryPart())
+                    + "i";
+        } else {
+            return integerImaginaryPart + "i";
+        }
     }
 
     /**
