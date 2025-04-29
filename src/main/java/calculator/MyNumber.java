@@ -10,48 +10,50 @@ import visitor.Visitor;
  * @see Expression
  * @see Operation
  */
-public abstract class MyNumber implements Expression
-{
+public abstract class MyNumber implements Expression {
     /**
      * accept method to implement the visitor design pattern to traverse arithmetic expressions.
      * Each number will pass itself to the visitor object to get processed by the visitor.
      *
-     * @param v	The visitor object
+     * @param v The visitor object
      */
-  public void accept(Visitor v) {
-      v.visit(this);
-  }
+    public void accept(Visitor v) {
+        v.visit(this);
+    }
 
 
-    /** The depth of a number expression is always 0
+    /**
+     * The depth of a number expression is always 0
      *
      * @return The depth of a number expression
      */
-  public int countDepth() {
-      CountVisitor v = new CountVisitor();
-      v.visit(this);
-      return v.getDepthCount();
-  }
+    public int countDepth() {
+        CountVisitor v = new CountVisitor();
+        v.visit(this);
+        return v.getDepthCount();
+    }
 
-    /** The number of operations contained in a number expression is always 0
+    /**
+     * The number of operations contained in a number expression is always 0
      *
      * @return The number of operations contained in a number expression
      */
-  public int countOps() {
-      CountVisitor v = new CountVisitor();
-      v.visit(this);
-      return v.getOpsCount();
-  }
+    public int countOps() {
+        CountVisitor v = new CountVisitor();
+        v.visit(this);
+        return v.getOpsCount();
+    }
 
-    /** The number of numbers contained in a number expression is always 1
+    /**
+     * The number of numbers contained in a number expression is always 1
      *
      * @return The number of numbers contained in  a number expression
      */
-  public int countNbs() {
-      CountVisitor v = new CountVisitor();
-      v.visit(this);
-      return v.getNbCount();
-  }
+    public int countNbs() {
+        CountVisitor v = new CountVisitor();
+        v.visit(this);
+        return v.getNbCount();
+    }
 
     public abstract MyNumber add(MyNumber other);
 
