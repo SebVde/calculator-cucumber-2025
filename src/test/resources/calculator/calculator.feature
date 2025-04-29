@@ -1,17 +1,11 @@
-Feature: Integer Arithmetic Expressions
+Feature: Arithmetic Expressions
   This feature provides a range of scenarios corresponding to the
-  intended external behaviour of arithmetic expressions on integers.
-
-  # This is just a comment.
-  # You can start with a Background: that will be run before executing each scenario.
+  intended external behaviour of arithmetic expressions on integers, rational numbers, and complex numbers.
 
   Background:
     Given I initialise a calculator
 
-  # Each scenario can be seen as a test that can be executed with JUnit,
-  # provided that each of the steps (Given, When, And and Then) are
-  # implemented in a Java mapping file (CalculatorSteps.Java)
-
+  # Integer arithmetic scenarios
   Scenario: Adding two integer numbers
     Given an integer operation '+'
     When I provide a first number 4
@@ -24,97 +18,69 @@ Feature: Integer Arithmetic Expressions
     And I provide a second number 5
     Then the operation evaluates to 2
 
-  Scenario: Multiplying two integer numbers
-    Given an integer operation '*'
-    When I provide a first number 7
-    And I provide a second number 5
-    Then the operation evaluates to 35
+  # Rational arithmetic scenarios
+  Scenario: Adding two rational numbers
+    Given a rational operation '+'
+    And the following list of rational numbers
+      | 3/4 | 5/6 |
+    Then the operation evaluates to rational "19/12"
 
-  Scenario: Dividing two integer numbers
-    Given an integer operation '/'
-    When I provide a first number 7
-    And I provide a second number 5
-    Then the operation evaluates to 1
+  Scenario: Subtracting two rational numbers
+    Given a rational operation '-'
+    And the following list of rational numbers
+      | 7/6 | 5/6 |
+    Then the operation evaluates to rational "1/3"
 
-  Scenario: Dividing two integer numbers
+  Scenario: Multiplying two rational numbers
+    Given a rational operation '*'
+    And the following list of rational numbers
+      | 3/4 | 5/6 |
+    Then the operation evaluates to rational "15/24"
+
+  Scenario: Dividing two rational numbers
+    Given a rational operation '/'
+    And the following list of rational numbers
+      | 3/4 | 5/6 |
+    Then the operation evaluates to rational "18/20"
+
+  # Complex arithmetic scenarios
+  Scenario: Adding two complex numbers
+    Given a rational operation '+'
+    And the following list of rational numbers
+      | 3/4 + 5/6i | 1/2 + 1/3i |
+    Then the operation evaluates to rational "5/4 + 3/2i"
+
+  Scenario: Subtracting two complex numbers
+    Given a rational operation '-'
+    And the following list of rational numbers
+      | 3/4 + 5/6i | 1/2 + 1/3i |
+    Then the operation evaluates to rational "1/4 + 1/2i"
+
+  Scenario: Multiplying two complex numbers
+    Given a rational operation '*'
+    And the following list of rational numbers
+      | 3/4 + 5/6i | 1/2 + 1/3i |
+    Then the operation evaluates to rational "-1/36 + 29/36i"
+
+  Scenario: Dividing two complex numbers
+    Given a rational operation '/'
+    And the following list of rational numbers
+      | 3/4 + 5/6i | 1/2 + 1/3i |
+    Then the operation evaluates to rational "19/25 + 2/25i"
+
+  # Edge cases
+  Scenario: Adding an empty list of numbers
+    Given an integer operation '+'
+    Then the operation evaluates to 0
+
+  Scenario: Dividing by zero
     Given an integer operation '/'
     When I provide a first number 7
     And I provide a second number 0
-    Then the operation returns infinity
+    Then the operation returns NaN
 
-  Scenario: Dividing two integer numbers
+  Scenario: Undefined operation
     Given an integer operation '/'
     When I provide a first number 0
     And I provide a second number 0
-    Then the operation is undefined
-
-  Scenario: Printing the sum of two integer numbers
-    Given the sum of two numbers 8 and 6
-    Then its INFIX notation is ( 8 + 6 )
-    And its PREFIX notation is + (8, 6)
-    And its POSTFIX notation is (8, 6) +
-
-  # This is an example of a scenario in which we provide a list of numbers as input.
-  # (In fact, this is not entirely true, since what is given as input is a table of
-  # strings. In this case, the table is of dimension 1 * 3 (1 line and three columns).
-  Scenario: Evaluation arithmetic operations over a list of integer numbers
-    Given the following list of integer numbers
-      | 8 | 2 | 2 |
-    Then the sum is 12
-    And the product is 32
-    And the difference is 4
-    And the quotient is 2
-
-  # A scenario outline (or template) is a scenario that is parameterised
-  # with different values. The outline comes with a set of examples.
-  # The scenario will be executed with each of the provided inputs.
-  Scenario Outline: Adding two integer numbers
-    Given an integer operation '+'
-    When I provide a first number <n1>
-    And I provide a second number <n2>
-    Then the operation evaluates to <result>
-
-    Examples:
-      | n1 | n2 | result |
-      | 4  | 5  | 9      |
-      | 5  | 3  | 8      |
-
-  Scenario Outline: Dividing two integer numbers
-    Given an integer operation '/'
-    When I provide a first number <n1>
-    And I provide a second number <n2>
-    Then the operation evaluates to <result>
-
-    Examples:
-      | n1 | n2 | result |
-      | 35 | 5  | 7      |
-      | 7  | 5  | 1      |
-      | 5  | 7  | 0      |
-
-  Scenario Outline: Evaluating arithmetic operations with two integer parameters
-    Given an integer operation <op>
-    When I provide a first number <n1>
-    And I provide a second number <n2>
-    Then the operation evaluates to <result>
-
-    Examples:
-      | op  | n1 | n2 | result |
-      | "+" | 4  | 5  | 9      |
-      | "-" | 8  | 5  | 3      |
-      | "*" | 7  | 2  | 14     |
-      | "/" | 6  | 2  | 3      |
-
-  Scenario Outline: Testing different notations for arithmetic operations
-    Given an integer operation <op>
-    When I provide a first number <n1>
-    And I provide a second number <n2>
-    Then its INFIX notation is <infix>
-    And its PREFIX notation is <prefix>
-    And its POSTFIX notation is <postfix>
-
-    Examples:
-      | op  | n1 | n2 | infix         | prefix       | postfix       |
-      | "+" | 8  | 6  | ( 8 + 6 )     | + (8, 6)     | (8, 6) +      |
-      | "-" | 8  | 6  | ( 8 - 6 )     | - (8, 6)     | (8, 6) -      |
-      | "*" | 8  | 6  | ( 8 * 6 )     | * (8, 6)     | (8, 6) *      |
-      | "/" | 8  | 6  | ( 8 / 6 )     | / (8, 6)     | (8, 6) /      |
+    Then the operation returns NaN

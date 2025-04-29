@@ -12,67 +12,13 @@ public class RealNumber extends MyNumber{
     }
 
     @Override
-    public MyNumber add(MyNumber other) {
-        return switch (other) {
-            case RealNumber realNumber -> new RealNumber(this.value + realNumber.value);
-            case RationalNumber rational ->
-                    this.add(new RealNumber(rational.getNominator().value / rational.getDenominator().value));
-            case ComplexNumber otherComplex -> otherComplex.add(this);
-            case null, default -> throw new IllegalArgumentException("Invalid type for addition");
-        };
-    }
-
-    @Override
-    public MyNumber subtract(MyNumber other) {
-        return switch (other) {
-            case RealNumber realNumber -> new RealNumber(this.value - realNumber.value);
-            case RationalNumber rational ->
-                    this.subtract(new RealNumber(rational.getNominator().value / rational.getDenominator().value));
-            case ComplexNumber otherComplex -> new ComplexNumber(
-                    this.subtract(otherComplex.getRealPart()),
-                    otherComplex.getImaginaryPart().multiply(new RealNumber(-1.0))
-            );
-            case null, default -> throw new IllegalArgumentException("Invalid type for subtraction");
-        };
-    }
-
-    @Override
-    public MyNumber multiply(MyNumber other) {
-        return switch (other) {
-            case RealNumber realNumber -> new RealNumber(this.value * realNumber.value);
-            case RationalNumber rational ->
-                    this.multiply(new RealNumber(rational.getNominator().value / rational.getDenominator().value));
-            case ComplexNumber otherComplex -> otherComplex.multiply(this);
-            case null, default -> throw new IllegalArgumentException("Invalid type for multiplication");
-        };
-    }
-
-    @Override
-    public MyNumber divide(MyNumber other) {
-        switch (other) {
-            case RealNumber realNumber -> {
-                if (realNumber.value != 0) {
-                    return new RealNumber(this.value / realNumber.value);
-                } else {
-                    throw new ArithmeticException("Division by zero");
-                }
-            }
-            case RationalNumber rational -> {
-                if (rational.getNominator().value != 0) {
-                    return this.divide(new RealNumber(rational.getNominator().value / rational.getDenominator().value));
-                } else {
-                    throw new ArithmeticException("Division by zero");
-                }
-            }
-            case ComplexNumber otherComplex -> {
-                return otherComplex.getConjugate().multiply(this).divide(otherComplex.getConjugate().multiply(otherComplex));
-            }
-            case null, default -> throw new IllegalArgumentException("Invalid type for division");
-        }
-    }
-
-    @Override
     public String toString() {
+        // Check if the value has a decimal part
+        if (value % 1 == 0) {
+            // If it does not, return the value as an integer
+            return String.valueOf(value.intValue());
+        }
+        // Otherwise, return the value as a double
         return String.valueOf(value);
     }
 

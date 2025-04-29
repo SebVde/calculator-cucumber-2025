@@ -49,4 +49,33 @@ public final class Minus extends Operation
   public int op(int l, int r) {
   	return (l-r);
   }
+
+  @Override
+  public MyNumber compute(MyNumber left, MyNumber right) throws IllegalConstruction {
+      if (left instanceof RealNumber l && right instanceof RealNumber r) {
+          return new RealNumber(l.getValue() - r.getValue());
+      } else if (left instanceof RationalNumber l && right instanceof RationalNumber r) {
+          Times times = new Times(List.of());
+          Minus minus = new Minus(List.of());
+          RealNumber numerator = (RealNumber) minus.compute(
+              times.compute(l.getNominator(), r.getDenominator()),
+              times.compute(r.getNominator(), l.getDenominator())
+          );
+          RealNumber denominator = (RealNumber) times.compute(l.getDenominator(), r.getDenominator());
+          return new RationalNumber(numerator, denominator).simplify();
+      } else if (left instanceof RealNumber l && right instanceof RationalNumber r) {
+          return compute(new RationalNumber(l), r);
+      } else if (left instanceof RationalNumber l && right instanceof RealNumber r) {
+          return compute(l, new RationalNumber(r));
+      } else if (left instanceof ComplexNumber l && right instanceof ComplexNumber r) {
+          Minus minus = new Minus(List.of());
+          return new ComplexNumber(
+              minus.compute(l.getRealPart(), r.getRealPart()),
+              minus.compute(l.getImaginaryPart(), r.getImaginaryPart())
+          );
+      } else {
+          throw new IllegalArgumentException("Unsupported types for subtraction");
+      }
+  }
 }
+

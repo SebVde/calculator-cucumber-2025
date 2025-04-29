@@ -25,89 +25,12 @@ public class RationalNumber extends MyNumber{
     }
 
     @Override
-    public MyNumber add(MyNumber other) {
-        switch (other) {
-            case RationalNumber otherRational -> {
-                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator)
-                        .add(otherRational.nominator.multiply(this.denominator));
-                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
-                return new RationalNumber(newNominator, newDenominator);
-            }
-            case RealNumber realNumber -> {
-                return this.add(new RationalNumber(realNumber));
-            }
-            case ComplexNumber otherComplex -> {
-                return otherComplex.add(this);
-            }
-            case null, default -> throw new IllegalArgumentException("Invalid type for addition");
-        }
-    }
-
-    @Override
-    public MyNumber subtract(MyNumber other) {
-        switch (other) {
-            case RationalNumber otherRational -> {
-                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator)
-                        .subtract(otherRational.nominator.multiply(this.denominator));
-
-                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
-                return new RationalNumber(newNominator, newDenominator);
-            }
-            case RealNumber realNumber -> {
-                return this.subtract(new RationalNumber(realNumber));
-            }
-            case ComplexNumber otherComplex -> {
-                return new ComplexNumber(this.subtract(otherComplex.getRealPart()),
-                        otherComplex.getImaginaryPart().multiply(new RealNumber(-1.0)));
-            }
-            case null, default ->
-                throw new IllegalArgumentException("Invalid type for subtraction");
-        }
-    }
-
-    @Override
-    public MyNumber multiply(MyNumber other) {
-        switch (other) {
-            case RationalNumber otherRational -> {
-                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.nominator);
-                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
-                return new RationalNumber(newNominator, newDenominator);
-            }
-            case RealNumber realNumber -> {
-                return this.multiply(new RationalNumber(realNumber));
-            }
-            case ComplexNumber otherComplex -> {
-                return otherComplex.multiply(this);
-            }
-            case null, default -> throw new IllegalArgumentException("Invalid type for multiplication");
-        }
-    }
-
-    @Override
-    public MyNumber divide(MyNumber other) {
-        switch (other) {
-            case RationalNumber otherRational -> {
-                if (!Objects.equals(otherRational.nominator, new RealNumber(0.0))) {
-                    RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator);
-                    RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.nominator);
-                    return new RationalNumber(newNominator, newDenominator);
-                } else {
-                    throw new ArithmeticException("Division by zero");
-                }
-            }
-            case RealNumber realNumber -> {
-                return this.divide(new RationalNumber(realNumber));
-            }
-            case ComplexNumber otherComplex -> {
-                return otherComplex.getConjugate().multiply(this).divide(otherComplex.getConjugate().multiply(otherComplex));
-            }
-            case null, default -> throw new IllegalArgumentException("Invalid type for division");
-        }
-    }
-
-    @Override
     public String toString() {
-        return nominator.toString() + "/" + denominator.toString();
+        if (denominator.equals(new RealNumber(1.0))) {
+            return nominator.toString();
+        } else {
+            return nominator.toString() + "/" + denominator;
+        }
     }
 
     @Override
@@ -120,5 +43,37 @@ public class RationalNumber extends MyNumber{
         if (this == o) return true;
         if (!(o instanceof RationalNumber that)) return false;
         return Objects.equals(nominator, that.nominator) && Objects.equals(denominator, that.denominator);
+    }
+
+    /**
+     * Simplifies the rational number by dividing the numerator and denominator
+     * by their greatest common divisor (GCD).
+     * @return A new RationalNumber that is the simplified version of this one.
+     */
+    public RationalNumber simplify() {
+        int numerator = nominator.getValue().intValue();
+        int denominator = this.denominator.getValue().intValue();
+        int gcd = gcd(numerator, denominator);
+
+        RealNumber simplifiedNumerator = new RealNumber((double) numerator / gcd);
+        RealNumber simplifiedDenominator = new RealNumber((double) denominator / gcd);
+
+        return new RationalNumber(simplifiedNumerator, simplifiedDenominator);
+    }
+
+    /**
+     * Helper method to compute the greatest common divisor (GCD) of two integers
+     * using the Euclidean algorithm.
+     * @param a The first integer.
+     * @param b The second integer.
+     * @return The GCD of a and b.
+     */
+    private int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return Math.abs(a);
     }
 }

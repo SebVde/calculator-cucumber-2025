@@ -47,4 +47,35 @@ public final class Times extends Operation
    */
   public int op(int l, int r)
     { return (l*r); }
+
+  @Override
+  public MyNumber compute(MyNumber left, MyNumber right) throws IllegalConstruction {
+      if (left instanceof RealNumber l && right instanceof RealNumber r) {
+          return new RealNumber(l.getValue() * r.getValue());
+      } else if (left instanceof RationalNumber l && right instanceof RationalNumber r) {
+          Times times = new Times(List.of());
+          RealNumber numerator = (RealNumber) times.compute(l.getNominator(), r.getNominator());
+          RealNumber denominator = (RealNumber) times.compute(l.getDenominator(), r.getDenominator());
+          return new RationalNumber(numerator, denominator).simplify();
+      } else if (left instanceof RealNumber l && right instanceof RationalNumber r) {
+          return compute(new RationalNumber(l), r);
+      } else if (left instanceof RationalNumber l && right instanceof RealNumber r) {
+          return compute(l, new RationalNumber(r));
+      } else if (left instanceof ComplexNumber l && right instanceof ComplexNumber r) {
+          Minus minus = new Minus(List.of());
+          Plus plus = new Plus(List.of());
+          Times times = new Times(List.of());
+          MyNumber realPart = minus.compute(
+              times.compute(l.getRealPart(), r.getRealPart()),
+              times.compute(l.getImaginaryPart(), r.getImaginaryPart())
+          );
+          MyNumber imaginaryPart = plus.compute(
+              times.compute(l.getRealPart(), r.getImaginaryPart()),
+              times.compute(l.getImaginaryPart(), r.getRealPart())
+          );
+          return new ComplexNumber(realPart, imaginaryPart);
+      } else {
+          throw new IllegalArgumentException("Unsupported types for multiplication");
+      }
+  }
 }

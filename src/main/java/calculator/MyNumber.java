@@ -54,13 +54,5 @@ public abstract class MyNumber implements Expression {
         v.visit(this);
         return v.getNbCount();
     }
-
-    public abstract MyNumber add(MyNumber other);
-
-    public abstract MyNumber subtract(MyNumber other);
-
-    public abstract MyNumber multiply(MyNumber other);
-
-    public abstract MyNumber divide(MyNumber other);
-
 }
+

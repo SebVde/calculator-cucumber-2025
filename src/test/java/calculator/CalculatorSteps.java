@@ -12,8 +12,6 @@ import java.util.List;
 
 public class CalculatorSteps {
 
-//	static final Logger log = getLogger(lookup().lookupClass());
-
 	private ArrayList<Expression> params;
 	private Operation op;
 	private Calculator c;
@@ -46,6 +44,22 @@ public class CalculatorSteps {
 		}
 	}
 
+	@Given("a rational operation {string}")
+	public void givenARationalOperation(String s) {
+	    params = new ArrayList<>();
+	    try {
+	        switch (s) {
+	            case "+" -> op = new Plus(params);
+	            case "-" -> op = new Minus(params);
+	            case "*" -> op = new Times(params);
+	            case "/" -> op = new Divides(params);
+	            default -> fail();
+	        }
+	    } catch (IllegalConstruction e) {
+	        fail();
+	    }
+	}
+
 	// The following example shows how to use a DataTable provided as input.
 	// The example looks slightly complex, since DataTables can take as input
 	//  tables in two dimensions, i.e. rows and lines. This is why the input
@@ -55,9 +69,44 @@ public class CalculatorSteps {
 		params = new ArrayList<>();
 		// Since we only use one line of input, we use get(0) to take the first line of the list,
 		// which is a list of strings, that we will manually convert to integers:
-		numbers.get(0).forEach(n -> params.add(new MyNumber(Integer.parseInt(n))));
+		numbers.getFirst().forEach(n -> params.add(new RealNumber(Double.parseDouble(n))));
 	    params.forEach(n -> System.out.println("value ="+ n));
 		op = null;
+	}
+
+	@Given("the following list of rational numbers")
+	public void givenTheFollowingListOfRationalNumbers(List<List<String>> numbers) {
+	    params = new ArrayList<>();
+	    numbers.getFirst().forEach(n -> {
+	        String[] fraction = n.split("/");
+	        RealNumber numerator = new RealNumber(Double.parseDouble(fraction[0]));
+	        RealNumber denominator = new RealNumber(Double.parseDouble(fraction[1]));
+	        params.add(new RationalNumber(numerator, denominator));
+	    });
+	    params.forEach(n -> System.out.println("value = " + n));
+	    op = null;
+	}
+
+	@Given("the following list of complex numbers")
+	public void givenTheFollowingListOfComplexNumbers(List<List<String>> numbers) {
+	    params = new ArrayList<>();
+	    numbers.getFirst().forEach(n -> {
+	        String[] parts = n.split("\\+");
+	        String realPart = parts[0].trim();
+	        String imaginaryPart = parts[1].replace("i", "").trim();
+	        RationalNumber real = parseRational(realPart);
+	        RationalNumber imaginary = parseRational(imaginaryPart);
+	        params.add(new ComplexNumber(real, imaginary));
+	    });
+	    params.forEach(n -> System.out.println("value = " + n));
+	    op = null;
+	}
+
+	private RationalNumber parseRational(String fraction) {
+	    String[] parts = fraction.split("/");
+	    RealNumber numerator = new RealNumber(Double.parseDouble(parts[0]));
+	    RealNumber denominator = new RealNumber(Double.parseDouble(parts[1]));
+	    return new RationalNumber(numerator, denominator);
 	}
 
 	// The string in the Given annotation shows how to use regular expressions...
@@ -68,10 +117,24 @@ public class CalculatorSteps {
 	public void givenTheSum(int n1, int n2) {
 		try {
 			params = new ArrayList<>();
-		    params.add(new MyNumber(n1));
-		    params.add(new MyNumber(n2));
+		    params.add(new RealNumber(Double.parseDouble(String.valueOf(n1))));
+		    params.add(new RealNumber(Double.parseDouble(String.valueOf(n2))));
 		    op = new Plus(params);}
 		catch(IllegalConstruction e) { fail(); }
+	}
+
+	@Given("^the sum of two rational numbers (\\d+/\\d+) and (\\d+/\\d+)$")
+	public void givenTheSumOfTwoRationalNumbers(String r1, String r2) {
+	    try {
+	        params = new ArrayList<>();
+	        String[] fraction1 = r1.split("/");
+	        String[] fraction2 = r2.split("/");
+	        params.add(new RationalNumber(new RealNumber(Double.parseDouble(fraction1[0])), new RealNumber(Double.parseDouble(fraction1[1]))));
+	        params.add(new RationalNumber(new RealNumber(Double.parseDouble(fraction2[0])), new RealNumber(Double.parseDouble(fraction2[1]))));
+	        op = new Plus(params);
+	    } catch (IllegalConstruction e) {
+	        fail();
+	    }
 	}
 
 	@Then("^its (.*) notation is (.*)$")
@@ -87,7 +150,7 @@ public class CalculatorSteps {
 	public void whenIProvideANumber(String s, int val) {
 		//add extra parameter to the operation
 		params = new ArrayList<>();
-		params.add(new MyNumber(val));
+		params.add(new RealNumber(Double.parseDouble(String.valueOf(val))));
 		op.addMoreParams(params);
 	}
 
@@ -109,17 +172,24 @@ public class CalculatorSteps {
 
 	@Then("the operation evaluates to {int}")
 	public void thenTheOperationEvaluatesTo(int val) {
-		assertEquals(val, c.eval(op));
+	    assertEquals(new RealNumber((double) val), c.eval(op));
 	}
 
-	@Then("the operation returns infinity")
+	@Then("the operation evaluates to rational {string}")
+	public void thenTheOperationEvaluatesToRational(String expected) {
+	    RationalNumber result = (RationalNumber) c.eval(op);
+	    assertEquals(expected, result.simplify().toString());
+	}
+
+	@Then("the operation evaluates to complex {string}")
+	public void thenTheOperationEvaluatesToComplex(String expected) {
+	    ComplexNumber result = (ComplexNumber) c.eval(op);
+	    assertEquals(expected, result.toString());
+	}
+
+	@Then("the operation returns NaN")
 	public void thenTheOperationReturnsInfinity() {
-		assertEquals(Integer.MAX_VALUE, c.eval(op));
-	}
-
-	@Then("the operation is undefined")
-	public void thenTheOperationIsUndefined() {
-		assertEquals(0, c.eval(op));
+	    assertEquals(new RealNumber(Double.NaN), c.eval(op));
 	}
 
 	@Then("its INFIX notation is {string}")
@@ -139,5 +209,5 @@ public class CalculatorSteps {
 		op.notation = Notation.POSTFIX;
 		assertEquals(s, op.toString());
 	}
-
 }
+

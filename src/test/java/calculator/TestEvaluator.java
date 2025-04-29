@@ -12,37 +12,24 @@ import java.util.List;
 class TestEvaluator {
 
     private Calculator calc;
-    private int value1, value2;
+    private RealNumber value1, value2;
 
     @BeforeEach
     void setUp() {
         calc = new Calculator();
-        value1 = 8;
-        value2 = 6;
+        value1 = new RealNumber(8.0);
+        value2 = new RealNumber(6.0);
     }
 
     @Test
     void testEvaluatorMyNumber() {
-        assertEquals( value1, calc.eval(new MyNumber(value1)));
+        assertEquals(value1, calc.eval(new RealNumber(Double.parseDouble(String.valueOf(value1)))));
+        assertEquals(value2, calc.eval(new RealNumber(Double.parseDouble(String.valueOf(value2)))));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"*", "+", "/", "-"})
-    void testEvaluateOperations(String symbol) {
-        List<Expression> params = Arrays.asList(new MyNumber(value1),new MyNumber(value2));
-        try {
-            //construct another type of operation depending on the input value
-            //of the parameterised test
-            switch (symbol) {
-                case "+"	->	assertEquals( value1 + value2, calc.eval(new Plus(params)));
-                case "-"	->	assertEquals( value1 - value2, calc.eval(new Minus(params)));
-                case "*"	->	assertEquals( value1 * value2, calc.eval(new Times(params)));
-                case "/"	->	assertEquals( value1 / value2, calc.eval(new Divides(params)));
-                default		->	fail();
-            }
-        } catch (IllegalConstruction e) {
-            fail();
-        }
+    @Test
+    void testEvaluatorRationalNumber() {
+        RationalNumber rational = new RationalNumber(new RealNumber(28.0), new RealNumber(24.0));
+        assertEquals("7/6", calc.eval(rational.simplify()).toString());
     }
-
 }
