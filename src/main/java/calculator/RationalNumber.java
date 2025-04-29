@@ -26,59 +26,82 @@ public class RationalNumber extends MyNumber{
 
     @Override
     public MyNumber add(MyNumber other) {
-        if (other instanceof RationalNumber otherRational) {
-            RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator)
-                    .add(otherRational.nominator.multiply(this.denominator));
-            RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
-            return new RationalNumber(newNominator, newDenominator);
-        } else if (other instanceof RealNumber) {
-            return this.add(new RationalNumber((RealNumber) other));
-        } else {
-            throw new IllegalArgumentException("Invalid type for addition");
+        switch (other) {
+            case RationalNumber otherRational -> {
+                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator)
+                        .add(otherRational.nominator.multiply(this.denominator));
+                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
+                return new RationalNumber(newNominator, newDenominator);
+            }
+            case RealNumber realNumber -> {
+                return this.add(new RationalNumber(realNumber));
+            }
+            case ComplexNumber otherComplex -> {
+                return otherComplex.add(this);
+            }
+            case null, default -> throw new IllegalArgumentException("Invalid type for addition");
         }
     }
 
     @Override
     public MyNumber subtract(MyNumber other) {
-        if (other instanceof RationalNumber otherRational) {
-            RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator)
-                    .subtract(otherRational.nominator.multiply(this.denominator));
-            RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
-            return new RationalNumber(newNominator, newDenominator);
-        } else if (other instanceof RealNumber) {
-            return this.subtract(new RationalNumber((RealNumber) other));
-        } else {
-            throw new IllegalArgumentException("Invalid type for subtraction");
+        switch (other) {
+            case RationalNumber otherRational -> {
+                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator)
+                        .subtract(otherRational.nominator.multiply(this.denominator));
+
+                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
+                return new RationalNumber(newNominator, newDenominator);
+            }
+            case RealNumber realNumber -> {
+                return this.subtract(new RationalNumber(realNumber));
+            }
+            case ComplexNumber otherComplex -> {
+                return new ComplexNumber(this.subtract(otherComplex.getRealPart()),
+                        otherComplex.getImaginaryPart().multiply(new RealNumber(-1.0)));
+            }
+            case null, default ->
+                throw new IllegalArgumentException("Invalid type for subtraction");
         }
     }
 
     @Override
     public MyNumber multiply(MyNumber other) {
-        if (other instanceof RationalNumber otherRational) {
-            RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.nominator);
-            RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
-            return new RationalNumber(newNominator, newDenominator);
-        } else if (other instanceof RealNumber) {
-            return this.multiply(new RationalNumber((RealNumber) other));
-        } else {
-            throw new IllegalArgumentException("Invalid type for multiplication");
+        switch (other) {
+            case RationalNumber otherRational -> {
+                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.nominator);
+                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.denominator);
+                return new RationalNumber(newNominator, newDenominator);
+            }
+            case RealNumber realNumber -> {
+                return this.multiply(new RationalNumber(realNumber));
+            }
+            case ComplexNumber otherComplex -> {
+                return otherComplex.multiply(this);
+            }
+            case null, default -> throw new IllegalArgumentException("Invalid type for multiplication");
         }
     }
 
     @Override
     public MyNumber divide(MyNumber other) {
-        if (other instanceof RationalNumber otherRational) {
-            if (!Objects.equals(otherRational.nominator, new RealNumber(0.0))) {
-                RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator);
-                RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.nominator);
-                return new RationalNumber(newNominator, newDenominator);
-            } else {
-                throw new ArithmeticException("Division by zero");
+        switch (other) {
+            case RationalNumber otherRational -> {
+                if (!Objects.equals(otherRational.nominator, new RealNumber(0.0))) {
+                    RealNumber newNominator = (RealNumber) this.nominator.multiply(otherRational.denominator);
+                    RealNumber newDenominator = (RealNumber) this.denominator.multiply(otherRational.nominator);
+                    return new RationalNumber(newNominator, newDenominator);
+                } else {
+                    throw new ArithmeticException("Division by zero");
+                }
             }
-        } else if (other instanceof RealNumber) {
-            return this.divide(new RationalNumber((RealNumber) other));
-        } else {
-            throw new IllegalArgumentException("Invalid type for division");
+            case RealNumber realNumber -> {
+                return this.divide(new RationalNumber(realNumber));
+            }
+            case ComplexNumber otherComplex -> {
+                return otherComplex.getConjugate().multiply(this).divide(otherComplex.getConjugate().multiply(otherComplex));
+            }
+            case null, default -> throw new IllegalArgumentException("Invalid type for division");
         }
     }
 
