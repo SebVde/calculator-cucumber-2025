@@ -18,6 +18,31 @@ Feature: Arithmetic Expressions
     And I provide a second number 5
     Then the operation evaluates to 2
 
+  # Real arithmetic scenarios
+  Scenario: Adding two real numbers
+    Given a real operation '+'
+    When I provide a first number 4.5
+    And I provide a second number 5.5
+    Then the operation evaluates to 10.0
+
+   Scenario: Subtracting two real numbers
+    Given a real operation '-'
+    When I provide a first number 7.5
+    And I provide a second number 5.5
+    Then the operation evaluates to 2.0
+
+  Scenario: Multiplying two real numbers
+    Given a real operation '*'
+    When I provide a first number 3.5
+    And I provide a second number 2.0
+    Then the operation evaluates to 7.0
+
+  Scenario: Dividing two real numbers
+    Given a real operation '/'
+    When I provide a first number 7.5
+    And I provide a second number 2.5
+    Then the operation evaluates to 3.0
+
   # Rational arithmetic scenarios
   Scenario: Adding two rational numbers
     Given a rational operation '+'
@@ -35,38 +60,38 @@ Feature: Arithmetic Expressions
     Given a rational operation '*'
     And the following list of rational numbers
       | 3/4 | 5/6 |
-    Then the operation evaluates to rational "15/24"
+    Then the operation evaluates to rational "5/8"
 
   Scenario: Dividing two rational numbers
     Given a rational operation '/'
     And the following list of rational numbers
       | 3/4 | 5/6 |
-    Then the operation evaluates to rational "18/20"
+    Then the operation evaluates to rational "9/10"
 
   # Complex arithmetic scenarios
   Scenario: Adding two complex numbers
-    Given a rational operation '+'
-    And the following list of rational numbers
+    Given a complex operation '+'
+    And the following list of complex numbers
       | 3/4 + 5/6i | 1/2 + 1/3i |
-    Then the operation evaluates to rational "5/4 + 3/2i"
+    Then the operation evaluates to complex "5/4 + 7/6i"
 
   Scenario: Subtracting two complex numbers
-    Given a rational operation '-'
-    And the following list of rational numbers
+    Given a complex operation '-'
+    And the following list of complex numbers
       | 3/4 + 5/6i | 1/2 + 1/3i |
-    Then the operation evaluates to rational "1/4 + 1/2i"
+    Then the operation evaluates to complex "1/4 + 1/2i"
 
   Scenario: Multiplying two complex numbers
-    Given a rational operation '*'
-    And the following list of rational numbers
+    Given a complex operation '*'
+    And the following list of complex numbers
       | 3/4 + 5/6i | 1/2 + 1/3i |
-    Then the operation evaluates to rational "-1/36 + 29/36i"
+    Then the operation evaluates to complex "7/72 + 2/3i"
 
   Scenario: Dividing two complex numbers
-    Given a rational operation '/'
-    And the following list of rational numbers
+    Given a complex operation '/'
+    And the following list of complex numbers
       | 3/4 + 5/6i | 1/2 + 1/3i |
-    Then the operation evaluates to rational "19/25 + 2/25i"
+    Then the operation evaluates to complex "47/26 + 6/13i"
 
   # Edge cases
   Scenario: Adding an empty list of numbers

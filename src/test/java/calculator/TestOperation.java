@@ -49,6 +49,7 @@ class TestOperation {
 	@Test
 	void testCountNbs() {
 		// Numbers: 3.0, 4.0, 5.0 (from Plus), 5.0, 4.0 (from Minus), 7.0
-		assertEquals(6, countVisitor1.getNbCount());
+		// Total: 4 unique numbers
+		assertEquals(4, countVisitor1.getNbCount());
 	}
 }

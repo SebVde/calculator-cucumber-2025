@@ -11,6 +11,7 @@ public class CountVisitor extends Visitor {
     private int currentDepth = 0;
     private int maxDepth = 0;
     private final Set<MyNumber> countedNumbers = new HashSet<>(); // To avoid double-counting numbers
+    private final Set<Operation> countedOperations = new HashSet<>(); // To avoid double-counting operations
 
     @Override
     public void visit(MyNumber n) {
@@ -37,7 +38,10 @@ public class CountVisitor extends Visitor {
 
     @Override
     public void visit(Operation o) {
-        opsCount++;
+        if (!countedOperations.contains(o)) {
+            opsCount++;
+            countedOperations.add(o);
+        }
         currentDepth++;
         maxDepth = Math.max(maxDepth, currentDepth);
         for (var arg : o.args) {
