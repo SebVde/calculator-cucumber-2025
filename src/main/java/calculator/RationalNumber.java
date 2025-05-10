@@ -1,6 +1,7 @@
 package calculator;
 
 import java.util.Objects;
+import java.math.BigDecimal;
 
 public class RationalNumber extends MyNumber{
     private final RealNumber nominator;
@@ -51,12 +52,12 @@ public class RationalNumber extends MyNumber{
      * @return A new RationalNumber that is the simplified version of this one.
      */
     public RationalNumber simplify() {
-        int numerator = nominator.getValue().intValue();
-        int denominator = this.denominator.getValue().intValue();
-        int gcd = gcd(numerator, denominator);
+        if (denominator.equals(RealNumber.ONE)) { return this; }
 
-        RealNumber simplifiedNumerator = new RealNumber((double) numerator / gcd);
-        RealNumber simplifiedDenominator = new RealNumber((double) denominator / gcd);
+        double gcd = gcd(nominator, denominator);
+
+        RealNumber simplifiedNumerator = new RealNumber(nominator.getValue() / gcd);
+        RealNumber simplifiedDenominator = new RealNumber(denominator.getValue() / gcd);
 
         return new RationalNumber(simplifiedNumerator, simplifiedDenominator);
     }
@@ -64,16 +65,25 @@ public class RationalNumber extends MyNumber{
     /**
      * Helper method to compute the greatest common divisor (GCD) of two integers
      * using the Euclidean algorithm.
-     * @param a The first integer.
-     * @param b The second integer.
+     * @param num_a The first integer.
+     * @param num_b The second integer.
      * @return The GCD of a and b.
      */
-    private int gcd(int a, int b) {
+    private double gcd(RealNumber num_a, RealNumber num_b) {
+        int max_decimals = Math.max(BigDecimal.valueOf(num_a.getValue()).scale(), BigDecimal.valueOf(num_b.getValue()).scale());
+        double a = Math.abs(num_a.getValue());
+        double b = Math.abs(num_b.getValue());
+
+        if (max_decimals > 0) {
+            a *= Math.pow(10, max_decimals);
+            b *= Math.pow(10, max_decimals);
+        }
+
         while (b != 0) {
-            int temp = b;
+            double temp = b;
             b = a % b;
             a = temp;
         }
-        return Math.abs(a);
+        return a/Math.pow(10, max_decimals);
     }
 }

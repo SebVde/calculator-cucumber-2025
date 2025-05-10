@@ -1,6 +1,8 @@
 package calculator;
 
 public class RealNumber extends MyNumber{
+    public static final RealNumber ONE = new RealNumber(1.0);
+
     private final Double value;
 
     public RealNumber(Double value){

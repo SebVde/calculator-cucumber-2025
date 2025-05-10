@@ -125,6 +125,12 @@ public class Main {
             c.printExpressionDetails(e);
             c.eval(e);
 
+            ComplexNumber complex7 = new ComplexNumber(new RationalNumber(new RealNumber(3.45)), new RationalNumber(new RealNumber(4.01)));
+            ComplexNumber complex8 = new ComplexNumber(new RationalNumber(new RealNumber(1.0)), new RationalNumber(new RealNumber(2.702)));
+            e = new Plus(List.of(complex7, complex8), Notation.INFIX);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
         } catch (IllegalConstruction exception) {
             System.out.println("Cannot create operations without parameters");
         }
