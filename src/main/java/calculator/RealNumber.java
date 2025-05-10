@@ -2,6 +2,7 @@ package calculator;
 
 public class RealNumber extends MyNumber{
     public static final RealNumber ONE = new RealNumber(1.0);
+    public static final RealNumber NaN = new RealNumber(Double.NaN);
 
     private final Double value;
 

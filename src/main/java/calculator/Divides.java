@@ -2,8 +2,6 @@ package calculator;
 
 import java.util.List;
 
-import static java.lang.Float.NaN;
-
 /** This class represents the arithmetic division operation "/".
  * The class extends an abstract superclass Operation.
  * Other subclasses of Operation represent other arithmetic operations.
@@ -62,10 +60,10 @@ public final class Divides extends Operation
     @Override
     public MyNumber compute(MyNumber left, MyNumber right) throws IllegalConstruction {
         if (left instanceof RealNumber l && right instanceof RealNumber r) {
-            if (r.getValue() == 0) return new RealNumber(Double.NaN);
+            if (r.getValue() == 0) return RealNumber.NaN;
             return new RealNumber(l.getValue() / r.getValue());
         } else if (left instanceof RationalNumber l && right instanceof RationalNumber r) {
-            if (r.getNominator().getValue() == 0) return new RealNumber(Double.NaN);
+            if (r.getNominator().getValue() == 0) return RealNumber.NaN;
             Times times = new Times(List.of());
             RealNumber numerator = (RealNumber) times.compute(l.getNominator(), r.getDenominator());
             RealNumber denominator = (RealNumber) times.compute(l.getDenominator(), r.getNominator());
@@ -106,6 +104,7 @@ public final class Divides extends Operation
         } else if (left instanceof ComplexNumber complex && (right instanceof RealNumber || right instanceof RationalNumber)) {
             MyNumber realPart = compute(complex.getRealPart(), right);
             MyNumber imaginaryPart = compute(complex.getImaginaryPart(), right);
+            if (realPart.equals(RealNumber.NaN)) return RealNumber.NaN;
             return new ComplexNumber(realPart, imaginaryPart);
         } else if ((left instanceof RealNumber || left instanceof RationalNumber) && right instanceof ComplexNumber complex ) {
             RationalNumber c = complex.getRealPart();
