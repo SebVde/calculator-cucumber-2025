@@ -1,7 +1,6 @@
 package calculator;
 
 import java.util.Objects;
-import java.util.List;
 
 public class ComplexNumber extends MyNumber {
 
@@ -36,7 +35,10 @@ public class ComplexNumber extends MyNumber {
         if (this.imaginaryPart.equals(new RationalNumber(new RealNumber(-1.0)))) {
             return this.realPart + " - i";
         }
-        // TODO gérer les nombres négatifs pour partie imaginaire
+        if (this.imaginaryPart.is_negative()) {
+            return this.realPart + " - " + this.imaginaryPart.get_opposite() + "i";
+        }
+
         return this.realPart + " + " + this.imaginaryPart + "i";
     }
 

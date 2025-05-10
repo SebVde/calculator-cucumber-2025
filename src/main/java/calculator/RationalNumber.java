@@ -46,6 +46,10 @@ public class RationalNumber extends MyNumber{
         return Objects.equals(nominator, that.nominator) && Objects.equals(denominator, that.denominator);
     }
 
+    public boolean is_negative() {
+        return (this.nominator.getValue() < 0 && this.denominator.getValue() > 0) || (this.nominator.getValue() > 0 && this.denominator.getValue() < 0);
+    }
+
     public RationalNumber get_opposite() {
         return new RationalNumber(this.nominator.get_opposite(), this.denominator);
     }
