@@ -46,6 +46,10 @@ public class RationalNumber extends MyNumber{
         return Objects.equals(nominator, that.nominator) && Objects.equals(denominator, that.denominator);
     }
 
+    public RationalNumber get_opposite() {
+        return new RationalNumber(this.nominator.get_opposite(), this.denominator);
+    }
+
     /**
      * Simplifies the rational number by dividing the numerator and denominator
      * by their greatest common divisor (GCD).

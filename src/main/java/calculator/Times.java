@@ -74,6 +74,18 @@ public final class Times extends Operation
               times.compute(l.getImaginaryPart(), r.getRealPart())
           );
           return new ComplexNumber(realPart, imaginaryPart);
+      } else if (left instanceof ComplexNumber complex && (right instanceof RealNumber || right instanceof RationalNumber)) {
+          Times times = new Times(List.of());
+          MyNumber realPart = times.compute(complex.getRealPart(), right);
+          MyNumber imaginaryPart = times.compute(complex.getImaginaryPart(), right);
+
+          return new ComplexNumber(realPart, imaginaryPart);
+      } else if ((left instanceof RealNumber || left instanceof RationalNumber) && right instanceof ComplexNumber complex ) {
+          Times times = new Times(List.of());
+          MyNumber realPart = times.compute(complex.getRealPart(), left);
+          MyNumber imaginaryPart = times.compute(complex.getImaginaryPart(), left);
+
+          return new ComplexNumber(realPart, imaginaryPart);
       } else {
           throw new IllegalArgumentException("Unsupported types for multiplication");
       }

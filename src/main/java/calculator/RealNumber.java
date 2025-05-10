@@ -13,6 +13,10 @@ public class RealNumber extends MyNumber{
         return this.value;
     }
 
+    public RealNumber get_opposite() {
+        return new RealNumber(-this.value);
+    }
+
     @Override
     public String toString() {
         // Check if the value has a decimal part

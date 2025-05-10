@@ -22,11 +22,6 @@ public class ComplexNumber extends MyNumber {
         return imaginaryPart;
     }
 
-    public ComplexNumber getConjugate() throws IllegalConstruction {
-        Times times = new Times(List.of());
-        return new ComplexNumber(this.realPart, times.compute(this.imaginaryPart, new RealNumber(-1.0)));
-    }
-
     @Override
     public String toString() {
         if (this.imaginaryPart.equals(new RationalNumber(new RealNumber(0.0)))) {
@@ -41,6 +36,7 @@ public class ComplexNumber extends MyNumber {
         if (this.imaginaryPart.equals(new RationalNumber(new RealNumber(-1.0)))) {
             return this.realPart + " - i";
         }
+        // TODO gérer les nombres négatifs pour partie imaginaire
         return this.realPart + " + " + this.imaginaryPart + "i";
     }
 

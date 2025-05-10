@@ -73,6 +73,16 @@ public final class Plus extends Operation
               plus.compute(l.getRealPart(), r.getRealPart()),
               plus.compute(l.getImaginaryPart(), r.getImaginaryPart())
           );
+      } else if (left instanceof ComplexNumber complex && (right instanceof RealNumber || right instanceof RationalNumber)) {
+          Plus plus = new Plus(List.of());
+          return new ComplexNumber(
+                  plus.compute(complex.getRealPart(), right),
+                  complex.getImaginaryPart());
+      } else if ((left instanceof RealNumber || left instanceof RationalNumber) && right instanceof ComplexNumber complex ) {
+          Plus plus = new Plus(List.of());
+          return new ComplexNumber(
+                  plus.compute(complex.getRealPart(), left),
+                  complex.getImaginaryPart());
       } else {
           throw new IllegalArgumentException("Unsupported types for addition");
       }

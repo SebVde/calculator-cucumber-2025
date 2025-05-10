@@ -131,6 +131,30 @@ public class Main {
             c.printExpressionDetails(e);
             c.eval(e);
 
+            RationalNumber complex9 = new RationalNumber(new RealNumber(5.0), new RealNumber(3.0));
+            ComplexNumber complex10 = new ComplexNumber(new RationalNumber(new RealNumber(1.0)), new RationalNumber(new RealNumber(2.702)));
+            e = new Plus(List.of(complex9, complex10), Notation.INFIX);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            RationalNumber complex11 = new RationalNumber(new RealNumber(5.0), new RealNumber(3.0));
+            ComplexNumber complex12 = new ComplexNumber(new RationalNumber(new RealNumber(1.0)), new RationalNumber(new RealNumber(-1.0)));
+            e = new Minus(List.of(complex12, complex11), Notation.INFIX);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            RationalNumber complex13 = new RationalNumber(new RealNumber(5.0), new RealNumber(3.0));
+            ComplexNumber complex14 = new ComplexNumber(new RationalNumber(new RealNumber(1.0)), new RationalNumber(new RealNumber(-1.5)));
+            e = new Times(List.of(complex13, complex14), Notation.INFIX);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            RealNumber complex15 = new RealNumber(3.0);
+            ComplexNumber complex16 = new ComplexNumber(new RationalNumber(new RealNumber(2.0)), new RationalNumber(new RealNumber(3.0)));
+            e = new Divides(List.of(complex16, complex15), Notation.INFIX);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
         } catch (IllegalConstruction exception) {
             System.out.println("Cannot create operations without parameters");
         }

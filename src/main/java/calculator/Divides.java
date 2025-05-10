@@ -103,6 +103,27 @@ public final class Divides extends Operation
             RationalNumber imaginaryPart = (RationalNumber) compute(imaginaryNumerator, denominator);
 
             return new ComplexNumber(realPart, imaginaryPart);
+        } else if (left instanceof ComplexNumber complex && (right instanceof RealNumber || right instanceof RationalNumber)) {
+            MyNumber realPart = compute(complex.getRealPart(), right);
+            MyNumber imaginaryPart = compute(complex.getImaginaryPart(), right);
+            return new ComplexNumber(realPart, imaginaryPart);
+        } else if ((left instanceof RealNumber || left instanceof RationalNumber) && right instanceof ComplexNumber complex ) {
+            RationalNumber c = complex.getRealPart();
+            RationalNumber d = complex.getImaginaryPart();
+
+            Times times = new Times(List.of());
+            Plus plus = new Plus(List.of());
+
+            RationalNumber cSquared = (RationalNumber) times.compute(c, c);
+            RationalNumber dSquared = (RationalNumber) times.compute(d, d);
+            RationalNumber denominator = (RationalNumber) plus.compute(cSquared, dSquared);
+
+            // Compute the real part: (a * c + b * d) / (c^2 + d^2)
+            MyNumber realPart = times.compute(left, complex.getRealPart());
+            MyNumber imaginaryPart = times.compute(left, complex.getImaginaryPart().get_opposite());
+            ComplexNumber nominator = new ComplexNumber(realPart, imaginaryPart);
+
+            return compute(nominator, denominator);
         } else {
             throw new IllegalArgumentException("Unsupported types for division");
         }

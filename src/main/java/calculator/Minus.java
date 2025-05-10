@@ -73,6 +73,18 @@ public final class Minus extends Operation
               minus.compute(l.getRealPart(), r.getRealPart()),
               minus.compute(l.getImaginaryPart(), r.getImaginaryPart())
           );
+      } else if (left instanceof ComplexNumber complex && (right instanceof RealNumber || right instanceof RationalNumber)) {
+          Minus minus = new Minus(List.of());
+          return new ComplexNumber(
+                  minus.compute(complex.getRealPart(), right),
+                  complex.getImaginaryPart()
+          );
+      } else if ((left instanceof RealNumber || left instanceof RationalNumber) && right instanceof ComplexNumber complex ) {
+          Minus minus = new Minus(List.of());
+          return new ComplexNumber(
+                  minus.compute(left, complex.getRealPart()),
+                  complex.getImaginaryPart().get_opposite()
+          );
       } else {
           throw new IllegalArgumentException("Unsupported types for subtraction");
       }
