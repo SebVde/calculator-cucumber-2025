@@ -1,0 +1,77 @@
+name: Release Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '23'
+
+      - name: Set version automatically
+        id: set_version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Current version: $CURRENT_VERSION"
+
+          NEW_VERSION=$(echo $CURRENT_VERSION | awk -F. -v OFS=. '{$NF += 1; print}')
+          echo "New version: $NEW_VERSION"
+
+          mvn versions:set -DnewVersion=$NEW_VERSION
+          mvn versions:commit
+
+          git add pom.xml
+          git commit -m "bump version to $NEW_VERSION"
+          git tag v$NEW_VERSION
+          git push origin main --tags
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build package
+        run: mvn clean package
+
+      - name: Generate changelog
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            echo "🚀 First Release" > changelog.md
+            git log --pretty=format:"- %s" >> changelog.md
+          else
+            echo "🚀 New Release since $LAST_TAG :" > changelog.md
+            git log "$LAST_TAG"..HEAD --pretty=format:"- %s" >> changelog.md
+          fi
+
+          echo "------ changelog.md content ------"
+          cat changelog.md
+
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.set_version.outputs.new_version }}
+          name: Release v${{ steps.set_version.outputs.new_version }}
+          body_path: changelog.md
+
+
+      - name: Upload release asset (jar)
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.set_version.outputs.new_version }}
+          files: target/*.jar
