@@ -155,7 +155,7 @@ public class Main {
             c.printExpressionDetails(e);
             c.eval(e);
 
-            String input = "6+7 +i +9i *4";
+            String input = "4+3i/1+2i";
             e = Parser.parse(input);
             c.printExpressionDetails(e);
             c.eval(e);

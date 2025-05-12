@@ -21,7 +21,12 @@ public class Parser {
     private static List<String> tokenize(String input) {
         List<String> tokens = new ArrayList<>();
         // Motif regex amélioré pour reconnaître différents formats de nombres complexes
-        Matcher m = Pattern.compile("([+-]?\\d+(\\.\\d+)?(?:[Ee]-?\\d+)?(\\+|\\.|/?)\\d*(\\.\\d+)?i|\\d+(\\.\\d+)?i|\\d+\\.\\d+|\\d+/\\d+|\\d+|[+\\-*/()()]|sqrt|sin|cos|tan|i)")
+        Matcher m = Pattern.compile("-?\\d+(\\.\\d+|/\\d+)?i" +
+                        "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i|i" +
+                        "\\d+\\.\\d+" +
+                        "|\\d+/\\d+" +
+                        "|\\d+" +
+                        "|[+\\-*/()]")
                 .matcher(input);
         while (m.find()) {
             tokens.add(m.group());
@@ -34,7 +39,7 @@ public class Parser {
         Deque<String> ops = new ArrayDeque<>();
 
         for (String token : tokens) {
-            if (isNumber(token) || token.matches("\\d+(\\.\\d+)?i") || token.matches("\\d+(\\.\\d+)?(\\+|\\.|\\/?)\\d*(\\.\\d+)?i") || token.equals("i")) {
+            if (isNumber(token) || isComplex(token)) {
                 output.add(token);
             } else if (OPERATORS.contains(token)) {
                 while (!ops.isEmpty() && OPERATORS.contains(ops.peek()) &&
@@ -61,92 +66,82 @@ public class Parser {
         return output;
     }
 
-    /**
-     * Regex for real numbers, it accepts numbers in the following form
-     * 12 | 12.0 | 12. | +12 | -12 | 12E-2 | +12E2
-     */
-    private static final String realRegEx = "^[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?$";
-    /**
-     * Regex for integers
-     */
-    private static final String intRegEx = "(\\d+([eE][-+])?\\d+)";
-
-    /**
-     * Regex for complex numbers, it accepts numbers in the following form
-     * 2+3i | 2-3i | 2.6+3.7i | +2+3i | -2-3i | 2E-2+3E2i | +2E+2-3E-4i | 3.7i
-     */
-    private static final String complexRegEx = "([+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)" +
-            "([+-](?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)i|" +
-            "([+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[Ee][+-]?\\d+)?)i";
-
-//    private static final String complexRegEx = "\\d+\\.\\d+([eE][-+])?\\d+|\\d+([eE][-+])?\\d+/\\d+([eE][-+])?\\d+|\\d+([eE][-+])?\\d+";
-//
-//    public static MyNumber parseNumbers(String s) throws IllegalConstruction, NumberFormatException {
-//        if (s.matches(intRegEx)) {
-//            return new MyNumber(Integer.parseInt(s));
-//        } else if (s.matches(realRegEx)) {
-//            return new MyNumber(Double.parseDouble(s));
-//        }
-//
-//        Pattern pattern = Pattern.compile(complexRegEx);
-//        Matcher matcher = pattern.matcher(s);
-//
-//        if (matcher.find()) {
-//            double real = 0;
-//            double imaginary = 0;
-//
-//            if (matcher.group(1) != null) {
-//                real = Double.parseDouble(matcher.group(1));
-//            } if (matcher.group(2) != null) {
-//                imaginary = Double.parseDouble(matcher.group(2));
-//            } if (matcher.group(3) != null) {
-//                imaginary = Double.parseDouble(matcher.group(3));
-//            }
-//
-//            return new MyNumber(real, imaginary);
-//        } else {
-//            throw new IllegalConstruction("Couldn't parse number");
-//        }
-//    }
-
     private static Expression buildExpressionTree(List<String> postfix) throws IllegalConstruction {
         Deque<Expression> stack = new ArrayDeque<>();
-
         for (String token : postfix) {
-            if (isNumber(token)) {
-                stack.push(parseNumber(token));
-            } else if (token.equals("i")) {
+            if (token.equals("i")) {
                 stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(1.0))));
-            } else if (token.matches("\\d+(\\.\\d+)?i")) {
+            } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?i")) {
+                RationalNumber realPart = new RationalNumber(new RealNumber(0.0));
+                // Cas comme "5/4i" ou "-5/4i"
+                if (token.contains("/")) {
+                    String[] temp = token.split("/");
+                    RationalNumber imagPart = new RationalNumber(
+                            new RealNumber(Double.parseDouble(temp[0])),
+                            new RealNumber(Double.parseDouble(temp[1].replace("i", ""))));
+
+                    stack.push(new ComplexNumber(
+                            realPart,
+                            imagPart)
+                    );
+                }
                 // Cas comme "4i" ou "3.5i"
-                double imagValue = Double.parseDouble(token.replace("i", ""));
-                stack.push(new ComplexNumber(
-                        new RationalNumber(new RealNumber(0.0)),
-                        new RationalNumber(new RealNumber(imagValue))
-                ));
-            } else if (token.matches("\\d+(\\.\\d+)?(\\+|\\.|/?)\\d*(\\.\\d+)?i")) {
-                // Cas plus complexes comme "2+3i", "2.5+3i", "2/3i"
-                String realPart;
-                String imagPart;
-                if (token.contains("+")) {
-                    // Format "2+3i"
-                    String[] parts = token.split("\\+");
-                    realPart = parts[0];
-                    imagPart = parts[1].replace("i", "");
-                } else if (token.contains("/")) {
-                    // Format potentiel "2/3i"
-                    realPart = "0";
-                    imagPart = token.replace("i", "");
-                } else {
-                    // Format "2.5i"
-                    realPart = "0";
-                    imagPart = token.replace("i", "");
+                else {
+                    RationalNumber imagPart = new RationalNumber(new RealNumber(Double.parseDouble(token.replace("i", ""))));
+                    stack.push(new ComplexNumber(
+                            realPart,
+                            imagPart)
+                    );
                 }
 
-                RationalNumber realNum = new RationalNumber(new RealNumber(Double.parseDouble(realPart)));
-                RationalNumber imagNum = new RationalNumber(new RealNumber(Double.parseDouble(imagPart)));
+            } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i")) {
+                // Cas plus complexes comme "-2+3i", "2.5-3.2i", "-1/5+2/3i"
+                String realString = "";
+                String imagString = "";
 
-                stack.push(new ComplexNumber(realNum, imagNum));
+                if (token.contains("+")) {
+                    // Format "2+3i" ou "-2.6+3/2i
+                    String[] parts = token.split("\\+");
+                    realString = parts[0];
+                    imagString = parts[1];
+                } else if (token.contains("-")) {
+                    String[] parts = token.split("-");
+                    if (token.length() - token.replace("-", "").length() == 2) {
+                        realString = "-" + parts[0];
+                    } else {
+                        realString = parts[0];
+                    }
+                    imagString = "-" + parts[1];
+                }
+
+                imagString = imagString.replace("i", "");
+                if (imagString.isEmpty()) { imagString = "1"; }
+
+                RationalNumber realPart;
+                RationalNumber imagPart;
+                if (realString.contains("/")) {
+                    String[] temp = realString.split("/");
+                    realPart = new RationalNumber(
+                            new RealNumber(Double.parseDouble(temp[0])),
+                            new RealNumber(Double.parseDouble(temp[1])));
+
+                } else {
+                    realPart = new RationalNumber(new RealNumber(Double.parseDouble(realString)));
+                }
+
+                if (imagString.contains("/")) {
+                    String[] temp = imagString.split("/");
+                    imagPart = new RationalNumber(
+                            new RealNumber(Double.parseDouble(temp[0])),
+                            new RealNumber(Double.parseDouble(temp[1])));
+
+                } else {
+                    imagPart = new RationalNumber(new RealNumber(Double.parseDouble(imagString)));
+                }
+
+                stack.push(new ComplexNumber(realPart, imagPart));
+            } else if (isNumber(token)) {
+                stack.push(parseNumber(token));
             } else if (OPERATORS.contains(token)) {
                 Expression right = stack.pop();
                 Expression left = stack.pop();
@@ -176,7 +171,13 @@ public class Parser {
     }
 
     private static boolean isNumber(String token) {
-        return token.matches("\\d+\\.\\d+([eE][-+])?\\d+|\\d+([eE][-+])?\\d+/\\d+([eE][-+])?\\d+|\\d+([eE][-+])?\\d+");
+        return token.matches("\\d+\\.\\d+|\\d+/\\d+|\\d+");
+    }
+
+    private static boolean isComplex(String token) {
+        return token.matches("-?\\d+(\\.\\d+|/\\d+)?i" +
+                "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i" +
+                "|i");
     }
 }
 
