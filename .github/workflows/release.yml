@@ -60,18 +60,23 @@ jobs:
 
           echo "------ changelog.md content ------"
           cat changelog.md
-
-
+          
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.set_version.outputs.new_version }}
           name: Release v${{ steps.set_version.outputs.new_version }}
           body_path: changelog.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Upload release asset (jar)
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: v${{ steps.set_version.outputs.new_version }}
+          files: target/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v${{ steps.set_version.outputs.new_version }}
           files: target/*.jar
