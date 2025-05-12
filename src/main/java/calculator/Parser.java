@@ -153,6 +153,8 @@ public class Parser {
                     case "/" -> stack.push(new Divides(args));
                     default -> throw new IllegalArgumentException("Unknown operator: " + token);
                 }
+            } else {
+                throw new IllegalArgumentException("Unable to parse this token: " + token);
             }
         }
 
