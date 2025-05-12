@@ -59,7 +59,6 @@ We use [SemVer](http://semver.org/) for semantic versioning. For the versions av
 
 ## Licence
 
-
 [This code is available under the GNU General Public License v3.0](https://choosealicense.com/licenses/gpl-3.0/) (GPLv3)
 
 ## Acknowledgments
