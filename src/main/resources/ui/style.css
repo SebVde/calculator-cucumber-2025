@@ -1,0 +1,92 @@
+.root {
+    -fx-font-family: "Montserrat", "Segoe UI", sans-serif;
+    -fx-background-color: #1e1e2e;
+}
+
+.display-field {
+    -fx-background-color: #313244;
+    -fx-text-fill: #cdd6f4;
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-padding: 15px;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+/* Boutons généraux */
+.button {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-pref-width: 80px;
+    -fx-pref-height: 60px;
+    -fx-background-color: #45475a;
+    -fx-text-fill: #cdd6f4;
+    -fx-background-radius: 8px;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #585b70;
+}
+
+.button:pressed {
+    -fx-background-color: #6c7086;
+}
+
+/* Opérateurs */
+.button[text="+"],
+.button[text="−"],
+.button[text="×"],
+.button[text="÷"] {
+    -fx-background-color: #89b4fa;
+    -fx-text-fill: #1e1e2e;
+}
+
+.button[text="+"]:hover,
+.button[text="−"]:hover,
+.button[text="×"]:hover,
+.button[text="÷"]:hover {
+    -fx-background-color: #b4befe;
+}
+
+/* Égal */
+.button[text="="] {
+    -fx-background-color: #f38ba8;
+    -fx-text-fill: #1e1e2e;
+}
+
+.button[text="="]:hover {
+    -fx-background-color: #f5c2e7;
+}
+
+/* Clear */
+.button[text="C"] {
+    -fx-background-color: #fab387;
+    -fx-text-fill: #1e1e2e;
+}
+
+.button[text="C"]:hover {
+    -fx-background-color: #f9e2af;
+}
+
+/* Scientifiques et spéciaux */
+.button[text="√"],
+.button[text="x²"],
+.button[text="π"],
+.button[text="sin"],
+.button[text="cos"],
+.button[text="tan"] {
+    -fx-background-color: #a6e3a1;
+    -fx-text-fill: #1e1e2e;
+}
+
+.button[text="√"]:hover,
+.button[text="x²"]:hover,
+.button[text="π"]:hover,
+.button[text="sin"]:hover,
+.button[text="cos"]:hover,
+.button[text="tan"]:hover {
+    -fx-background-color: #94e2d5;
+}

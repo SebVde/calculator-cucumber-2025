@@ -63,6 +63,12 @@ public class Calculator {
         return v.getResult();
     }
 
+    private final Evaluator evaluator = new Evaluator();
+    public Evaluator getEvaluator() {
+        return evaluator;
+    }
+
+
     /*
      We could also have other methods, e.g. to verify whether an expression is syntactically correct
      public Boolean validate(Expression e)

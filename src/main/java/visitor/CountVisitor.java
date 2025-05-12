@@ -50,6 +50,16 @@ public class CountVisitor extends Visitor {
         currentDepth--;
     }
 
+    @Override
+    public void visit(FunctionWrapper f) {
+        opsCount++; // Compte la fonction comme une opération
+        currentDepth++;
+        maxDepth = Math.max(maxDepth, currentDepth);
+        f.getArgument().accept(this); // Visite l’argument de la fonction
+        currentDepth--;
+    }
+
+
     public int getOpsCount() {
         return opsCount;
     }
