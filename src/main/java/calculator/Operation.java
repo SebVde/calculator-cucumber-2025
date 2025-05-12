@@ -6,7 +6,6 @@ import visitor.Visitor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Operation is an abstract class that represents arithmetic operations,
@@ -61,8 +60,8 @@ public abstract class Operation implements Expression
 			throws IllegalConstruction
 	{
 		if (elist == null) {
-			throw new IllegalConstruction(); }
-		else {
+			throw new IllegalConstruction("Operation cannot be constructed with a null list of expressions");
+		} else {
 			args = new ArrayList<>(elist);
 		}
 		if (n!=null) notation = n;
@@ -191,11 +190,40 @@ public abstract class Operation implements Expression
 	@Override
 	public int hashCode()
 	{
-		int result = 5, prime = 31;
+		int result = 5;
+		int prime = 31;
 		result = prime * result + neutral;
 		result = prime * result + symbol.hashCode();
 		result = prime * result + args.hashCode();
 		return result;
 	}
+
+	/**
+	 * Compute the result of the operation using the provided arguments.
+	 * @param evaluatedArgs The list of evaluated arguments.
+	 * @return The result of the operation.
+	 * @throws IllegalConstruction If the operation is not properly constructed.
+	 */
+	public MyNumber compute(List<Expression> evaluatedArgs) throws IllegalConstruction {
+		if (evaluatedArgs.size() < 2) {
+			return new RealNumber(0.0);
+		}
+
+		MyNumber result = (MyNumber) evaluatedArgs.getFirst();
+		for (int i = 1; i < evaluatedArgs.size(); i++) {
+			MyNumber next = (MyNumber) evaluatedArgs.get(i);
+			result = compute(result, next);
+		}
+		return result;
+	}
+
+	/**
+	 * Compute the result of the operation for two arguments.
+	 * @param left The left operand.
+	 * @param right The right operand.
+	 * @return The result of the operation.
+	 * @throws IllegalConstruction If the operation is not properly constructed.
+	 */
+	public abstract MyNumber compute(MyNumber left, MyNumber right) throws IllegalConstruction;
 
 }

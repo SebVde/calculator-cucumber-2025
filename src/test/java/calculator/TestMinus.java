@@ -17,7 +17,8 @@ class TestMinus {
 
 	@BeforeEach
 	void setUp() {
-		  params = Arrays.asList(new MyNumber(value1),new MyNumber(value2));
+		  params = Arrays.asList(new RealNumber(Double.parseDouble(String.valueOf(value1))),
+				  new RealNumber(Double.parseDouble(String.valueOf(value2))));
 		  try { op = new Minus(params); }
 		  catch(IllegalConstruction e) { fail(); }
 	}
@@ -42,7 +43,8 @@ class TestMinus {
 	@Test
 	void testEquals() {
 		// Two similar expressions, constructed separately (and using different constructors) should not be equal
-		List<Expression> p = Arrays.asList(new MyNumber(value1), new MyNumber(value2));
+		List<Expression> p = Arrays.asList(new RealNumber(Double.parseDouble(String.valueOf(value1))),
+				new RealNumber(Double.parseDouble(String.valueOf(value2))));
 		try {
 			Minus e = new Minus(p, Notation.INFIX);
 			assertEquals(op, e);
@@ -59,7 +61,8 @@ class TestMinus {
 	@Test
 	void testHashCode() {
 		// Two similar expressions, constructed separately (and using different constructors) should have the same hashcode
-		List<Expression> p = Arrays.asList(new MyNumber(value1), new MyNumber(value2));
+		List<Expression> p = Arrays.asList(new RealNumber(Double.parseDouble(String.valueOf(value1))),
+				new RealNumber(Double.parseDouble(String.valueOf(value2))));
 		try {
 			Minus e = new Minus(p, Notation.INFIX);
 			assertEquals(e.hashCode(), op.hashCode());
@@ -71,6 +74,50 @@ class TestMinus {
 	void testNullParamList() {
 		params = null;
 		assertThrows(IllegalConstruction.class, () -> op = new Minus(params));
+	}
+
+	@Test
+	void testRationalSubtraction() {
+	    RationalNumber r1 = new RationalNumber(new RealNumber(7.0), new RealNumber(6.0));
+	    RationalNumber r2 = new RationalNumber(new RealNumber(5.0), new RealNumber(6.0));
+	    try {
+	        Minus minus = new Minus(List.of(r1, r2));
+	        Calculator calc = new Calculator();
+	        RationalNumber result = (RationalNumber) calc.eval(minus);
+	        assertEquals("1/3", result.simplify().toString());
+	    } catch (IllegalConstruction e) {
+	        fail();
+	    }
+	}
+
+	@Test
+	void testComplexSubtraction() {
+	    ComplexNumber c1 = new ComplexNumber(new RationalNumber(new RealNumber(3.0), new RealNumber(4.0)),
+	                                         new RationalNumber(new RealNumber(5.0), new RealNumber(6.0)));
+	    ComplexNumber c2 = new ComplexNumber(new RationalNumber(new RealNumber(1.0), new RealNumber(2.0)),
+	                                         new RationalNumber(new RealNumber(1.0), new RealNumber(3.0)));
+	    try {
+	        Minus minus = new Minus(List.of(c1, c2));
+	        Calculator calc = new Calculator();
+	        ComplexNumber result = (ComplexNumber) calc.eval(minus);
+	        assertEquals("1/4 + 1/2i", result.toString());
+	    } catch (IllegalConstruction e) {
+	        fail();
+	    }
+	}
+
+	@Test
+	void testSubtractionWithZero() {
+	    RationalNumber r1 = new RationalNumber(new RealNumber(3.0), new RealNumber(4.0));
+	    RationalNumber r2 = new RationalNumber(new RealNumber(0.0), new RealNumber(1.0));
+	    try {
+	        Minus minus = new Minus(List.of(r1, r2));
+	        Calculator calc = new Calculator();
+	        RationalNumber result = (RationalNumber) calc.eval(minus);
+	        assertEquals("3/4", result.simplify().toString());
+	    } catch (IllegalConstruction e) {
+	        fail();
+	    }
 	}
 
 }
