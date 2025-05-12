@@ -155,6 +155,11 @@ public class Main {
             c.printExpressionDetails(e);
             c.eval(e);
 
+            String input = "6+7 +i +9i *4";
+            e = Parser.parse(input);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
         } catch (IllegalConstruction exception) {
             System.out.println("Cannot create operations without parameters");
         }
