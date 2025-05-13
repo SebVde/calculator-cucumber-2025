@@ -12,6 +12,13 @@ public class Parser {
     );
 
     public static Expression parse(String input) throws IllegalConstruction {
+        if (!hasAtLeastOneNumber(input))
+            throw new IllegalArgumentException("No numbers in expression " + input);
+        if (!areParenthesesEqual(input))
+            throw new IllegalArgumentException("The opened and closed parentheses are not equal");
+        if (!checkOperatorsOk(input))
+            throw new IllegalArgumentException("Invalid operators sequence in expression " + input);
+
         input = input.replace("π", String.valueOf(Math.PI));
         List<String> tokens = tokenize(input.replaceAll("\\s+", ""));
         List<String> postfix = infixToPostfix(tokens);
@@ -22,8 +29,8 @@ public class Parser {
         List<String> tokens = new ArrayList<>();
         // Motif regex amélioré pour reconnaître différents formats de nombres complexes
         Matcher m = Pattern.compile("-?\\d+(\\.\\d+|/\\d+)?i" +
-                        "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i|i" +
-                        "\\d+\\.\\d+" +
+                        "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i|-?i" +
+                        "|\\d+\\.\\d+" +
                         "|\\d+/\\d+" +
                         "|\\d+" +
                         "|[+\\-*/()]")
@@ -71,6 +78,8 @@ public class Parser {
         for (String token : postfix) {
             if (token.equals("i")) {
                 stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(1.0))));
+            } else if (token.equals("-i")) {
+                stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(-1.0))));
             } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?i")) {
                 RationalNumber realPart = new RationalNumber(new RealNumber(0.0));
                 // Cas comme "5/4i" ou "-5/4i"
@@ -179,7 +188,35 @@ public class Parser {
     private static boolean isComplex(String token) {
         return token.matches("-?\\d+(\\.\\d+|/\\d+)?i" +
                 "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i" +
-                "|i");
+                "|-?i");
+    }
+
+    private static boolean areParenthesesEqual(String input) {
+         return input.length() - input.replace("(", "").length() == input.length() - input.replace(")", "").length();
+    }
+
+    private static boolean checkOperatorsOk(String input) throws IllegalArgumentException {
+        String expr = input.replaceAll("\\s+", "");
+        if (expr.charAt(0) == '+' || expr.charAt(0) == '/' || expr.charAt(0) == '*')
+            throw new IllegalArgumentException("Illegal operator begins the expression: " + expr.charAt(0));
+
+        for (int i = 0; i < expr.length() - 1; i++) {
+            char current = expr.charAt(i);
+            char next = expr.charAt(i + 1);
+
+            if (OPERATORS.contains(String.valueOf(current)) &&
+                    OPERATORS.contains(String.valueOf(next))) {
+                // On autorise seulement "/-" et "*-"
+                if (!(next == '-' && (current == '*' || current == '/'))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static boolean hasAtLeastOneNumber(String input) {
+        return input.replace("\\s+", "").matches(".*\\d+.*|.*i.*");
     }
 }
 
