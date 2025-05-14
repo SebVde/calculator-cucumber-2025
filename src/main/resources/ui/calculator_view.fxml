@@ -49,7 +49,8 @@
                     <Button text="8" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                     <Button text="9" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
                     <Button text="×" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-                    <Button text="Rad" onAction="#toggleAngleMode" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
+                    <Button fx:id="angleModeButton" text="Rad" onAction="#toggleAngleMode" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
+
 
                     <!-- Ligne 2 -->
                     <Button text="4" onAction="#handleButtonPress" GridPane.rowIndex="2"/>
