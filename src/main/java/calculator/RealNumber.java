@@ -20,6 +20,9 @@ public class RealNumber extends MyNumber{
 
     @Override
     public String toString() {
+        if (Math.abs(value) < 1e-10) return "0";
+        if (Math.abs(value - 1.0) < 1e-10) return "1";
+        if (Math.abs(value + 1.0) < 1e-10) return "-1";
         // Check if the value has a decimal part
         if (value % 1 == 0) {
             // If it does not, return the value as an integer

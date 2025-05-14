@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import visitor.Evaluator;
 
 import java.util.Objects;
 
@@ -43,13 +44,13 @@ public class CalculatorController {
     private void handleEvaluate() {
         if (currentInput.isEmpty()) return; // évite d’évaluer si vide
         try {
-            calculator.getEvaluator().setUseDegrees(useDegrees);
+            System.out.println("useDegrees: " + useDegrees);
+            Evaluator eval = new Evaluator(useDegrees);
+            calculator.setEvaluator(eval);  // Ajoute cette méthode dans Calculator
             Expression expr = FxExpressionParser.parse(currentInput.toString());
             Expression result = calculator.eval(expr);
             inputField.setText(result.toString());
-            currentInput.setLength(0);
-            currentInput.append(result.toString());
-            startNew = true;
+            startNew = true;  // ← autorise saisie neuve
         } catch (Exception e) {
             inputField.setText("Erreur");
             currentInput.setLength(0);
@@ -83,6 +84,7 @@ public class CalculatorController {
             default -> {}
         }
         inputField.setText(currentInput.toString());
+        ((Button) event.getSource()).getParent().requestFocus();
     }
 
     private void processInput(String value) {
@@ -91,7 +93,7 @@ public class CalculatorController {
             boolean isFunctionStart = current.endsWith("(") || current.matches(".*(sin|cos|tan|sqrt)\\($");
 
             // Clear if NOT a continuation operator
-            if (!value.matches("[+\\-*/]") && !isFunctionStart) {
+            if (!value.matches("[+\\-*/]") && !isFunctionStart && !current.matches(".*[πi]$")) {
                 currentInput.setLength(0);
             }
         }

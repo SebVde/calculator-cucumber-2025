@@ -11,6 +11,10 @@ public class Evaluator extends Visitor {
 
     private boolean useDegrees = false;
 
+    public Evaluator(boolean useDegrees) {
+        this.useDegrees = useDegrees;
+    }
+
     public void setUseDegrees(boolean useDegrees) {
         this.useDegrees = useDegrees;
     }
@@ -68,7 +72,7 @@ public class Evaluator extends Visitor {
 
         switch (value) {
             case RealNumber r -> {
-                double x = r.getValue();
+                double x = convert(r.getValue());
                 result = applyRealFunction(f.getFunctionName(), x);
             }
             case RationalNumber r -> {
@@ -99,8 +103,7 @@ public class Evaluator extends Visitor {
 
                         try {
                             Divides divide = new Divides(List.of(sinZ, cosZ));
-                            Evaluator subEval = new Evaluator();
-                            subEval.setUseDegrees(this.useDegrees);
+                            Evaluator subEval = new Evaluator(this.useDegrees);
                             divide.accept(subEval);
                             yield subEval.getResult();
                         } catch (IllegalConstruction e) {
@@ -124,11 +127,12 @@ public class Evaluator extends Visitor {
     }
 
     private Expression applyRealFunction(String name, double x) {
+        System.out.println("applyRealFunction(" + name + ", " + x + ") — useDegrees: " + useDegrees);
         return switch (name) {
             case "sqrt" -> new RealNumber(Math.sqrt(x));
-            case "sin" -> new RealNumber(Math.sin(convert(x)));
-            case "cos" -> new RealNumber(Math.cos(convert(x)));
-            case "tan" -> new RealNumber(Math.tan(convert(x)));
+            case "sin" -> new RealNumber(Math.sin(x));
+            case "cos" -> new RealNumber(Math.cos(x));
+            case "tan" -> new RealNumber(Math.tan(x));
             default -> throw new IllegalArgumentException("Unknown function: " + name);
         };
     }
