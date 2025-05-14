@@ -7,198 +7,169 @@ import java.util.regex.*;
 
 public class FxExpressionParser {
 
-    private static final Set<String> OPERATORS = Set.of("+", "-", "*", "/");
-    private static final Set<String> FUNCTIONS = Set.of("sqrt", "sin", "cos", "tan");
-    private static final Map<String, Integer> PRECEDENCE = Map.of(
-            "+", 1, "-", 1,
-            "*", 2, "/", 2
-    );
+    private static final String COMPLEX_PATTERN = "-?\\d+(\\.\\d+|/-?\\d+)?i|-?\\d+(\\.\\d+|/-?\\d+)?[+-](\\d+(\\.\\d+|/-?\\d+)?)?i|-?i";
+    private static final String REAL_PATTERN = "-?\\d*\\.\\d+";
+    private static final String INTEGER_PATTERN = "-?\\d+";
+    private static final String RATIONAL_PATTERN = "-?\\d+/-?\\d+";
+    private static final String FUNCTION_PATTERN = "sqrt\\(([^()]*)\\)";
+    private static final String ANY_NUMBER = String.format("(%s)|(%s)|(%s)|(%s)",
+            COMPLEX_PATTERN,
+            REAL_PATTERN,
+            INTEGER_PATTERN,
+            RATIONAL_PATTERN);
 
-    public static Expression parse(String input) throws IllegalConstruction {
-        input = input.replace("π", String.valueOf(Math.PI));
-
-        if (!hasAtLeastOneNumber(input))
-            throw new IllegalArgumentException("No numbers in expression: " + input);
-        if (!areParenthesesEqual(input))
-            throw new IllegalArgumentException("Mismatched parentheses in expression");
-        if (!checkOperatorsOk(input))
-            throw new IllegalArgumentException("Invalid operator sequence");
-
-        List<String> tokens = tokenize(input.replaceAll("\\s+", ""));
-        List<String> postfix = infixToPostfix(tokens);
-        return buildExpressionTree(postfix);
+    private enum TokenType {
+        INTEGER, REAL, COMPLEX, RATIONAL, OPERATOR, LEFT_PAREN, RIGHT_PAREN, FUNCTION
     }
 
-    private static List<String> tokenize(String input) {
-        List<String> tokens = new ArrayList<>();
-        Matcher m = Pattern.compile(
-                "sqrt|sin|cos|tan|" +
-                        "-?π|" +
-                        "\\d+\\.\\d+|" +
-                        "\\d+/\\d+|" +
-                        "\\d+|" +
-                        "\\d+(\\.\\d+)?i|" +
-                        "i|" +
-                        "\\d+(\\.\\d+)?[+-]\\d+(\\.\\d+)?i|" +
-                        "[+\\-*/()]"
-        ).matcher(input);
-        while (m.find()) {
-            tokens.add(m.group());
-        }
+    private static class Token {
+        TokenType type;
+        String value;
 
-        // Handle negative numbers and expressions
-        return processUnaryMinus(tokens);
+        Token(TokenType type, String value) {
+            this.type = type;
+            this.value = value;
+        }
     }
 
-    private static List<String> processUnaryMinus(List<String> tokens) {
-        List<String> processed = new ArrayList<>();
-        for (int i = 0; i < tokens.size(); i++) {
-            String token = tokens.get(i);
-
-            // Handle unary minus
-            if (token.equals("-")) {
-                // Check if this is a unary minus (at start or after an operator or open parenthesis)
-                boolean isUnary = i == 0 ||
-                        OPERATORS.contains(processed.getLast()) ||
-                        processed.getLast().equals("(");
-
-                if (isUnary && i + 1 < tokens.size()) {
-                    String nextToken = tokens.get(i + 1);
-                    // If next token is a number, combine with minus
-                    if (nextToken.matches("\\d+(\\.\\d+)?|\\d+/\\d+|i|\\d+i|\\d+\\.\\d+i")) {
-                        processed.add("-" + nextToken);
-                        i++; // Skip the next token
-                    } else if (nextToken.equals("(")) {
-                        // Handle expressions like -(3+4)
-                        processed.add("-1");
-                        processed.add("*");
-                        processed.add(nextToken);
-                    } else {
-                        processed.add(token);
-                    }
-                } else {
-                    processed.add(token);
-                }
-            } else if (token.matches("\\d+(\\.\\d+)?[+-]\\d+(\\.\\d+)?i")) {
-                // Handle complex numbers with both real and imaginary parts
-                processed.add(token);
-            } else {
-                processed.add(token);
-            }
-        }
-        return processed;
+    public static Expression parse(String expression) throws IllegalConstruction {
+        String cleaned = expression.replaceAll("\\s+", "").replace("π", String.valueOf(Math.PI));
+        return parseInfix(cleaned);
     }
 
-    private static List<String> infixToPostfix(List<String> tokens) {
-        List<String> output = new ArrayList<>();
-        Deque<String> ops = new ArrayDeque<>();
-
-        for (String token : tokens) {
-            if (isNumber(token) || isComplex(token)) {
-                output.add(token);
-            } else if (FUNCTIONS.contains(token)) {
-                ops.push(token);
-            } else if (OPERATORS.contains(token)) {
-                while (!ops.isEmpty() && (OPERATORS.contains(ops.peek()) || FUNCTIONS.contains(ops.peek())) &&
-                        PRECEDENCE.getOrDefault(token, 0) <= PRECEDENCE.getOrDefault(ops.peek(), 0)) {
-                    output.add(ops.pop());
-                }
-                ops.push(token);
-            } else if (token.equals("(")) {
-                ops.push(token);
-            } else if (token.equals(")")) {
-                while (!ops.isEmpty() && !ops.peek().equals("(")) {
-                    output.add(ops.pop());
-                }
-                if (!ops.isEmpty() && ops.peek().equals("(")) ops.pop();
-                if (!ops.isEmpty() && FUNCTIONS.contains(ops.peek())) output.add(ops.pop());
-            }
-        }
-
-        while (!ops.isEmpty()) {
-            output.add(ops.pop());
-        }
-
-        return output;
-    }
-
-    private static Expression buildExpressionTree(List<String> postfix) throws IllegalConstruction {
+    private static Expression parseInfix(String expression) throws IllegalConstruction {
+        expression = preprocessFunctions(expression);
+        List<Token> tokens = tokenizeInfix(expression);
+        List<Token> postfix = toPostfix(tokens);
         Deque<Expression> stack = new ArrayDeque<>();
-        for (String token : postfix) {
-            if (token.equals("i")) {
-                stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(1.0))));
-            } else if (token.equals("-i")) {
-                stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(-1.0))));
-            } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?i")) {
-                // Handle imaginary numbers like 2i, -3i
-                RationalNumber realPart = new RationalNumber(new RealNumber(0.0));
-                String imag = token.replace("i", "");
-                RationalNumber imagPart = imag.contains("/") ? parseRational(imag) : new RationalNumber(new RealNumber(Double.parseDouble(imag)));
-                stack.push(new ComplexNumber(realPart, imagPart));
-            } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i")) {
-                // Handle complex numbers like 3+2i, -3+2i
-                String[] parts;
-                if (token.startsWith("-")) {
-                    // Handle negative complex numbers correctly
-                    String withoutMinus = token.substring(1);
-                    if (withoutMinus.contains("+")) {
-                        parts = withoutMinus.split("\\+", 2);
-                        parts[0] = "-" + parts[0];
-                        parts[1] = "+" + parts[1];
-                    } else if (withoutMinus.contains("-")) {
-                        parts = withoutMinus.split("-", 2);
-                        parts[0] = "-" + parts[0];
-                        parts[1] = "-" + parts[1];
-                    } else {
-                        parts = new String[]{ token };
-                    }
-                } else {
-                    parts = token.split("(?=[+-])", 2);
-                }
 
-                RationalNumber real = parseRational(parts[0]);
-                String imagStr = parts[1].replace("i", "");
-                if (imagStr.equals("+") || imagStr.isEmpty()) {
-                    imagStr = "1";
-                } else if (imagStr.equals("-")) {
-                    imagStr = "-1";
+        for (Token token : postfix) {
+            switch (token.type) {
+                case INTEGER, REAL, RATIONAL, COMPLEX -> stack.push(createNumber(token));
+                case FUNCTION -> stack.push(new FunctionWrapper("sqrt", parse(token.value)));
+                case OPERATOR -> {
+                    Expression b = stack.pop();
+                    Expression a = stack.pop();
+                    List<Expression> args = List.of(a, b);
+                    stack.push(switch (token.value) {
+                        case "+" -> new Plus(args);
+                        case "-" -> new Minus(args);
+                        case "*" -> new Times(args);
+                        case "/" -> new Divides(args);
+                        default -> throw new IllegalArgumentException("Unknown operator: " + token.value);
+                    });
                 }
-                RationalNumber imag = parseRational(imagStr);
-                stack.push(new ComplexNumber(real, imag));
-            } else if (isNumber(token)) {
-                stack.push(parseNumber(token));
-            } else if (OPERATORS.contains(token)) {
-                if (stack.size() < 2) {
-                    throw new IllegalArgumentException("Invalid expression: not enough operands for operator " + token);
-                }
-                Expression b = stack.pop();
-                Expression a = stack.pop();
-                List<Expression> args = List.of(a, b);
-                switch (token) {
-                    case "+" -> stack.push(new Plus(args));
-                    case "-" -> stack.push(new Minus(args));
-                    case "*" -> stack.push(new Times(args));
-                    case "/" -> stack.push(new Divides(args));
-                    default -> throw new IllegalArgumentException("Unknown operator: " + token);
-                }
-            } else if (FUNCTIONS.contains(token)) {
-                if (stack.isEmpty()) {
-                    throw new IllegalArgumentException("Invalid expression: not enough arguments for function " + token);
-                }
-                Expression arg = stack.pop();
-                stack.push(new FunctionWrapper(token, arg));
+                default -> throw new IllegalArgumentException("Unexpected token type: " + token.type);
             }
         }
-
-        if (stack.isEmpty()) {
-            throw new IllegalArgumentException("Invalid expression: empty result");
-        }
-
         return stack.pop();
     }
 
-    private static MyNumber parseNumber(String token) {
-        return parseRational(token);
+    private static String preprocessFunctions(String expression) {
+        Pattern pattern = Pattern.compile(FUNCTION_PATTERN);
+        Matcher matcher = pattern.matcher(expression);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String inside = matcher.group(1);
+            matcher.appendReplacement(sb, "FUNC{" + inside + "}");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static List<Token> tokenizeInfix(String input) {
+        List<Token> tokens = new ArrayList<>();
+        Pattern pattern = Pattern.compile("FUNC\\{[^}]+}|" + ANY_NUMBER + "|[+\\-*/()]|");
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            String part = matcher.group();
+            if (part == null || part.isEmpty()) continue;
+            Token token;
+            if (part.equals("(") || part.equals(")")) {
+                token = new Token(part.equals("(") ? TokenType.LEFT_PAREN : TokenType.RIGHT_PAREN, part);
+            } else if (part.startsWith("FUNC{")) {
+                token = new Token(TokenType.FUNCTION, part.substring(5, part.length() - 1));
+            } else if (part.matches(COMPLEX_PATTERN)) {
+                token = new Token(TokenType.COMPLEX, part);
+            } else if (part.matches(RATIONAL_PATTERN)) {
+                token = new Token(TokenType.RATIONAL, part);
+            } else if (part.matches(REAL_PATTERN)) {
+                token = new Token(TokenType.REAL, part);
+            } else if (part.matches(INTEGER_PATTERN)) {
+                token = new Token(TokenType.INTEGER, part);
+            } else if ("+-*/".contains(part)) {
+                token = new Token(TokenType.OPERATOR, part);
+            } else {
+                throw new IllegalArgumentException("Unknown token: " + part);
+            }
+            tokens.add(token);
+        }
+        return tokens;
+    }
+
+    private static List<Token> toPostfix(List<Token> infix) {
+        List<Token> output = new ArrayList<>();
+        Deque<Token> ops = new ArrayDeque<>();
+        for (Token token : infix) {
+            switch (token.type) {
+                case INTEGER, REAL, RATIONAL, COMPLEX, FUNCTION -> output.add(token);
+                case OPERATOR -> {
+                    while (!ops.isEmpty() && precedence(ops.peek()) >= precedence(token)) {
+                        output.add(ops.pop());
+                    }
+                    ops.push(token);
+                }
+                case LEFT_PAREN -> ops.push(token);
+                case RIGHT_PAREN -> {
+                    while (!ops.isEmpty() && ops.peek().type != TokenType.LEFT_PAREN) {
+                        output.add(ops.pop());
+                    }
+                    if (!ops.isEmpty() && ops.peek().type == TokenType.LEFT_PAREN) {
+                        ops.pop();
+                    }
+                }
+            }
+        }
+        while (!ops.isEmpty()) output.add(ops.pop());
+        return output;
+    }
+
+    private static int precedence(Token token) {
+        return switch (token.value) {
+            case "+", "-" -> 1;
+            case "*", "/" -> 2;
+            default -> 0;
+        };
+    }
+
+    private static Expression createNumber(Token token) {
+        return switch (token.type) {
+            case INTEGER, REAL -> new RealNumber(Double.parseDouble(token.value));
+            case RATIONAL -> {
+                String[] parts = token.value.split("/");
+                yield new RationalNumber(new RealNumber(Double.parseDouble(parts[0])), new RealNumber(Double.parseDouble(parts[1])));
+            }
+            case COMPLEX -> parseComplex(token.value);
+            default -> throw new IllegalArgumentException("Not a number token: " + token.value);
+        };
+    }
+
+    private static ComplexNumber parseComplex(String value) {
+        if (value.equals("i")) return new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(1.0)));
+        if (value.equals("-i")) return new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(-1.0)));
+
+        if (value.matches("-?\\d+(\\.\\d+|/-?\\d+)?i")) {
+            RationalNumber imag = value.contains("/") ? parseRational(value.replace("i", "")) : new RationalNumber(new RealNumber(Double.parseDouble(value.replace("i", ""))));
+            return new ComplexNumber(new RationalNumber(new RealNumber(0.0)), imag);
+        }
+
+        String[] parts = value.split("(?=[+-])", 2);
+        RationalNumber real = parseRational(parts[0]);
+        String imagStr = parts[1].replace("i", "");
+        if (imagStr.equals("+") || imagStr.isEmpty()) imagStr = "1";
+        else if (imagStr.equals("-")) imagStr = "-1";
+        RationalNumber imag = parseRational(imagStr);
+        return new ComplexNumber(real, imag);
     }
 
     private static RationalNumber parseRational(String token) {
@@ -208,47 +179,5 @@ public class FxExpressionParser {
         } else {
             return new RationalNumber(new RealNumber(Double.parseDouble(token)));
         }
-    }
-
-    private static boolean isNumber(String token) {
-        return token.matches("-?\\d+\\.\\d+|-?\\d+/\\d+|-?\\d+");
-    }
-
-    private static boolean isComplex(String token) {
-        return token.matches("-?\\d+(\\.\\d+|/\\d+)?i" +
-                "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i" +
-                "|-?i");
-    }
-
-    private static boolean hasAtLeastOneNumber(String input) {
-        return input.replaceAll("\\s+", "").matches(".*\\d+.*|.*i.*");
-    }
-
-    private static boolean areParenthesesEqual(String input) {
-        return input.chars().filter(c -> c == '(').count() == input.chars().filter(c -> c == ')').count();
-    }
-
-    private static boolean checkOperatorsOk(String input) {
-        String expr = input.replaceAll("\\s+", "");
-        if (expr.isEmpty()) return true;
-
-        // Allow starting with minus (for negative numbers)
-        if (OPERATORS.contains(String.valueOf(expr.charAt(0))) && expr.charAt(0) != '-')
-            return false;
-
-        // Check for consecutive operators except when handling negative numbers
-        for (int i = 0; i < expr.length() - 1; i++) {
-            char c = expr.charAt(i);
-            char n = expr.charAt(i + 1);
-
-            if (OPERATORS.contains("" + c) && OPERATORS.contains("" + n)) {
-                // Allow combinations like "+-", "--", "*-", "/-" (for negative numbers)
-                if (n == '-') continue;
-                return false;
-            }
-        }
-
-        // Check if expression ends with an operator
-        return !OPERATORS.contains(String.valueOf(expr.charAt(expr.length() - 1)));
     }
 }

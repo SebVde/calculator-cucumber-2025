@@ -74,19 +74,32 @@
 /* Scientifiques et spéciaux */
 .button[text="√"],
 .button[text="x²"],
-.button[text="π"],
-.button[text="sin"],
-.button[text="cos"],
-.button[text="tan"] {
+.button[text="π"] {
     -fx-background-color: #a6e3a1;
     -fx-text-fill: #1e1e2e;
 }
 
 .button[text="√"]:hover,
 .button[text="x²"]:hover,
-.button[text="π"]:hover,
-.button[text="sin"]:hover,
-.button[text="cos"]:hover,
-.button[text="tan"]:hover {
+.button[text="π"]:hover {
     -fx-background-color: #94e2d5;
+}
+
+/* Toggle Button: Fraction Mode */
+.toggle-button {
+    -fx-font-size: 14px;
+    -fx-padding: 5 10;
+    -fx-background-color: #45475a;
+    -fx-text-fill: #cdd6f4;
+    -fx-background-radius: 6px;
+    -fx-border-color: transparent;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #a6e3a1;
+    -fx-text-fill: #1e1e2e;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #585b70;
 }

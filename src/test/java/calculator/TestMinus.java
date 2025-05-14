@@ -100,7 +100,7 @@ class TestMinus {
 	        Minus minus = new Minus(List.of(c1, c2));
 	        Calculator calc = new Calculator();
 	        ComplexNumber result = (ComplexNumber) calc.eval(minus);
-	        assertEquals("1/4 + 1/2i", result.toString());
+	        assertEquals("1/4 + 1/2i", result.simplify().toString());
 	    } catch (IllegalConstruction e) {
 	        fail();
 	    }

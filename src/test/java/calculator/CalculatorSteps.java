@@ -343,7 +343,7 @@ public class CalculatorSteps {
 		MyNumber result = (MyNumber) c.eval(op);
 		assertInstanceOf(ComplexNumber.class, result, "Result should be a ComplexNumber but was " + result.getClass().getName());
 		ComplexNumber complexResult = (ComplexNumber) result;
-		assertEquals(expected, complexResult.toString());
+		assertEquals(expected, complexResult.simplify().toString());
 	}
 
 	@Then("the operation returns NaN")

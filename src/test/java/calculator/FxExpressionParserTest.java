@@ -8,102 +8,86 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class FxExpressionParserTest {
 
-    @Test
-    void testRealNumberParsing() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("3.5");
-        assertEquals(new RationalNumber(new RealNumber(3.5)), e);
-    }
-
-    @Test
-    void testRationalNumberParsing() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("3/4");
-        assertEquals(new RationalNumber(new RealNumber(3.0), new RealNumber(4.0)), e);
-    }
-
-    @Test
-    void testComplexNumberParsing() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("2+3i");
-        Evaluator eval = new Evaluator(false);
+    private void assertEvaluation(String input, Expression expected, boolean preserveFractions) throws IllegalConstruction {
+        Expression e = FxExpressionParser.parse(input);
+        Evaluator eval = new Evaluator(preserveFractions);
         e.accept(eval);
-        Expression result = eval.getResult();
-        assertEquals("2 + 3i", result.toString());
+        assertEquals(expected, eval.getResult());
     }
 
     @Test
-    void testFunctionParsing() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("sqrt(9)");
-        FunctionWrapper expected = new FunctionWrapper("sqrt", new RationalNumber(new RealNumber(9.0)));
-        assertEquals(expected, e);
+    void testSimpleAddition() throws IllegalConstruction {
+        assertEvaluation("2+3", new RealNumber(5.0), false);
     }
 
     @Test
-    void testAddition() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("2+3");
-        Expression expected = new Plus(
-                java.util.List.of(
-                        new RationalNumber(new RealNumber(2.0)),
-                        new RationalNumber(new RealNumber(3.0))
-                )
-        );
-        assertEquals(expected, e);
+    void testFractionPreserved() throws IllegalConstruction {
+        assertEvaluation("3/4+1/4", new RationalNumber(new RealNumber(1.0)), true);
     }
 
     @Test
-    void testNestedFunctions() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("sin(cos(0))");
-        FunctionWrapper inner = new FunctionWrapper("cos", new RationalNumber(new RealNumber(0.0)));
-        FunctionWrapper expected = new FunctionWrapper("sin", inner);
-        assertEquals(expected, e);
+    void testFractionReduced() throws IllegalConstruction {
+        assertEvaluation("2/4+2/4", new RationalNumber(new RealNumber(1.0)), true);
     }
 
     @Test
-    void testPiSymbol() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("π");
-        assertEquals(new RationalNumber(new RealNumber(Math.PI)), e);
+    void testFractionConvertedToDecimal() throws IllegalConstruction {
+        assertEvaluation("1/2+1/2", new RealNumber(1.0), false);
     }
 
     @Test
-    void testNegativeImaginaryUnit() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("-i");
-        ComplexNumber expected = new ComplexNumber(
+    void testComplexNumber() throws IllegalConstruction {
+        assertEvaluation("2+3i", new ComplexNumber(
+                new RationalNumber(new RealNumber(2.0)),
+                new RationalNumber(new RealNumber(3.0))
+        ), true);
+    }
+
+    @Test
+    void testImaginaryOnly() throws IllegalConstruction {
+        assertEvaluation("-i", new ComplexNumber(
                 new RationalNumber(new RealNumber(0.0)),
                 new RationalNumber(new RealNumber(-1.0))
-        );
-        assertEquals(expected, e);
+        ), true);
     }
 
     @Test
-    void testRadModeEvaluation() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("sin(1)");
-        Expression e2 = FxExpressionParser.parse("cos(1)");
-        Expression e3 = FxExpressionParser.parse("tan(1)");
-        Evaluator eval = new Evaluator(false); // Radians
-        e.accept(eval);
-        assertEquals(Math.sin(1.0), ((RealNumber) eval.getResult()).getValue(), 1e-9);
-        e2.accept(eval);
-        assertEquals(Math.cos(1.0), ((RealNumber) eval.getResult()).getValue(), 1e-9);
-        e3.accept(eval);
-        assertEquals(Math.tan(1.0), ((RealNumber) eval.getResult()).getValue(), 1e-9);
+    void testRealOnlyComplex() throws IllegalConstruction {
+        assertEvaluation("5", new RealNumber(5.0), false);
     }
 
     @Test
-    void testDegModeEvaluation() throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse("sin(90)");
-        Expression e2 = FxExpressionParser.parse("cos(0)");
-        Expression e3 = FxExpressionParser.parse("tan(45)");
-        Evaluator eval = new Evaluator(true); // Degrees
-        e.accept(eval);
-        assertEquals(1.0, ((RealNumber) eval.getResult()).getValue(), 1e-9);
-        e2.accept(eval);
-        assertEquals(1.0, ((RealNumber) eval.getResult()).getValue(), 1e-9);
-        e3.accept(eval);
-        assertEquals(1.0, ((RealNumber) eval.getResult()).getValue(), 1e-9);
+    void testSqrtInteger() throws IllegalConstruction {
+        assertEvaluation("sqrt(9)", new RealNumber(3.0), false);
     }
 
     @Test
-    void testInvalidExpressionThrows() {
-        assertThrows(IllegalArgumentException.class, () -> FxExpressionParser.parse("+3"));
-        assertThrows(IllegalArgumentException.class, () -> FxExpressionParser.parse("3++4"));
-        assertThrows(IllegalArgumentException.class, () -> FxExpressionParser.parse("(3+4"));
+    void testSqrtFraction() throws IllegalConstruction {
+        assertEvaluation("sqrt(1/4)", new RealNumber(0.5), false);
+    }
+
+    @Test
+    void testSqrtInFractionMode() throws IllegalConstruction {
+        assertEvaluation("sqrt(4/9)", new RealNumber(2.0/3.0), true);
+    }
+
+    @Test
+    void testNestedSqrtAndAddition() throws IllegalConstruction {
+        assertEvaluation("sqrt(4)+1", new RealNumber(3.0), false);
+    }
+
+    @Test
+    void testExpressionWithPi() throws IllegalConstruction {
+        assertEvaluation("π", new RealNumber(Math.PI), false);
+    }
+
+    @Test
+    void testNestedParentheses() throws IllegalConstruction {
+        assertEvaluation("(1+(2+3))", new RealNumber(6.0), false);
+    }
+
+    @Test
+    void testPowerAsDuplication() throws IllegalConstruction {
+        assertEvaluation("2*2", new RealNumber(4.0), false);
     }
 }

@@ -62,7 +62,7 @@ public final class Minus extends Operation
               times.compute(r.getNominator(), l.getDenominator())
           );
           RealNumber denominator = (RealNumber) times.compute(l.getDenominator(), r.getDenominator());
-          return new RationalNumber(numerator, denominator).simplify();
+          return new RationalNumber(numerator, denominator);
       } else if (left instanceof RealNumber l && right instanceof RationalNumber r) {
           return compute(new RationalNumber(l), r);
       } else if (left instanceof RationalNumber l && right instanceof RealNumber r) {

@@ -1,76 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Pos?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="ui.CalculatorController"
-            stylesheets="@style.css">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ui.CalculatorController" stylesheets="@style.css">
 
-    <!-- Écran d'affichage -->
     <top>
-        <TextField fx:id="inputField"
-                   editable="false"
-                   alignment="CENTER_RIGHT"
-                   styleClass="display-field"
-                   prefHeight="80" />
-    </top>
-
-    <!-- Grille de boutons -->
-    <center>
-        <VBox spacing="20" alignment="CENTER">
-            <padding><Insets top="20" left="20" right="20" bottom="20"/></padding>
-
-            <HBox spacing="15" alignment="CENTER">
-                <!-- Grille scientifique -->
-                <GridPane fx:id="scientificGrid" hgap="10" vgap="10">
-                    <Button text="sin" onAction="#handleScientific" />
-                    <Button text="cos" onAction="#handleScientific" GridPane.columnIndex="1"/>
-                    <Button text="tan" onAction="#handleScientific" GridPane.columnIndex="2"/>
-
-                    <Button text="√" onAction="#handleScientific" GridPane.rowIndex="1"/>
-                    <Button text="x²" onAction="#handleScientific" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                    <Button text="π" onAction="#handleScientific" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                </GridPane>
-
-                <!-- Grille numérique et opérateurs -->
-                <GridPane fx:id="mainGrid" hgap="10" vgap="10">
-                    <!-- Ligne 0 -->
-                    <Button text="C" onAction="#handleClear" GridPane.columnIndex="0"/>
-                    <Button text="⌫" onAction="#handleBackspace" GridPane.columnIndex="4"/>
-                    <Button text="(" onAction="#handleButtonPress" GridPane.columnIndex="1"/>
-                    <Button text=")" onAction="#handleButtonPress" GridPane.columnIndex="2"/>
-                    <Button text="÷" onAction="#handleButtonPress" GridPane.columnIndex="3"/>
-
-                    <!-- Ligne 1 -->
-                    <Button text="7" onAction="#handleButtonPress" GridPane.rowIndex="1"/>
-                    <Button text="8" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                    <Button text="9" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                    <Button text="×" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-                    <Button fx:id="angleModeButton" text="Rad" onAction="#toggleAngleMode" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
-
-
-                    <!-- Ligne 2 -->
-                    <Button text="4" onAction="#handleButtonPress" GridPane.rowIndex="2"/>
-                    <Button text="5" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                    <Button text="6" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-                    <Button text="−" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
-
-                    <!-- Ligne 3 -->
-                    <Button text="1" onAction="#handleButtonPress" GridPane.rowIndex="3"/>
-                    <Button text="2" onAction="#handleButtonPress" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                    <Button text="3" onAction="#handleButtonPress" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
-                    <Button text="+" onAction="#handleButtonPress" GridPane.rowIndex="3" GridPane.columnIndex="3"/>
-
-                    <!-- Ligne 4 -->
-                    <Button text="0" onAction="#handleButtonPress" GridPane.rowIndex="4"/>
-                    <Button text="." onAction="#handleButtonPress" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                    <Button text="i" onAction="#handleButtonPress" GridPane.rowIndex="4" GridPane.columnIndex="2"/>
-                    <Button text="=" onAction="#handleEvaluate" GridPane.rowIndex="4" GridPane.columnIndex="3"/>
-                </GridPane>
+        <VBox spacing="5" alignment="CENTER">
+            <TextField fx:id="inputField"
+                       editable="false"
+                       alignment="CENTER_RIGHT"
+                       styleClass="display-field"
+                       prefHeight="80" />
+            <HBox spacing="10" alignment="CENTER">
+                <ToggleButton fx:id="fractionModeToggle" text="Fraction Mode" />
+                <Label fx:id="resultModeLabel" style="-fx-text-fill: #cdd6f4; -fx-font-size: 14px;" />
             </HBox>
         </VBox>
+    </top>
+
+    <center>
+        <GridPane hgap="5" vgap="5" alignment="CENTER">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <!-- Ligne 1 -->
+            <Button text="7" onAction="#handleButtonPress" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+            <Button text="8" onAction="#handleButtonPress" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+            <Button text="9" onAction="#handleButtonPress" GridPane.rowIndex="0" GridPane.columnIndex="2" />
+            <Button text="÷" onAction="#handleButtonPress" GridPane.rowIndex="0" GridPane.columnIndex="3" />
+
+            <!-- Ligne 2 -->
+            <Button text="4" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+            <Button text="5" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+            <Button text="6" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="2" />
+            <Button text="×" onAction="#handleButtonPress" GridPane.rowIndex="1" GridPane.columnIndex="3" />
+
+            <!-- Ligne 3 -->
+            <Button text="1" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+            <Button text="2" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+            <Button text="3" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="2" />
+            <Button text="−" onAction="#handleButtonPress" GridPane.rowIndex="2" GridPane.columnIndex="3" />
+
+            <!-- Ligne 4 -->
+            <Button text="0" onAction="#handleButtonPress" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+            <Button text="." onAction="#handleButtonPress" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+            <Button text="π" onAction="#handleScientific" GridPane.rowIndex="3" GridPane.columnIndex="2" />
+            <Button text="+" onAction="#handleButtonPress" GridPane.rowIndex="3" GridPane.columnIndex="3" />
+
+            <!-- Ligne 5 -->
+            <Button text="C" onAction="#handleClear" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+            <Button text="(" onAction="#handleButtonPress" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+            <Button text=")" onAction="#handleButtonPress" GridPane.rowIndex="4" GridPane.columnIndex="2" />
+            <Button text="=" onAction="#handleEvaluate" GridPane.rowIndex="4" GridPane.columnIndex="3" />
+
+            <!-- Ligne 6 -->
+            <Button text="√" onAction="#handleScientific" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+            <Button text="x²" onAction="#handleScientific" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+            <Button text="i" onAction="#handleButtonPress" GridPane.rowIndex="5" GridPane.columnIndex="2" />
+        </GridPane>
     </center>
+
 </BorderPane>

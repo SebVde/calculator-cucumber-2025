@@ -105,7 +105,7 @@ class TestDivides {
 	        Divides divides = new Divides(List.of(c1, c2));
 	        Calculator calc = new Calculator();
 	        ComplexNumber result = (ComplexNumber) calc.eval(divides);
-	        assertEquals("47/26 + 6/13i", result.toString());
+	        assertEquals("47/26 + 6/13i", result.simplify().toString());
 	    } catch (IllegalConstruction e) {
 	        fail();
 	    }

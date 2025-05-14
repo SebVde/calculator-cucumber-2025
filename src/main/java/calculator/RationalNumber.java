@@ -94,4 +94,13 @@ public class RationalNumber extends MyNumber{
         }
         return a/Math.pow(10, max_decimals);
     }
+
+    public MyNumber simplify(boolean preserveFraction) {
+        RationalNumber simplified = this.simplify();
+        if (!preserveFraction && simplified.getDenominator().equals(new RealNumber(1.0))) {
+            return simplified.getNominator();
+        } else {
+            return simplified;
+        }
+    }
 }

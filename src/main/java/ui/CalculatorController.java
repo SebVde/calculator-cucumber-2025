@@ -5,6 +5,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import visitor.Evaluator;
@@ -16,21 +18,33 @@ public class CalculatorController {
     @FXML
     private TextField inputField;
 
+    @FXML
+    private Button angleModeButton;
+
+    @FXML
+    private ToggleButton fractionModeToggle;
+
+    @FXML
+    private Label resultModeLabel;
+
     private final StringBuilder currentInput = new StringBuilder();
     private final Calculator calculator = new Calculator();
 
     private boolean startNew = true;
-
-    @FXML
-    private Button angleModeButton;
-
     private boolean useDegrees = false;
-
-
+    private boolean preserveFractions = false;
 
     @FXML
     public void initialize() {
         inputField.setOnKeyPressed(this::handleKeyPress);
+        if (fractionModeToggle != null) {
+            preserveFractions = fractionModeToggle.isSelected();
+            resultModeLabel.setText(preserveFractions ? "Résultat en fraction" : "Résultat décimal");
+            fractionModeToggle.setOnAction(e -> {
+                preserveFractions = fractionModeToggle.isSelected();
+                resultModeLabel.setText(preserveFractions ? "Résultat en fraction" : "Résultat décimal");
+            });
+        }
     }
 
     @FXML
@@ -41,16 +55,36 @@ public class CalculatorController {
     }
 
     @FXML
+    private void handleScientific(ActionEvent event) {
+        String value = ((Button) event.getSource()).getText();
+        switch (value) {
+            case "√" -> currentInput.append("sqrt(");
+            case "x²" -> {
+                if (!currentInput.isEmpty()) {
+                    String expr = currentInput.toString();
+                    currentInput.setLength(0);
+                    currentInput.append("(").append(expr).append(")*(").append(expr).append(")");
+                }
+            }
+            case "π" -> currentInput.append("π");
+        }
+        inputField.setText(currentInput.toString());
+        ((Button) event.getSource()).getParent().requestFocus();
+    }
+
+    @FXML
     private void handleEvaluate() {
-        if (currentInput.isEmpty()) return; // évite d’évaluer si vide
+        if (currentInput.isEmpty()) return;
         try {
-            System.out.println("useDegrees: " + useDegrees);
-            Evaluator eval = new Evaluator(useDegrees);
-            calculator.setEvaluator(eval);  // Ajoute cette méthode dans Calculator
+            Evaluator eval = new Evaluator(preserveFractions);
+            calculator.setEvaluator(eval);
             Expression expr = FxExpressionParser.parse(currentInput.toString());
-            Expression result = calculator.eval(expr);
+            expr.accept(eval);
+            Expression result = eval.getResult();
             inputField.setText(result.toString());
-            startNew = true;  // ← autorise saisie neuve
+            currentInput.setLength(0);
+            currentInput.append(result.toString());
+            startNew = true;
         } catch (Exception e) {
             inputField.setText("Erreur");
             currentInput.setLength(0);
@@ -66,33 +100,10 @@ public class CalculatorController {
         startNew = true;
     }
 
-    @FXML
-    private void handleScientific(ActionEvent event) {
-        String value = ((Button) event.getSource()).getText();
-
-        switch (value) {
-            case "√" -> currentInput.append("sqrt(");
-            case "x²" -> {
-                if (!currentInput.isEmpty()) {
-                    String expr = currentInput.toString();
-                    currentInput.setLength(0);
-                    currentInput.append("(").append(expr).append(")*(").append(expr).append(")");
-                }
-            }
-            case "π" -> currentInput.append("π");
-            case "sin", "cos", "tan" -> currentInput.append(value).append("(");
-            default -> {}
-        }
-        inputField.setText(currentInput.toString());
-        ((Button) event.getSource()).getParent().requestFocus();
-    }
-
     private void processInput(String value) {
         if (startNew) {
             String current = currentInput.toString();
-            boolean isFunctionStart = current.endsWith("(") || current.matches(".*(sin|cos|tan|sqrt)\\($");
-
-            // Clear if NOT a continuation operator
+            boolean isFunctionStart = current.endsWith("(") || current.matches(".*(sqrt)\\($");
             if (!value.matches("[+\\-*/]") && !isFunctionStart && !current.matches(".*[πi]$")) {
                 currentInput.setLength(0);
             }
@@ -109,8 +120,6 @@ public class CalculatorController {
         inputField.setText(currentInput.toString());
     }
 
-
-
     void handleKeyPress(KeyEvent event) {
         KeyCode code = event.getCode();
         String text = event.getText();
@@ -123,7 +132,12 @@ public class CalculatorController {
         } else if (code == KeyCode.ESCAPE) {
             handleClear();
         } else if (Objects.equals(text, "²")) {
-            handleScientific(new ActionEvent(new Button("x²"), null));
+            if (!currentInput.isEmpty()) {
+                String expr = currentInput.toString();
+                currentInput.setLength(0);
+                currentInput.append("(").append(expr).append(")*(").append(expr).append(")");
+                inputField.setText(currentInput.toString());
+            }
         } else if (Objects.equals(text.toLowerCase(), "i")) {
             currentInput.append("i");
             inputField.setText(currentInput.toString());
@@ -133,11 +147,6 @@ public class CalculatorController {
     }
 
     @FXML
-    private void toggleAngleMode() {
-        useDegrees = !useDegrees;
-        angleModeButton.setText(useDegrees ? "Deg" : "Rad");
-    }
-    @FXML
     private void handleBackspace() {
         if (!currentInput.isEmpty()) {
             currentInput.setLength(currentInput.length() - 1);
@@ -145,6 +154,5 @@ public class CalculatorController {
             inputField.requestFocus();
         }
     }
-
 
 }
