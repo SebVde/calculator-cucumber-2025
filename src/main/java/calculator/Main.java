@@ -155,8 +155,18 @@ public class Main {
             c.printExpressionDetails(e);
             c.eval(e);
 
-            String input = "4+3i/1+2i";
-            e = Parser.parse(input);
+            String inputPostfix = "((4,5,6)+,(7,(5,2,7)/)+,9)*";
+            e = Parser.parse(inputPostfix);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            String inputPrefix = "*(+(4,5,6),+(7,/(5,2,7)),9)";
+            e = Parser.parse(inputPrefix);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            String inputInfix = "(4 + 5 + 6) * (7 + (5 / 2 / 7)) * 9";
+            e = Parser.parse(inputInfix);
             c.printExpressionDetails(e);
             c.eval(e);
 

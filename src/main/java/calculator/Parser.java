@@ -1,222 +1,415 @@
 package calculator;
 
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import static java.lang.Character.isDigit;
 
 public class Parser {
+    private static final String COMPLEX_PATTERN = "-?\\d+(\\.\\d+|/-?\\d+)?i|-?\\d+(\\.\\d+|/-?\\d+)?[+-](\\d+(\\.\\d+|/-?\\d+)?)?i|-?i";
+    private static final String REAL_PATTERN = "-?\\d+\\.\\d+";
+    private static final String INTEGER_PATTERN = "-?\\d+";
+    private static final String RATIONAL_PATTERN = "-?\\d+/-?\\d+";
 
-    private static final Set<String> OPERATORS = Set.of("+", "-", "*", "/");
-    private static final Map<String, Integer> PRECEDENCE = Map.of(
-            "+", 1, "-", 1,
-            "*", 2, "/", 2
-    );
-
-    public static Expression parse(String input) throws IllegalConstruction {
-        if (!hasAtLeastOneNumber(input))
-            throw new IllegalArgumentException("No numbers in expression " + input);
-        if (!areParenthesesEqual(input))
-            throw new IllegalArgumentException("The opened and closed parentheses are not equal");
-        if (!checkOperatorsOk(input))
-            throw new IllegalArgumentException("Invalid operators sequence in expression " + input);
-
-        input = input.replace("π", String.valueOf(Math.PI));
-        List<String> tokens = tokenize(input.replaceAll("\\s+", ""));
-        List<String> postfix = infixToPostfix(tokens);
-        return buildExpressionTree(postfix);
+    // Main method to parse an expression
+    public static Expression parse(String expression) throws IllegalConstruction {
+        String cleaned = expression.replaceAll("\\s+", "");
+        if (cleaned.length() >= 6 && isOperator(cleaned.charAt(0)) && cleaned.charAt(1) == '(') {
+            return parsePrefixExpression(cleaned);
+        } else if (cleaned.length() >= 6 && isOperator(cleaned.charAt(cleaned.length()-1)) && cleaned.charAt(0) == '(') {
+            return parsePostfixExpression(cleaned);
+        } else if (cleaned.charAt(0) == '(' ||
+                (isDigit(cleaned.charAt(0)) || cleaned.charAt(0) == 'i') ||
+                (cleaned.charAt(0) == '-' && (isDigit(cleaned.charAt(1)) || cleaned.charAt(0) == 'i'))) {
+            return parseInfix(expression);
+        } else {
+            throw new IllegalArgumentException("Unsupported notation type");
+        }
     }
 
-    private static List<String> tokenize(String input) {
-        List<String> tokens = new ArrayList<>();
-        // Motif regex amélioré pour reconnaître différents formats de nombres complexes
-        Matcher m = Pattern.compile("-?\\d+(\\.\\d+|/\\d+)?i" +
-                        "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i|-?i" +
-                        "|\\d+\\.\\d+" +
-                        "|\\d+/\\d+" +
-                        "|\\d+" +
-                        "|[+\\-*/()]")
-                .matcher(input);
-        while (m.find()) {
-            tokens.add(m.group());
-        }
-        return tokens;
-    }
+    private static Expression parseInfix(String expression) throws IllegalConstruction {
+        List<Token> tokens = tokenizeInfix(expression);
+        List<Token> postfixTokens = convertInfixToPostfix(tokens);
 
-    private static List<String> infixToPostfix(List<String> tokens) {
-        List<String> output = new ArrayList<>();
-        Deque<String> ops = new ArrayDeque<>();
+        Stack<Expression> stack = new Stack<>();
 
-        for (String token : tokens) {
-            if (isNumber(token) || isComplex(token)) {
-                output.add(token);
-            } else if (OPERATORS.contains(token)) {
-                while (!ops.isEmpty() && OPERATORS.contains(ops.peek()) &&
-                        PRECEDENCE.getOrDefault(token, 0) <= PRECEDENCE.getOrDefault(ops.peek(), 0)) {
-                    output.add(ops.pop());
-                }
-                ops.push(token);
-            } else if (token.equals("(")) {
-                ops.push(token);
-            } else if (token.equals(")")) {
-                while (!ops.isEmpty() && !ops.peek().equals("(")) {
-                    output.add(ops.pop());
-                }
-                if (!ops.isEmpty() && ops.peek().equals("(")) {
-                    ops.pop();
-                }
-            }
-        }
+        for (Token token : postfixTokens) {
+            switch (token.type) {
+                case INTEGER:
+                case DECIMAL:
+                case COMPLEX:
+                case RATIONAL:
+                    stack.push(createNumbers(token));
+                    break;
 
-        while (!ops.isEmpty()) {
-            output.add(ops.pop());
-        }
-
-        return output;
-    }
-
-    private static Expression buildExpressionTree(List<String> postfix) throws IllegalConstruction {
-        Deque<Expression> stack = new ArrayDeque<>();
-        for (String token : postfix) {
-            if (token.equals("i")) {
-                stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(1.0))));
-            } else if (token.equals("-i")) {
-                stack.push(new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(-1.0))));
-            } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?i")) {
-                RationalNumber realPart = new RationalNumber(new RealNumber(0.0));
-                // Cas comme "5/4i" ou "-5/4i"
-                if (token.contains("/")) {
-                    String[] temp = token.split("/");
-                    RationalNumber imagPart = new RationalNumber(
-                            new RealNumber(Double.parseDouble(temp[0])),
-                            new RealNumber(Double.parseDouble(temp[1].replace("i", ""))));
-
-                    stack.push(new ComplexNumber(
-                            realPart,
-                            imagPart)
-                    );
-                }
-                // Cas comme "4i" ou "3.5i"
-                else {
-                    RationalNumber imagPart = new RationalNumber(new RealNumber(Double.parseDouble(token.replace("i", ""))));
-                    stack.push(new ComplexNumber(
-                            realPart,
-                            imagPart)
-                    );
-                }
-
-            } else if (token.matches("-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i")) {
-                // Cas plus complexes comme "-2+3i", "2.5-3.2i", "-1/5+2/3i"
-                String realString = "";
-                String imagString = "";
-
-                if (token.contains("+")) {
-                    // Format "2+3i" ou "-2.6+3/2i
-                    String[] parts = token.split("\\+");
-                    realString = parts[0];
-                    imagString = parts[1];
-                } else if (token.contains("-")) {
-                    String[] parts = token.split("-");
-                    if (token.length() - token.replace("-", "").length() == 2) {
-                        realString = "-" + parts[0];
-                    } else {
-                        realString = parts[0];
+                case OPERATOR:
+                    if (stack.size() < 2) {
+                        throw new IllegalArgumentException("Invalid postfix expression");
                     }
-                    imagString = "-" + parts[1];
-                }
 
-                imagString = imagString.replace("i", "");
-                if (imagString.isEmpty()) { imagString = "1"; }
+                    Expression right = stack.pop();
+                    Expression left = stack.pop();
+                    List<Expression> args = List.of(left, right);
 
-                RationalNumber realPart;
-                RationalNumber imagPart;
-                if (realString.contains("/")) {
-                    String[] temp = realString.split("/");
-                    realPart = new RationalNumber(
-                            new RealNumber(Double.parseDouble(temp[0])),
-                            new RealNumber(Double.parseDouble(temp[1])));
+                    switch (token.value) {
+                        case "+" -> stack.push(new Plus(args));
+                        case "-" -> stack.push(new Minus(args));
+                        case "*" -> stack.push(new Times(args));
+                        case "/" -> stack.push(new Divides(args));
+                        default -> throw new IllegalArgumentException("Unknown operator: " + token.value);
+                    }
+                    break;
 
-                } else {
-                    realPart = new RationalNumber(new RealNumber(Double.parseDouble(realString)));
-                }
-
-                if (imagString.contains("/")) {
-                    String[] temp = imagString.split("/");
-                    imagPart = new RationalNumber(
-                            new RealNumber(Double.parseDouble(temp[0])),
-                            new RealNumber(Double.parseDouble(temp[1])));
-
-                } else {
-                    imagPart = new RationalNumber(new RealNumber(Double.parseDouble(imagString)));
-                }
-
-                stack.push(new ComplexNumber(realPart, imagPart));
-            } else if (isNumber(token)) {
-                stack.push(parseNumber(token));
-            } else if (OPERATORS.contains(token)) {
-                Expression right = stack.pop();
-                Expression left = stack.pop();
-                List<Expression> args = List.of(left, right);
-                switch (token) {
-                    case "+" -> stack.push(new Plus(args));
-                    case "-" -> stack.push(new Minus(args));
-                    case "*" -> stack.push(new Times(args));
-                    case "/" -> stack.push(new Divides(args));
-                    default -> throw new IllegalArgumentException("Unknown operator: " + token);
-                }
-            } else {
-                throw new IllegalArgumentException("Unable to parse this token: " + token);
+                default:
+                    throw new IllegalArgumentException("Unexpected token type: " + token.type);
             }
+        }
+
+        if (stack.size() != 1) {
+            throw new IllegalArgumentException("Invalid expression");
         }
 
         return stack.pop();
     }
 
-    private static MyNumber parseNumber(String token) {
-        if (token.contains("/")) {
-            String[] parts = token.split("/");
-            RealNumber num = new RealNumber(Double.parseDouble(parts[0]));
-            RealNumber den = new RealNumber(Double.parseDouble(parts[1]));
-            return new RationalNumber(num, den);
-        } else {
-            return new RealNumber(Double.parseDouble(token));
+    private static List<Token> tokenizeInfix(String expression) {
+        List<Token> tokens = new ArrayList<>();
+
+        // Insert spaces around operators and parentheses to make tokenization easier
+        expression = expression.replaceAll("([+\\-*/()])", " $1 ");
+        expression = expression.replaceAll("\\s+", " ").trim();
+
+        String[] parts = expression.split(" ");
+
+        for (String part : parts) {
+            if (part.isEmpty()) {
+                continue;
+            }
+
+            if (isOperator(part.charAt(0))) {
+                tokens.add(new Token(TokenType.OPERATOR, part));
+                continue;
+            }
+
+            if (part.equals("(")) {
+                tokens.add(new Token(TokenType.LEFT_PAREN, part));
+                continue;
+            }
+
+            if (part.equals(")")) {
+                tokens.add(new Token(TokenType.RIGHT_PAREN, part));
+                continue;
+            }
+
+            if (part.matches(COMPLEX_PATTERN)) {
+                tokens.add(new Token(TokenType.COMPLEX, part));
+                continue;
+            }
+
+            if (part.matches(RATIONAL_PATTERN)) {
+                tokens.add(new Token(TokenType.RATIONAL, part));
+                continue;
+            }
+
+            if (part.matches(REAL_PATTERN)) {
+                tokens.add(new Token(TokenType.DECIMAL, part));
+                continue;
+            }
+
+            if (part.matches(INTEGER_PATTERN)) {
+                tokens.add(new Token(TokenType.INTEGER, part));
+                continue;
+            }
+
+            throw new IllegalArgumentException("Unexpected token: " + part);
         }
+
+        return tokens;
     }
 
-    private static boolean isNumber(String token) {
-        return token.matches("\\d+\\.\\d+|\\d+/\\d+|\\d+");
-    }
+    // Convert infix to postfix using Shunting Yard algorithm
+    private static List<Token> convertInfixToPostfix(List<Token> infixTokens) {
+        List<Token> postfixTokens = new ArrayList<>();
+        Stack<Token> operatorStack = new Stack<>();
 
-    private static boolean isComplex(String token) {
-        return token.matches("-?\\d+(\\.\\d+|/\\d+)?i" +
-                "|-?\\d+(\\.\\d+|/\\d+)?[+-](\\d+(\\.\\d+|/\\d+)?)?i" +
-                "|-?i");
-    }
+        for (Token token : infixTokens) {
+            switch (token.type) {
+                case INTEGER:
+                case DECIMAL:
+                case COMPLEX:
+                case RATIONAL:
+                    postfixTokens.add(token);
+                    break;
 
-    private static boolean areParenthesesEqual(String input) {
-         return input.length() - input.replace("(", "").length() == input.length() - input.replace(")", "").length();
-    }
+                case LEFT_PAREN:
+                    operatorStack.push(token);
+                    break;
 
-    private static boolean checkOperatorsOk(String input) throws IllegalArgumentException {
-        String expr = input.replaceAll("\\s+", "");
-        if (expr.charAt(0) == '+' || expr.charAt(0) == '/' || expr.charAt(0) == '*')
-            throw new IllegalArgumentException("Illegal operator begins the expression: " + expr.charAt(0));
+                case RIGHT_PAREN:
+                    while (!operatorStack.isEmpty() && operatorStack.peek().type != TokenType.LEFT_PAREN) {
+                        postfixTokens.add(operatorStack.pop());
+                    }
 
-        for (int i = 0; i < expr.length() - 1; i++) {
-            char current = expr.charAt(i);
-            char next = expr.charAt(i + 1);
+                    if (!operatorStack.isEmpty() && operatorStack.peek().type == TokenType.LEFT_PAREN) {
+                        operatorStack.pop(); // Discard the left parenthesis
+                    } else {
+                        throw new IllegalArgumentException("Mismatched parentheses");
+                    }
+                    break;
 
-            if (OPERATORS.contains(String.valueOf(current)) &&
-                    OPERATORS.contains(String.valueOf(next))) {
-                // On autorise seulement "/-" et "*-"
-                if (!(next == '-' && (current == '*' || current == '/'))) {
-                    return false;
-                }
+                case OPERATOR:
+                    while (!operatorStack.isEmpty() &&
+                            operatorStack.peek().type == TokenType.OPERATOR &&
+                            getPrecedence(operatorStack.peek().value.charAt(0)) >= getPrecedence(token.value.charAt(0))) {
+                        postfixTokens.add(operatorStack.pop());
+                    }
+                    operatorStack.push(token);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Unexpected token type: " + token.type);
             }
         }
-        return true;
+
+        while (!operatorStack.isEmpty()) {
+            if (operatorStack.peek().type == TokenType.LEFT_PAREN) {
+                throw new IllegalArgumentException("Mismatched parentheses");
+            }
+            postfixTokens.add(operatorStack.pop());
+        }
+
+        return postfixTokens;
     }
 
-    private static boolean hasAtLeastOneNumber(String input) {
-        return input.replace("\\s+", "").matches(".*\\d+.*|.*i.*");
+    private static Expression parsePrefixExpression(String expression) throws IllegalConstruction {
+        // Base case if the expression is a simple number
+        if (expression.matches(COMPLEX_PATTERN)) {
+            return createNumberFromString(expression, TokenType.COMPLEX);
+        } else if (expression.matches(RATIONAL_PATTERN)) {
+            return createNumberFromString(expression, TokenType.RATIONAL);
+        } else if (expression.matches(REAL_PATTERN)) {
+            return createNumberFromString(expression, TokenType.DECIMAL);
+        } else if (expression.matches(INTEGER_PATTERN)) {
+            return createNumberFromString(expression, TokenType.INTEGER);
+        }
+
+        char operator = expression.charAt(0);
+
+        // Extract the arguments inside the parentheses
+        String argsString = expression.substring(2, expression.length() - 1);
+        List<String> args = splitArguments(argsString);
+
+        // Parse each argument recursively
+        List<Expression> parsedArgs = new ArrayList<>();
+        for (String arg : args) {
+            parsedArgs.add(parsePrefixExpression(arg));
+        }
+
+        // Create the appropriate expression based on the operator
+        return createOperatorExpression(operator, parsedArgs);
+    }
+
+    private static Expression parsePostfixExpression(String expression) throws IllegalConstruction {
+        // Base case if the expression is a simple number
+        if (expression.matches(COMPLEX_PATTERN)) {
+            return createNumberFromString(expression, TokenType.COMPLEX);
+        } else if (expression.matches(RATIONAL_PATTERN)) {
+            return createNumberFromString(expression, TokenType.RATIONAL);
+        } else if (expression.matches(REAL_PATTERN)) {
+            return createNumberFromString(expression, TokenType.DECIMAL);
+        } else if (expression.matches(INTEGER_PATTERN)) {
+            return createNumberFromString(expression, TokenType.INTEGER);
+        }
+
+        char operator = expression.charAt(expression.length() - 1);
+
+        // Extract the arguments inside the parentheses
+        String argsString = expression.substring(1, expression.length() - 2);
+        List<String> args = splitArguments(argsString);
+
+        // Parse each argument recursively
+        List<Expression> parsedArgs = new ArrayList<>();
+        for (String arg : args) {
+            parsedArgs.add(parsePostfixExpression(arg));
+        }
+
+        // Create the appropriate expression based on the operator
+        return createOperatorExpression(operator, parsedArgs);
+
+    }
+
+    // Helper method to split arguments by commas, accounting for nested expressions
+    private static List<String> splitArguments(String argsString) {
+        List<String> args = new ArrayList<>();
+        int depth = 0;
+        StringBuilder currentArg = new StringBuilder();
+
+        for (int i = 0; i < argsString.length(); i++) {
+            char c = argsString.charAt(i);
+
+            if (c == '(') {
+                depth++;
+                currentArg.append(c);
+            } else if (c == ')') {
+                depth--;
+                currentArg.append(c);
+            } else if (c == ',' && depth == 0) {
+                // Only split at top-level commas
+                args.add(currentArg.toString());
+                currentArg = new StringBuilder();
+            } else {
+                currentArg.append(c);
+            }
+        }
+
+        // Add the last argument
+        if (!currentArg.isEmpty()) {
+            args.add(currentArg.toString());
+        }
+
+        return args;
+    }
+
+    // Create an expression based on the operator and arguments
+    private static Expression createOperatorExpression(char operator, List<Expression> args) throws IllegalConstruction {
+        return switch (operator) {
+            case '+' -> new Plus(args);
+            case '-' -> new Minus(args);
+            case '*' -> new Times(args);
+            case '/' -> new Divides(args);
+            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+        };
+    }
+
+    // Create a number expression from a string
+    private static Expression createNumberFromString(String value, TokenType type) {
+        Token token = new Token(type, value);
+        return createNumbers(token);
+    }
+
+    // Create a number node based on the token type
+    private static Expression createNumbers(Token token) {
+        switch (token.type) {
+            case INTEGER, DECIMAL:
+                return new RealNumber(Double.parseDouble(token.value));
+            case COMPLEX:
+                String value = token.value;
+                if (value.equals("i")) {
+                    return new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(1.0)));
+                } else if (value.equals("-i")) {
+                    return new ComplexNumber(new RationalNumber(new RealNumber(0.0)), new RationalNumber(new RealNumber(-1.0)));
+                } else if (value.matches("-?\\d+(\\.\\d+|/-?\\d+)?i")) {
+                    RationalNumber realPart = new RationalNumber(new RealNumber(0.0));
+                    // Case like "5/4i" or "-5/4i"
+                    if (value.contains("/")) {
+                        String[] temp = value.split("/");
+                        RationalNumber imagPart = new RationalNumber(
+                                new RealNumber(Double.parseDouble(temp[0])),
+                                new RealNumber(Double.parseDouble(temp[1].replace("i", ""))));
+
+                        return new ComplexNumber(realPart, imagPart);
+                    }
+                    // Case like "4i" or "3.5i"
+                    else {
+                        RationalNumber imagPart = new RationalNumber(new RealNumber(Double.parseDouble(value.replace("i", ""))));
+                        return new ComplexNumber(realPart, imagPart);
+                    }
+
+                } else if (value.matches("-?\\d+(\\.\\d+|/-?\\d+)?[+-](\\d+(\\.\\d+|/-?\\d+)?)?i")) {
+                    // More complex cases like "-2+3i", "2.5-3.2i", "-1/5+2/3i"
+                    String realString = "";
+                    String imagString = "";
+
+                    if (value.contains("+")) {
+                        // Format "2+3i" or "-2.6+3/2i
+                        String[] parts = value.split("\\+");
+                        realString = parts[0];
+                        imagString = parts[1];
+                    } else if (value.contains("-")) {
+                        String[] parts = value.split("-");
+                        if (value.length() - value.replace("-", "").length() == 2) {
+                            realString = "-" + parts[1];
+                            imagString = "-" + parts[2];
+                        } else {
+                            realString = parts[0];
+                            imagString = "-" + parts[1];
+                        }
+                    }
+
+                    imagString = imagString.replace("i", "");
+                    if (imagString.isEmpty()) { imagString = "1"; }
+
+                    RationalNumber realPart;
+                    RationalNumber imagPart;
+
+                    if (realString.contains("/")) {
+                        String[] temp = realString.split("/");
+                        realPart = new RationalNumber(
+                                new RealNumber(Double.parseDouble(temp[0])),
+                                new RealNumber(Double.parseDouble(temp[1])));
+
+                    } else {
+                        realPart = new RationalNumber(new RealNumber(Double.parseDouble(realString)));
+                    }
+
+                    if (imagString.contains("/")) {
+                        String[] temp = imagString.split("/");
+                        imagPart = new RationalNumber(
+                                new RealNumber(Double.parseDouble(temp[0])),
+                                new RealNumber(Double.parseDouble(temp[1])));
+
+                    } else {
+                        imagPart = new RationalNumber(new RealNumber(Double.parseDouble(imagString)));
+                    }
+
+                    return new ComplexNumber(realPart, imagPart);
+                } else
+                    throw new IllegalArgumentException("Unable to create complex from token " + value);
+
+            case RATIONAL:
+                String[] parts = token.value.split("/");
+                RealNumber num = new RealNumber(Double.parseDouble(parts[0]));
+                RealNumber den = new RealNumber(Double.parseDouble(parts[1]));
+                return new RationalNumber(num, den);
+            default:
+                throw new IllegalArgumentException("Unexpected token type: " + token.type);
+        }
+    }
+
+
+    private static boolean isOperator(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/';
+    }
+
+    private static int getPrecedence(char operator) {
+        return switch (operator) {
+            case '+', '-' -> 1;
+            case '*', '/' -> 2;
+            default -> 0;
+        };
+    }
+
+
+    private enum TokenType {
+        INTEGER, DECIMAL, COMPLEX, RATIONAL, OPERATOR, LEFT_PAREN, RIGHT_PAREN
+    }
+
+
+    private static class Token {
+        TokenType type;
+        String value;
+
+        Token(TokenType type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "Token{" +
+                    "type=" + type +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
     }
 }
-
