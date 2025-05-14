@@ -3,24 +3,37 @@ package calculator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static java.lang.Character.isDigit;
 
 public class Parser {
     private static final String COMPLEX_PATTERN = "-?\\d+(\\.\\d+|/-?\\d+)?i|-?\\d+(\\.\\d+|/-?\\d+)?[+-](\\d+(\\.\\d+|/-?\\d+)?)?i|-?i";
-    private static final String REAL_PATTERN = "-?\\d+\\.\\d+";
+    private static final String REAL_PATTERN = "-?\\d*\\.\\d+";
     private static final String INTEGER_PATTERN = "-?\\d+";
     private static final String RATIONAL_PATTERN = "-?\\d+/-?\\d+";
+    private static final String ANY_NUMBER = String.format("(%s)|(%s)|(%s)|(%s)",
+            COMPLEX_PATTERN,
+            REAL_PATTERN,
+            INTEGER_PATTERN,
+            RATIONAL_PATTERN);
+
 
     // Main method to parse an expression
     public static Expression parse(String expression) throws IllegalConstruction {
         String cleaned = expression.replaceAll("\\s+", "");
-        if (cleaned.length() >= 6 && isOperator(cleaned.charAt(0)) && cleaned.charAt(1) == '(') {
+        if (cleaned.length() >= 6 && isOperator(cleaned.charAt(0)) && cleaned.charAt(1) == '('
+                && cleaned.charAt(cleaned.length()-1) == ')') {
             return parsePrefixExpression(cleaned);
         } else if (cleaned.length() >= 6 && isOperator(cleaned.charAt(cleaned.length()-1)) && cleaned.charAt(0) == '(') {
             return parsePostfixExpression(cleaned);
         } else if (cleaned.charAt(0) == '(' ||
-                (isDigit(cleaned.charAt(0)) || cleaned.charAt(0) == 'i') ||
-                (cleaned.charAt(0) == '-' && (isDigit(cleaned.charAt(1)) || cleaned.charAt(0) == 'i'))) {
+                ((isDigit(cleaned.charAt(0)) || cleaned.charAt(0) == 'i') ||
+                (cleaned.charAt(0) == '-' &&
+                (isDigit(cleaned.charAt(1)) || cleaned.charAt(1) == '(' || cleaned.charAt(0) == 'i')) &&
+                        (isDigit(cleaned.charAt(cleaned.length()-1)) || cleaned.charAt(cleaned.length()-1) == ')'
+                        || cleaned.charAt(cleaned.length()-1) == 'i'))) {
             return parseInfix(expression);
         } else {
             throw new IllegalArgumentException("Unsupported notation type");
@@ -36,7 +49,7 @@ public class Parser {
         for (Token token : postfixTokens) {
             switch (token.type) {
                 case INTEGER:
-                case DECIMAL:
+                case REAL:
                 case COMPLEX:
                 case RATIONAL:
                     stack.push(createNumbers(token));
@@ -44,9 +57,8 @@ public class Parser {
 
                 case OPERATOR:
                     if (stack.size() < 2) {
-                        throw new IllegalArgumentException("Invalid postfix expression");
-                    }
-
+                            throw new IllegalArgumentException("Invalid postfix expression");
+                        }
                     Expression right = stack.pop();
                     Expression left = stack.pop();
                     List<Expression> args = List.of(left, right);
@@ -74,50 +86,88 @@ public class Parser {
 
     private static List<Token> tokenizeInfix(String expression) {
         List<Token> tokens = new ArrayList<>();
+        List<String> parts = splitKeepNumbers(expression);
 
-        // Insert spaces around operators and parentheses to make tokenization easier
-        expression = expression.replaceAll("([+\\-*/()])", " $1 ");
-        expression = expression.replaceAll("\\s+", " ").trim();
+        TokenType previous = null;
+        for (int i = 0; i<parts.size(); i++) {
+            String part = parts.get(i);
 
-        String[] parts = expression.split(" ");
-
-        for (String part : parts) {
             if (part.isEmpty()) {
                 continue;
             }
 
-            if (isOperator(part.charAt(0))) {
-                tokens.add(new Token(TokenType.OPERATOR, part));
+            if (part.length() == 1 && isOperator(part.charAt(0))) {
+                if (part.equals("-") && parts.get(i+1).equals("(")) {
+                    if (i==0 || previous.equals(TokenType.OPERATOR) || previous.equals(TokenType.LEFT_PAREN)){
+                        tokens.add(new Token(TokenType.REAL, "-1"));
+                        tokens.add(new Token(TokenType.OPERATOR, "*"));
+                    } else {
+                        tokens.add(new Token(TokenType.OPERATOR, "-"));
+                    }
+                } else {
+                    tokens.add(new Token(TokenType.OPERATOR, part));
+                }
+                previous = TokenType.OPERATOR;
                 continue;
             }
 
             if (part.equals("(")) {
                 tokens.add(new Token(TokenType.LEFT_PAREN, part));
+                previous = TokenType.LEFT_PAREN;
                 continue;
             }
 
             if (part.equals(")")) {
                 tokens.add(new Token(TokenType.RIGHT_PAREN, part));
+                previous = TokenType.RIGHT_PAREN;
                 continue;
             }
 
             if (part.matches(COMPLEX_PATTERN)) {
-                tokens.add(new Token(TokenType.COMPLEX, part));
+                if (part.charAt(0) != '-' || (part.charAt(0) == '-' && (i == 0 || previous.equals(TokenType.OPERATOR)
+                        || previous.equals(TokenType.LEFT_PAREN)))) {
+                    tokens.add(new Token(TokenType.COMPLEX, part));
+                } else {
+                    tokens.add(new Token(TokenType.OPERATOR, "-"));
+                    tokens.add(new Token(TokenType.COMPLEX, part.substring(1)));
+                }
+                previous = TokenType.COMPLEX;
                 continue;
             }
 
             if (part.matches(RATIONAL_PATTERN)) {
-                tokens.add(new Token(TokenType.RATIONAL, part));
+                if (part.charAt(0) != '-' || (part.charAt(0) == '-' && (i == 0 || previous.equals(TokenType.OPERATOR)
+                        || previous.equals(TokenType.LEFT_PAREN)))) {
+                    tokens.add(new Token(TokenType.RATIONAL, part));
+                } else {
+                    tokens.add(new Token(TokenType.OPERATOR, "-"));
+                    tokens.add(new Token(TokenType.RATIONAL, part.substring(1)));
+                }
+                previous = TokenType.RATIONAL;
                 continue;
             }
 
             if (part.matches(REAL_PATTERN)) {
-                tokens.add(new Token(TokenType.DECIMAL, part));
+                if (part.charAt(0) != '-' || (part.charAt(0) == '-' && (i == 0 || previous.equals(TokenType.OPERATOR)
+                        || previous.equals(TokenType.LEFT_PAREN)))) {
+                    tokens.add(new Token(TokenType.REAL, part));
+                } else {
+                    tokens.add(new Token(TokenType.OPERATOR, "-"));
+                    tokens.add(new Token(TokenType.REAL, part.substring(1)));
+                }
+                previous = TokenType.REAL;
                 continue;
             }
 
             if (part.matches(INTEGER_PATTERN)) {
-                tokens.add(new Token(TokenType.INTEGER, part));
+                if (part.charAt(0) != '-' || (part.charAt(0) == '-' && (i == 0 || previous.equals(TokenType.OPERATOR)
+                        || previous.equals(TokenType.LEFT_PAREN)))) {
+                    tokens.add(new Token(TokenType.INTEGER, part));
+                } else {
+                    tokens.add(new Token(TokenType.OPERATOR, "-"));
+                    tokens.add(new Token(TokenType.INTEGER, part.substring(1)));
+                }
+                previous = TokenType.INTEGER;
                 continue;
             }
 
@@ -125,6 +175,29 @@ public class Parser {
         }
 
         return tokens;
+    }
+
+    private static List<String> splitKeepNumbers(String expression) {
+        List<String> result = new ArrayList<>();
+        Pattern pattern = Pattern.compile(ANY_NUMBER + "|[()]");
+        Matcher matcher = pattern.matcher(expression);
+
+        int lastEnd = 0;
+        while (matcher.find()) {
+            if (matcher.start() > lastEnd) {
+                result.add(expression.substring(lastEnd, matcher.start()));
+            }
+
+            result.add(matcher.group());
+
+            lastEnd = matcher.end();
+        }
+
+        if (lastEnd < expression.length()) {
+            result.add(expression.substring(lastEnd));
+        }
+
+        return result;
     }
 
     // Convert infix to postfix using Shunting Yard algorithm
@@ -135,7 +208,7 @@ public class Parser {
         for (Token token : infixTokens) {
             switch (token.type) {
                 case INTEGER:
-                case DECIMAL:
+                case REAL:
                 case COMPLEX:
                 case RATIONAL:
                     postfixTokens.add(token);
@@ -151,7 +224,7 @@ public class Parser {
                     }
 
                     if (!operatorStack.isEmpty() && operatorStack.peek().type == TokenType.LEFT_PAREN) {
-                        operatorStack.pop(); // Discard the left parenthesis
+                        operatorStack.pop();
                     } else {
                         throw new IllegalArgumentException("Mismatched parentheses");
                     }
@@ -164,6 +237,7 @@ public class Parser {
                         postfixTokens.add(operatorStack.pop());
                     }
                     operatorStack.push(token);
+
                     break;
 
                 default:
@@ -188,7 +262,7 @@ public class Parser {
         } else if (expression.matches(RATIONAL_PATTERN)) {
             return createNumberFromString(expression, TokenType.RATIONAL);
         } else if (expression.matches(REAL_PATTERN)) {
-            return createNumberFromString(expression, TokenType.DECIMAL);
+            return createNumberFromString(expression, TokenType.REAL);
         } else if (expression.matches(INTEGER_PATTERN)) {
             return createNumberFromString(expression, TokenType.INTEGER);
         }
@@ -216,7 +290,7 @@ public class Parser {
         } else if (expression.matches(RATIONAL_PATTERN)) {
             return createNumberFromString(expression, TokenType.RATIONAL);
         } else if (expression.matches(REAL_PATTERN)) {
-            return createNumberFromString(expression, TokenType.DECIMAL);
+            return createNumberFromString(expression, TokenType.REAL);
         } else if (expression.matches(INTEGER_PATTERN)) {
             return createNumberFromString(expression, TokenType.INTEGER);
         }
@@ -290,7 +364,7 @@ public class Parser {
     // Create a number node based on the token type
     private static Expression createNumbers(Token token) {
         switch (token.type) {
-            case INTEGER, DECIMAL:
+            case INTEGER, REAL:
                 return new RealNumber(Double.parseDouble(token.value));
             case COMPLEX:
                 String value = token.value;
@@ -391,7 +465,7 @@ public class Parser {
 
 
     private enum TokenType {
-        INTEGER, DECIMAL, COMPLEX, RATIONAL, OPERATOR, LEFT_PAREN, RIGHT_PAREN
+        INTEGER, REAL, COMPLEX, RATIONAL, OPERATOR, LEFT_PAREN, RIGHT_PAREN
     }
 
 
