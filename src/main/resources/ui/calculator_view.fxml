@@ -55,8 +55,6 @@
             <Button text="=" onAction="#handleEvaluate" GridPane.rowIndex="4" GridPane.columnIndex="3" />
 
             <!-- Ligne 6 -->
-            <Button text="√" onAction="#handleScientific" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-            <Button text="x²" onAction="#handleScientific" GridPane.rowIndex="5" GridPane.columnIndex="1" />
             <Button text="i" onAction="#handleButtonPress" GridPane.rowIndex="5" GridPane.columnIndex="2" />
         </GridPane>
     </center>

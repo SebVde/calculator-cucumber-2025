@@ -70,28 +70,4 @@ public class Evaluator extends Visitor {
         }
     }
 
-    @Override
-    public void visit(FunctionWrapper f) {
-        f.argument().accept(this);
-        Expression arg = result;
-
-        if (!(arg instanceof MyNumber value)) {
-            throw new IllegalArgumentException("Function argument must be a number");
-        }
-
-        String name = f.functionName();
-        double x;
-
-        switch (value) {
-            case RationalNumber r -> x = r.getNominator().getValue() / r.getDenominator().getValue();
-            case RealNumber r -> x = r.getValue();
-            default -> throw new IllegalArgumentException("Unsupported number type in function: " + value);
-        }
-
-        result = switch (name) {
-            case "sqrt" -> new RealNumber(Math.sqrt(x));
-            default -> throw new IllegalArgumentException("Unsupported function: " + name);
-        };
-    }
-
 }

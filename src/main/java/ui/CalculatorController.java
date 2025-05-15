@@ -79,7 +79,7 @@ public class CalculatorController {
         try {
             Evaluator eval = new Evaluator(preserveFractions);
             calculator.setEvaluator(eval);
-            Expression expr = FxExpressionParser.parse(currentInput.toString(), preserveFractions);
+            Expression expr = Parser.parse(currentInput.toString(), preserveFractions);
             expr.accept(eval);
             Expression result = eval.getResult();
             inputField.setText(result.toString());
