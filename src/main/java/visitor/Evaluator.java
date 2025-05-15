@@ -50,6 +50,7 @@ public class Evaluator extends Visitor {
         }
         try {
             MyNumber computed = o.compute(evaluatedArgs);
+            System.out.println(computed.toString());
             switch (computed) {
                 case RationalNumber r -> result = r.simplify(preserveFractions);
                 case ComplexNumber c -> {
@@ -61,6 +62,13 @@ public class Evaluator extends Visitor {
                     if (simplifiedImag instanceof RationalNumber ri) {
                         simplifiedImag = ri.simplify(preserveFractions);
                     }
+
+                    if (simplifiedReal instanceof RealNumber) {
+                        simplifiedReal = new RationalNumber((RealNumber) simplifiedReal);
+                    }
+                    if (simplifiedImag instanceof RealNumber) {
+                        simplifiedImag = new RationalNumber((RealNumber) simplifiedImag);
+                    }
                     result = new ComplexNumber(simplifiedReal, simplifiedImag);
                 }
                 default -> result = computed;
@@ -68,6 +76,30 @@ public class Evaluator extends Visitor {
         } catch (Exception e) {
             throw new IllegalArgumentException("Error during evaluation: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void visit(FunctionWrapper f) {
+        f.argument().accept(this);
+        Expression arg = result;
+
+        if (!(arg instanceof MyNumber value)) {
+            throw new IllegalArgumentException("Function argument must be a number");
+        }
+
+        String name = f.functionName();
+        double x;
+
+        switch (value) {
+            case RationalNumber r -> x = r.getNominator().getValue() / r.getDenominator().getValue();
+            case RealNumber r -> x = r.getValue();
+            default -> throw new IllegalArgumentException("Unsupported number type in function: " + value);
+        }
+
+        result = switch (name) {
+            case "sqrt" -> new RealNumber(Math.sqrt(x));
+            default -> throw new IllegalArgumentException("Unsupported function: " + name);
+        };
     }
 
 }
