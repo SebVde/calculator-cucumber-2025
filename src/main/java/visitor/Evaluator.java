@@ -50,7 +50,6 @@ public class Evaluator extends Visitor {
         }
         try {
             MyNumber computed = o.compute(evaluatedArgs);
-            System.out.println(computed.toString());
             switch (computed) {
                 case RationalNumber r -> result = r.simplify(preserveFractions);
                 case ComplexNumber c -> {

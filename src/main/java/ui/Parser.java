@@ -32,12 +32,12 @@ public class Parser {
             return parsePrefixExpression(cleaned, preserveFractions);
         } else if (cleaned.length() >= 6 && isOperator(cleaned.charAt(cleaned.length()-1)) && cleaned.charAt(0) == '(') {
             return parsePostfixExpression(cleaned, preserveFractions);
-        } else if (cleaned.charAt(0) == '(' ||
+        } else if (cleaned.charAt(0) == '(' || cleaned.charAt(0) == 'F' ||
                 ((isDigit(cleaned.charAt(0)) || cleaned.charAt(0) == 'i') ||
                         (cleaned.charAt(0) == '-' &&
-                                (isDigit(cleaned.charAt(1)) || cleaned.charAt(1) == '(' || cleaned.charAt(0) == 'i')) &&
+                                (isDigit(cleaned.charAt(1)) || cleaned.charAt(1) == '(' || cleaned.charAt(1) == 'i' || cleaned.charAt(1) == 'F')) &&
                                 (isDigit(cleaned.charAt(cleaned.length()-1)) || cleaned.charAt(cleaned.length()-1) == ')'
-                                        || cleaned.charAt(cleaned.length()-1) == 'i'))) {
+                                        || cleaned.charAt(cleaned.length()-1) == 'i' || cleaned.charAt(cleaned.length()-1) == '}'))) {
             return parseInfix(cleaned, preserveFractions);
         } else {
             throw new IllegalArgumentException("Unsupported notation type");
@@ -143,9 +143,10 @@ public class Parser {
                 continue;
             }
 
-            if (part.startsWith("FUNC{")) {
+            if (part.charAt(0) == 'F') {
                 tokens.add(new Token(TokenType.FUNCTION, part.substring(5, part.length() - 1)));
                 previous = TokenType.FUNCTION;
+                continue;
             }
 
             if (part.matches(COMPLEX_PATTERN)) {
