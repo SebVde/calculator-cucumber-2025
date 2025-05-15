@@ -62,7 +62,6 @@ public class RationalNumber extends MyNumber{
      * @return A new RationalNumber that is the simplified version of this one.
      */
     public RationalNumber simplify() {
-        System.out.println("RationalNumber.simplify() called");
         if (denominator.equals(RealNumber.ONE)) { return this; }
 
         double gcd = gcd(nominator, denominator);
@@ -101,13 +100,10 @@ public class RationalNumber extends MyNumber{
     public MyNumber simplify(boolean preserveFraction) {
         RationalNumber simplified = this.simplify();
         if (preserveFraction) {
-            System.out.println("Preserving fraction: " + simplified);
             return simplified;
         } else if (simplified.getDenominator().equals(new RealNumber(1.0))) {
-            System.out.println("Simplified to integer: " + simplified.getNominator());
             return simplified.getNominator();  // => RealNumber
         } else {
-            System.out.println("Simplified to fraction: " + simplified);
             return simplified;
         }
     }

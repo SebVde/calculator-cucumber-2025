@@ -34,7 +34,6 @@ public class FxExpressionParser {
 
     public static Expression parse(String expression, boolean preserveFractions) throws IllegalConstruction {
         String cleaned = expression.replaceAll("\\s+", "").replace("π", String.valueOf(Math.PI));
-        System.out.println("[Parser] Input (cleaned): " + cleaned);
         return parseInfix(cleaned, preserveFractions);
     }
 
@@ -82,7 +81,6 @@ public class FxExpressionParser {
         List<Token> tokens = new ArrayList<>();
         Pattern pattern = Pattern.compile("FUNC\\{[^}]+}|-?\\d+/\\d+|" + ANY_NUMBER + "|[+\\-*/()]");
         Matcher matcher = pattern.matcher(input);
-        System.out.println("[Parser] Tokenized:");
         while (matcher.find()) {
             String part = matcher.group();
             if (part == null || part.isEmpty()) continue;
@@ -104,7 +102,6 @@ public class FxExpressionParser {
             } else {
                 throw new IllegalArgumentException("Unknown token: " + part);
             }
-            System.out.println(" - " + part + " → " + token.type);
             tokens.add(token);
         }
         return tokens;
@@ -134,10 +131,6 @@ public class FxExpressionParser {
             }
         }
         while (!ops.isEmpty()) output.add(ops.pop());
-        System.out.println("[Parser] Postfix order:");
-        for (Token token : output) {
-            System.out.println("   → " + token.type + " : " + token.value);
-        }
         return output;
     }
 
@@ -150,7 +143,6 @@ public class FxExpressionParser {
     }
 
     private static Expression createNumber(Token token, boolean preserveFractions) throws IllegalConstruction {
-        System.out.println("[Parser] Creating number from token: " + token.value + " (" + token.type + ")");
         return switch (token.type) {
             case INTEGER, REAL -> new RealNumber(Double.parseDouble(token.value));
             case RATIONAL -> {

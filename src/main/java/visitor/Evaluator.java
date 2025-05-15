@@ -18,7 +18,6 @@ public class Evaluator extends Visitor {
     public Evaluator(boolean useDegrees, boolean preserveFractions) {
         this.useDegrees = useDegrees;
         this.preserveFractions = preserveFractions;
-        System.out.println("[Evaluator] Mode : degrees=" + useDegrees + ", preserveFractions=" + preserveFractions);
     }
 
     public void setPreserveFractions(boolean preserveFractions) {
@@ -57,16 +56,12 @@ public class Evaluator extends Visitor {
             evaluatedArgs.add(result);
         }
         try {
-            System.out.println("[Evaluator] Evaluating operation: " + o.getSymbol());
             MyNumber computed = o.compute(evaluatedArgs);
-            System.out.println("[Evaluator] Raw result: " + computed);
             switch (computed) {
                 case RationalNumber r -> {
-                    System.out.println("[Evaluator] Simplifying RationalNumber");
                     result = r.simplify(preserveFractions);
                 }
                 case ComplexNumber c -> {
-                    System.out.println("[Evaluator] Simplifying ComplexNumber");
                     MyNumber simplifiedReal = c.getRealPart();
                     MyNumber simplifiedImag = c.getImaginaryPart();
                     if (simplifiedReal instanceof RationalNumber rr) {
@@ -78,7 +73,6 @@ public class Evaluator extends Visitor {
                     result = new ComplexNumber(simplifiedReal, simplifiedImag);
                 }
                 default -> {
-                    System.out.println("[Evaluator] No simplification needed");
                     result = computed;
                 }
             }
