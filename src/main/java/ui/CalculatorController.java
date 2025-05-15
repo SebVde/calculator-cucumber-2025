@@ -43,6 +43,7 @@ public class CalculatorController {
             fractionModeToggle.setOnAction(e -> {
                 preserveFractions = fractionModeToggle.isSelected();
                 resultModeLabel.setText(preserveFractions ? "Résultat en fraction" : "Résultat décimal");
+                inputField.requestFocus();
             });
         }
     }
@@ -78,7 +79,7 @@ public class CalculatorController {
         try {
             Evaluator eval = new Evaluator(preserveFractions);
             calculator.setEvaluator(eval);
-            Expression expr = FxExpressionParser.parse(currentInput.toString());
+            Expression expr = FxExpressionParser.parse(currentInput.toString(), preserveFractions);
             expr.accept(eval);
             Expression result = eval.getResult();
             inputField.setText(result.toString());

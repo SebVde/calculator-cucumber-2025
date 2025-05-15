@@ -32,12 +32,13 @@ public class FxExpressionParser {
         }
     }
 
-    public static Expression parse(String expression) throws IllegalConstruction {
+    public static Expression parse(String expression, boolean preserveFractions) throws IllegalConstruction {
         String cleaned = expression.replaceAll("\\s+", "").replace("π", String.valueOf(Math.PI));
-        return parseInfix(cleaned);
+        System.out.println("[Parser] Input (cleaned): " + cleaned);
+        return parseInfix(cleaned, preserveFractions);
     }
 
-    private static Expression parseInfix(String expression) throws IllegalConstruction {
+    private static Expression parseInfix(String expression, boolean preserveFractions) throws IllegalConstruction {
         expression = preprocessFunctions(expression);
         List<Token> tokens = tokenizeInfix(expression);
         List<Token> postfix = toPostfix(tokens);
@@ -45,8 +46,8 @@ public class FxExpressionParser {
 
         for (Token token : postfix) {
             switch (token.type) {
-                case INTEGER, REAL, RATIONAL, COMPLEX -> stack.push(createNumber(token));
-                case FUNCTION -> stack.push(new FunctionWrapper("sqrt", parse(token.value)));
+                case INTEGER, REAL, RATIONAL, COMPLEX -> stack.push(createNumber(token, preserveFractions));
+                case FUNCTION -> stack.push(new FunctionWrapper("sqrt", parse(token.value, preserveFractions)));
                 case OPERATOR -> {
                     Expression b = stack.pop();
                     Expression a = stack.pop();
@@ -68,7 +69,7 @@ public class FxExpressionParser {
     private static String preprocessFunctions(String expression) {
         Pattern pattern = Pattern.compile(FUNCTION_PATTERN);
         Matcher matcher = pattern.matcher(expression);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (matcher.find()) {
             String inside = matcher.group(1);
             matcher.appendReplacement(sb, "FUNC{" + inside + "}");
@@ -79,8 +80,9 @@ public class FxExpressionParser {
 
     private static List<Token> tokenizeInfix(String input) {
         List<Token> tokens = new ArrayList<>();
-        Pattern pattern = Pattern.compile("FUNC\\{[^}]+}|" + ANY_NUMBER + "|[+\\-*/()]|");
+        Pattern pattern = Pattern.compile("FUNC\\{[^}]+}|-?\\d+/\\d+|" + ANY_NUMBER + "|[+\\-*/()]");
         Matcher matcher = pattern.matcher(input);
+        System.out.println("[Parser] Tokenized:");
         while (matcher.find()) {
             String part = matcher.group();
             if (part == null || part.isEmpty()) continue;
@@ -102,6 +104,7 @@ public class FxExpressionParser {
             } else {
                 throw new IllegalArgumentException("Unknown token: " + part);
             }
+            System.out.println(" - " + part + " → " + token.type);
             tokens.add(token);
         }
         return tokens;
@@ -131,6 +134,10 @@ public class FxExpressionParser {
             }
         }
         while (!ops.isEmpty()) output.add(ops.pop());
+        System.out.println("[Parser] Postfix order:");
+        for (Token token : output) {
+            System.out.println("   → " + token.type + " : " + token.value);
+        }
         return output;
     }
 
@@ -142,12 +149,23 @@ public class FxExpressionParser {
         };
     }
 
-    private static Expression createNumber(Token token) {
+    private static Expression createNumber(Token token, boolean preserveFractions) throws IllegalConstruction {
+        System.out.println("[Parser] Creating number from token: " + token.value + " (" + token.type + ")");
         return switch (token.type) {
             case INTEGER, REAL -> new RealNumber(Double.parseDouble(token.value));
             case RATIONAL -> {
                 String[] parts = token.value.split("/");
-                yield new RationalNumber(new RealNumber(Double.parseDouble(parts[0])), new RealNumber(Double.parseDouble(parts[1])));
+                if (preserveFractions) {
+                    yield new RationalNumber(
+                            new RealNumber(Double.parseDouble(parts[0])),
+                            new RealNumber(Double.parseDouble(parts[1]))
+                    );
+                } else {
+                    yield new Divides(List.of(
+                            new RealNumber(Double.parseDouble(parts[0])),
+                            new RealNumber(Double.parseDouble(parts[1]))
+                    ));
+                }
             }
             case COMPLEX -> parseComplex(token.value);
             default -> throw new IllegalArgumentException("Not a number token: " + token.value);

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FxExpressionParserTest {
 
     private void assertEvaluation(String input, Expression expected, boolean preserveFractions) throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse(input);
+        Expression e = FxExpressionParser.parse(input, preserveFractions);
         Evaluator eval = new Evaluator(preserveFractions);
         e.accept(eval);
         assertEquals(expected, eval.getResult());

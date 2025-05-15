@@ -61,8 +61,12 @@ public class Evaluator extends Visitor {
             MyNumber computed = o.compute(evaluatedArgs);
             System.out.println("[Evaluator] Raw result: " + computed);
             switch (computed) {
-                case RationalNumber r -> result = r.simplify(preserveFractions);
+                case RationalNumber r -> {
+                    System.out.println("[Evaluator] Simplifying RationalNumber");
+                    result = r.simplify(preserveFractions);
+                }
                 case ComplexNumber c -> {
+                    System.out.println("[Evaluator] Simplifying ComplexNumber");
                     MyNumber simplifiedReal = c.getRealPart();
                     MyNumber simplifiedImag = c.getImaginaryPart();
                     if (simplifiedReal instanceof RationalNumber rr) {
@@ -74,6 +78,7 @@ public class Evaluator extends Visitor {
                     result = new ComplexNumber(simplifiedReal, simplifiedImag);
                 }
                 default -> {
+                    System.out.println("[Evaluator] No simplification needed");
                     result = computed;
                 }
             }
