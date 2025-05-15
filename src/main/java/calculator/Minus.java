@@ -89,5 +89,18 @@ public final class Minus extends Operation
           throw new IllegalArgumentException("Unsupported types for subtraction");
       }
   }
+
+     @Override
+     public boolean equals(Object o) {
+         if (this == o) return true;
+         if (!(o instanceof Minus)) return false;
+         if (!super.equals(o)) return false; // Delegate to the superclass
+         return true;
+     }
+
+     @Override
+     public int hashCode() {
+         return super.hashCode(); // Delegate to the superclass
+     }
 }
 
