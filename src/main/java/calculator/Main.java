@@ -155,6 +155,21 @@ public class Main {
             c.printExpressionDetails(e);
             c.eval(e);
 
+            String inputPostfix = "((4,5,6)+,(7,(5,2,7)/)+,9)*";
+            e = Parser.parse(inputPostfix);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            String inputPrefix = "*(+(4,5,6),+(7,/(5,2,7)),9)";
+            e = Parser.parse(inputPrefix);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
+            String inputInfix = "(4 + 5 + 6) * (7 + (5 / 2 / 7)) * 9";
+            e = Parser.parse(inputInfix);
+            c.printExpressionDetails(e);
+            c.eval(e);
+
         } catch (IllegalConstruction exception) {
             System.out.println("Cannot create operations without parameters");
         }
