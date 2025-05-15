@@ -1,15 +1,15 @@
 package calculator;
 
 import org.junit.jupiter.api.Test;
-import ui.FxExpressionParser;
+import ui.Parser;
 import visitor.Evaluator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FxExpressionParserTest {
+class ParserTest {
 
     private void assertEvaluation(String input, Expression expected, boolean preserveFractions) throws IllegalConstruction {
-        Expression e = FxExpressionParser.parse(input, preserveFractions);
+        Expression e = Parser.parse(input, preserveFractions);
         Evaluator eval = new Evaluator(preserveFractions);
         e.accept(eval);
         assertEquals(expected, eval.getResult());
