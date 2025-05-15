@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.geometry.Pos?>
-
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ui.CalculatorController" stylesheets="@style.css">
 
     <top>

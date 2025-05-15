@@ -56,8 +56,8 @@ public class OutputVisitor extends Visitor {
     @Override
     public void visit(FunctionWrapper f) {
         OutputVisitor argVisitor = new OutputVisitor();
-        f.getArgument().accept(argVisitor);
-        output = f.getFunctionName() + "(" + argVisitor.getOutput() + ")";
+        f.argument().accept(argVisitor);
+        output = f.functionName() + "(" + argVisitor.getOutput() + ")";
     }
 
 }

@@ -3,7 +3,6 @@ package calculator;
 //Import Junit5 libraries for unit testing:
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.cucumber.java.eo.Do;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -57,7 +56,6 @@ class TestDivides {
 		catch(IllegalConstruction e) { fail(); }
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Test
 	void testNull() {
 		assertDoesNotThrow(() -> op==null); // Direct way to to test if the null case is handled.

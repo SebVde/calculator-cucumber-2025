@@ -5,32 +5,12 @@ import visitor.Visitor;
 /**
  * Représente une fonction mathématique à un seul argument (ex : sqrt(x), sin(x)).
  */
-public class FunctionWrapper implements Expression {
-
-    private final String functionName;
-    private final Expression argument;
-
-    public FunctionWrapper(String functionName, Expression argument) {
-        this.functionName = functionName;
-        this.argument = argument;
-    }
-
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    public Expression getArgument() {
-        return argument;
-    }
+public record FunctionWrapper(String functionName, Expression argument) implements Expression {
 
     @Override
     public void accept(Visitor v) {
         argument.accept(v);
-        try {
-            v.visit(this);
-        } catch (IllegalConstruction e) {
-            throw new RuntimeException(e);
-        }
+        v.visit(this);
     }
 
     @Override
@@ -60,8 +40,4 @@ public class FunctionWrapper implements Expression {
         return functionName.equals(other.functionName) && argument.equals(other.argument);
     }
 
-    @Override
-    public int hashCode() {
-        return functionName.hashCode() + 31 * argument.hashCode();
-    }
 }

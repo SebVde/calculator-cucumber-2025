@@ -55,7 +55,7 @@ public class CountVisitor extends Visitor {
         opsCount++; // Compte la fonction comme une opération
         currentDepth++;
         maxDepth = Math.max(maxDepth, currentDepth);
-        f.getArgument().accept(this); // Visite l’argument de la fonction
+        f.argument().accept(this); // Visite l’argument de la fonction
         currentDepth--;
     }
 

@@ -31,7 +31,7 @@ public class CalculatorController {
     private final Calculator calculator = new Calculator();
 
     private boolean startNew = true;
-    private boolean useDegrees = false;
+    private final boolean useDegrees = false;
     private boolean preserveFractions = false;
 
     @FXML
@@ -84,7 +84,7 @@ public class CalculatorController {
             Expression result = eval.getResult();
             inputField.setText(result.toString());
             currentInput.setLength(0);
-            currentInput.append(result.toString());
+            currentInput.append(result);
             startNew = true;
         } catch (Exception e) {
             inputField.setText("Erreur");

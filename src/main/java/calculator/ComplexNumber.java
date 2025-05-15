@@ -57,8 +57,8 @@ public class ComplexNumber extends MyNumber {
 
     public ComplexNumber simplify() {
         return new ComplexNumber(
-                ((RationalNumber) realPart).simplify(),
-                ((RationalNumber) imaginaryPart).simplify()
+                realPart.simplify(),
+                imaginaryPart.simplify()
         );
     }
 

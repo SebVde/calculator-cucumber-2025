@@ -3,20 +3,13 @@ package visitor;
 import calculator.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Evaluator extends Visitor {
 
     private Expression result;
     private boolean preserveFractions = false;
-    private boolean useDegrees = false;
 
     public Evaluator(boolean preserveFractions) {
-        this(false, preserveFractions);
-    }
-
-    public Evaluator(boolean useDegrees, boolean preserveFractions) {
-        this.useDegrees = useDegrees;
         this.preserveFractions = preserveFractions;
     }
 
@@ -58,9 +51,7 @@ public class Evaluator extends Visitor {
         try {
             MyNumber computed = o.compute(evaluatedArgs);
             switch (computed) {
-                case RationalNumber r -> {
-                    result = r.simplify(preserveFractions);
-                }
+                case RationalNumber r -> result = r.simplify(preserveFractions);
                 case ComplexNumber c -> {
                     MyNumber simplifiedReal = c.getRealPart();
                     MyNumber simplifiedImag = c.getImaginaryPart();
@@ -72,9 +63,7 @@ public class Evaluator extends Visitor {
                     }
                     result = new ComplexNumber(simplifiedReal, simplifiedImag);
                 }
-                default -> {
-                    result = computed;
-                }
+                default -> result = computed;
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Error during evaluation: " + e.getMessage());
@@ -83,22 +72,20 @@ public class Evaluator extends Visitor {
 
     @Override
     public void visit(FunctionWrapper f) {
-        f.getArgument().accept(this);
+        f.argument().accept(this);
         Expression arg = result;
 
         if (!(arg instanceof MyNumber value)) {
             throw new IllegalArgumentException("Function argument must be a number");
         }
 
-        String name = f.getFunctionName();
+        String name = f.functionName();
         double x;
 
-        if (value instanceof RationalNumber r) {
-            x = r.getNominator().getValue() / r.getDenominator().getValue();
-        } else if (value instanceof RealNumber r) {
-            x = r.getValue();
-        } else {
-            throw new IllegalArgumentException("Unsupported number type in function: " + value);
+        switch (value) {
+            case RationalNumber r -> x = r.getNominator().getValue() / r.getDenominator().getValue();
+            case RealNumber r -> x = r.getValue();
+            default -> throw new IllegalArgumentException("Unsupported number type in function: " + value);
         }
 
         result = switch (name) {
