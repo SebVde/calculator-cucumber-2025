@@ -4,32 +4,49 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="ui.CalculatorController" stylesheets="@style.css">
 
+<!--
+  Main layout for the JavaFX calculator application using a BorderPane structure.
+  Controller: ui.CalculatorController
+  Stylesheet: style.css
+-->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="ui.CalculatorController"
+            stylesheets="@style.css">
+
+    <!-- Top section: display and mode toggles -->
     <top>
         <VBox styleClass="calculator-header" spacing="10">
             <padding>
                 <Insets top="15" right="15" bottom="5" left="15"/>
             </padding>
+
+            <!-- Text field to display input and result -->
             <TextField fx:id="inputField"
                        editable="false"
                        alignment="CENTER_RIGHT"
                        styleClass="display-field"
                        prefHeight="80" />
+
+            <!-- Toggle for fraction/decimal mode -->
             <HBox spacing="10" alignment="CENTER_RIGHT">
-                <ToggleButton fx:id="fractionModeToggle" text="Mode Fraction" styleClass="mode-toggle" />
-                <Label fx:id="resultModeLabel" styleClass="mode-label" />
+                <ToggleButton fx:id="fractionModeToggle"
+                              text="Mode Fraction"
+                              styleClass="mode-toggle" />
+                <Label fx:id="resultModeLabel"
+                       styleClass="mode-label" />
             </HBox>
         </VBox>
     </top>
 
+    <!-- Center section: scientific and numeric buttons -->
     <center>
         <VBox styleClass="calculator-body" spacing="10">
             <padding>
                 <Insets top="10" right="15" bottom="15" left="15"/>
             </padding>
 
-            <!-- Section scientifique -->
+            <!-- Scientific function section -->
             <HBox spacing="8" alignment="CENTER">
                 <Button text="(" onAction="#handleButtonPress" styleClass="parenthesis-button" />
                 <Button text=")" onAction="#handleButtonPress" styleClass="parenthesis-button" />
@@ -39,34 +56,52 @@
                 <Button text="x²" onAction="#handleScientific" styleClass="scientific-button" />
             </HBox>
 
-            <!-- Section principale -->
+            <!-- Main calculator grid -->
             <GridPane hgap="8" vgap="8" alignment="CENTER">
-                <!-- Première ligne -->
-                <Button text="C" onAction="#handleClear" styleClass="clear-button" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-                <Button text="÷" onAction="#handleButtonPress" styleClass="operator-button" GridPane.rowIndex="0" GridPane.columnIndex="3" />
 
-                <!-- Deuxième ligne -->
-                <Button text="7" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-                <Button text="8" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-                <Button text="9" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="1" GridPane.columnIndex="2" />
-                <Button text="×" onAction="#handleButtonPress" styleClass="operator-button" GridPane.rowIndex="1" GridPane.columnIndex="3" />
+                <!-- First row: Clear and division -->
+                <Button text="C" onAction="#handleClear" styleClass="clear-button"
+                        GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <Button text="÷" onAction="#handleButtonPress" styleClass="operator-button"
+                        GridPane.rowIndex="0" GridPane.columnIndex="3" />
 
-                <!-- Troisième ligne -->
-                <Button text="4" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-                <Button text="5" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-                <Button text="6" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="2" GridPane.columnIndex="2" />
-                <Button text="−" onAction="#handleButtonPress" styleClass="operator-button" GridPane.rowIndex="2" GridPane.columnIndex="3" />
+                <!-- Second row: 7 8 9 × -->
+                <Button text="7" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <Button text="8" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                <Button text="9" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="1" GridPane.columnIndex="2" />
+                <Button text="×" onAction="#handleButtonPress" styleClass="operator-button"
+                        GridPane.rowIndex="1" GridPane.columnIndex="3" />
 
-                <!-- Quatrième ligne -->
-                <Button text="1" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-                <Button text="2" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-                <Button text="3" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="3" GridPane.columnIndex="2" />
-                <Button text="+" onAction="#handleButtonPress" styleClass="operator-button" GridPane.rowIndex="3" GridPane.columnIndex="3" />
+                <!-- Third row: 4 5 6 − -->
+                <Button text="4" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                <Button text="5" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                <Button text="6" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="2" GridPane.columnIndex="2" />
+                <Button text="−" onAction="#handleButtonPress" styleClass="operator-button"
+                        GridPane.rowIndex="2" GridPane.columnIndex="3" />
 
-                <!-- Cinquième ligne -->
-                <Button text="0" onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2" />
-                <Button text="." onAction="#handleButtonPress" styleClass="number-button" GridPane.rowIndex="4" GridPane.columnIndex="2" />
-                <Button text="=" onAction="#handleEvaluate" styleClass="equals-button" GridPane.rowIndex="4" GridPane.columnIndex="3" />
+                <!-- Fourth row: 1 2 3 + -->
+                <Button text="1" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                <Button text="2" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                <Button text="3" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="3" GridPane.columnIndex="2" />
+                <Button text="+" onAction="#handleButtonPress" styleClass="operator-button"
+                        GridPane.rowIndex="3" GridPane.columnIndex="3" />
+
+                <!-- Fifth row: 0 . = -->
+                <Button text="0" onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2" />
+                <Button text="." onAction="#handleButtonPress" styleClass="number-button"
+                        GridPane.rowIndex="4" GridPane.columnIndex="2" />
+                <Button text="=" onAction="#handleEvaluate" styleClass="equals-button"
+                        GridPane.rowIndex="4" GridPane.columnIndex="3" />
             </GridPane>
         </VBox>
     </center>

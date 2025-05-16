@@ -20,7 +20,7 @@ class TestMinus {
 		  params = Arrays.asList(new RealNumber(Double.parseDouble(String.valueOf(value1))),
 				  new RealNumber(Double.parseDouble(String.valueOf(value2))));
 		  try { op = new Minus(params); }
-		  catch(IllegalConstruction e) { fail(); }
+		  catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -35,7 +35,7 @@ class TestMinus {
 		// A Times expression should not be the same as a Minus expression
 		try {
 			assertNotSame(new Times(new ArrayList<>()), op);
-		} catch (IllegalConstruction e) {
+		} catch (IllegalConstruction _) {
 			fail();
 		}
 	}
@@ -49,7 +49,7 @@ class TestMinus {
 			Minus e = new Minus(p, Notation.INFIX);
 			assertEquals(op, e);
 		}
-		catch(IllegalConstruction e) { fail(); }
+		catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class TestMinus {
 			Minus e = new Minus(p, Notation.INFIX);
 			assertEquals(e.hashCode(), op.hashCode());
 		}
-		catch(IllegalConstruction e) { fail(); }
+		catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class TestMinus {
 	        Calculator calc = new Calculator();
 	        RationalNumber result = (RationalNumber) calc.eval(minus);
 	        assertEquals("1/3", result.simplify().toString());
-	    } catch (IllegalConstruction e) {
+	    } catch (IllegalConstruction _) {
 	        fail();
 	    }
 	}
@@ -100,7 +100,7 @@ class TestMinus {
 	        Calculator calc = new Calculator();
 	        ComplexNumber result = (ComplexNumber) calc.eval(minus);
 	        assertEquals("1/4 + 1/2i", result.simplify().toString());
-	    } catch (IllegalConstruction e) {
+	    } catch (IllegalConstruction _) {
 	        fail();
 	    }
 	}
@@ -114,7 +114,7 @@ class TestMinus {
 	        Calculator calc = new Calculator();
 	        RationalNumber result = (RationalNumber) calc.eval(minus);
 	        assertEquals("3/4", result.simplify().toString());
-	    } catch (IllegalConstruction e) {
+	    } catch (IllegalConstruction _) {
 	        fail();
 	    }
 	}

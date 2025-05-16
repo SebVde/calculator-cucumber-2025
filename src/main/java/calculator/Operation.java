@@ -8,207 +8,177 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Operation is an abstract class that represents arithmetic operations,
- * which are a special kind of Expressions, just like numbers are.
+ * {@code Operation} is an abstract class that represents an arithmetic operation
+ * such as addition, subtraction, multiplication, or division.
+ * Each operation works on a list of sub-expressions (its arguments) and
+ * supports different notations (prefix, infix, postfix).
+ *
+ * <p>This class implements the {@link Expression} interface and is the base for concrete operations like
+ * {@link Plus}, {@link Minus}, {@link Times}, and {@link Divides}.
  *
  * @see Expression
  * @see MyNumber
  */
-public abstract class Operation implements Expression
-{
-	/**
-	 * The list of expressions passed as an argument to the arithmetic operation
-	 */
+public abstract class Operation implements Expression {
+
+	/** List of argument expressions used in this operation */
 	public List<Expression> args;
 
-  /**
-   * The character used to represent the arithmetic operation (e.g. "+", "*")
-   */
-  protected String symbol;
+	/** Symbol representing this operation (e.g., "+", "-", "*", "/") */
+	protected String symbol;
 
-  /**
-   * The neutral element of the operation (e.g. 1 for *, 0 for +)
-   */
-  protected int neutral;
+	/** The neutral element for this operation (e.g., 0 for addition, 1 for multiplication) */
+	protected int neutral;
 
-  /**
-   * The notation used to render operations as strings.
-   * By default, the infix notation will be used.
-   */
-  public Notation notation = Notation.INFIX;
+	/** The notation used for string representation (default: INFIX) */
+	public Notation notation = Notation.INFIX;
 
-  /** It is not allowed to construct an operation with a null list of expressions.
-   * Note that it is allowed to have an EMPTY list of arguments.
-   *
-   * @param elist	The list of expressions passed as argument to the arithmetic operation
-   * @throws IllegalConstruction	Exception thrown if a null list of expressions is passed as argument
-   */
-  protected /*constructor*/ Operation(List<Expression> elist)
-		  throws IllegalConstruction
-	{
-		this(elist, null);
-    }
-
-	/** To construct an operation with a list of expressions as arguments,
-	 * as well as the Notation used to represent the operation.
+	/**
+	 * Constructs an operation with a list of expressions as arguments.
+	 * Default notation (INFIX) is used if none is specified.
 	 *
-	 * @param elist	The list of expressions passed as argument to the arithmetic operation
-	 * @param n 	The notation to be used to represent the operation
-	 * @throws IllegalConstruction	Exception thrown if a null list of expressions is passed as argument
+	 * @param elist the list of argument expressions
+	 * @throws IllegalConstruction if the list is null
 	 */
-	protected /*constructor*/ Operation(List<Expression> elist,Notation n)
-			throws IllegalConstruction
-	{
-		if (elist == null) {
-			throw new IllegalConstruction("Operation cannot be constructed with a null list of expressions");
-		} else {
-			args = new ArrayList<>(elist);
-		}
-		if (n!=null) notation = n;
+	protected Operation(List<Expression> elist) throws IllegalConstruction {
+		this(elist, null);
 	}
 
 	/**
-	 * getter method to return the number of arguments of an arithmetic operation.
+	 * Constructs an operation with a list of expressions and a specified notation.
 	 *
-	 * @return	The number of arguments of the arithmetic operation.
+	 * @param elist the list of argument expressions
+	 * @param n the notation to use (INFIX, PREFIX, POSTFIX)
+	 * @throws IllegalConstruction if the list is null
+	 */
+	protected Operation(List<Expression> elist, Notation n) throws IllegalConstruction {
+		if (elist == null) {
+			throw new IllegalConstruction("Operation cannot be constructed with a null list of expressions");
+		}
+		this.args = new ArrayList<>(elist);
+		if (n != null) this.notation = n;
+	}
+
+	/**
+	 * Returns the list of argument expressions.
+	 *
+	 * @return list of expressions
 	 */
 	public List<Expression> getArgs() {
-  	return args;
-  }
+		return args;
+	}
 
 	/**
-	 * Abstract method representing the actual binary arithmetic operation to compute
-	 * @param l	 first argument of the binary operation
-	 * @param r	second argument of the binary operation
-	 * @return	result of computing the binary operation
-	 */
-   public abstract int op(int l, int r);
-    // the operation itself is specified in the subclasses
-
-	/** Add more parameters to the existing list of parameters
+	 * Returns the operation symbol (e.g., "+", "-", "*", "/").
 	 *
-	 * @param params	The list of parameters to be added
+	 * @return the operation symbol
 	 */
-	public void addMoreParams(List<Expression> params) {
-  	args.addAll(params);
-  }
-
-	/**
-	 * Accept method to implement the visitor design pattern to traverse arithmetic expressions.
-	 * Each operation will delegate the visitor to each of its arguments expressions,
-	 * and will then pass itself to the visitor object to get processed by the visitor object.
-	 *
-	 * @param v	The visitor object
-	 */
-  public void accept(Visitor v) {
-  	for(Expression a:args) { a.accept(v); }
-  	v.visit(this);
-  }
-
-	/**
-	 * Count the depth of an arithmetic expression recursively,
-	 * using Java 8 functional programming capabilities (streams, maps, etc...)
-	 *
- 	 * @return	The depth of the arithmetic expression being traversed
-	 */
-	public final int countDepth() {
-		CountVisitor v = new CountVisitor();
-		v.visit(this);
-		return v.getDepthCount();
-  	}
-
-	/**
-	 * Count the number of operations contained in an arithmetic expression recursively,
-	 * using Java 8 functional programming capabilities (streams, maps, etc...)
-	 *
-	 * @return	The number of operations contained in an arithmetic expression being traversed
-	 */
-	public final int countOps() {
-		CountVisitor v = new CountVisitor();
-		v.visit(this);
-		return v.getOpsCount();
-  }
-
-  public final int countNbs() {
-	  CountVisitor v = new CountVisitor();
-	  v.visit(this);
-	  return v.getNbCount();
-  }
-
-  /**
-   * Convert the arithmetic operation into a String to allow it to be printed,
-   * using the default notation (prefix, infix or postfix) that is specified in some variable.
-   *
-   * @return	The String that is the result of the conversion.
-   */
-  @Override
-  public final String toString() {
-  	return toString(notation);
-  }
-
-  /**
-   * Convert the arithmetic operation into a String to allow it to be printed,
-   * using the notation n (prefix, infix or postfix) that is specified as a parameter.
-   *
-   * @param n	The notation to be used for representing the operation (prefix, infix or postfix)
-   * @return	The String that is the result of the conversion.
-   */
-  public final String toString(Notation n) {
-	  OutputVisitor outputVisitor = new OutputVisitor();
-	  accept(outputVisitor);
-	  return outputVisitor.getOutput();
-  }
-
 	public String getSymbol() {
 		return symbol;
 	}
 
 	/**
-	 * Two operation objects are equal if their list of arguments is equal and they correspond to the same operation.
+	 * Adds more expressions to the argument list.
 	 *
-	 * @param o	The object to compare with
-	 * @return	The result of the equality comparison
+	 * @param params the list of expressions to add
 	 */
-	@Override
-	public boolean equals(Object o) {
-		if (o == null) return false; // No object should be equal to null
-
-		if (this == o) return true; // If it's the same object, they're obviously equal
-
-		if (getClass() != o.getClass()) return false; // getClass() instead of instanceof() because an addition is not the same as a multiplication
-
-		Operation other = (Operation) o;
-		return this.args.equals(other.getArgs());
-	  }
-
-	/** The method hashCode needs to be overridden it the equals method is overridden;
-	 * 	otherwise there may be problems when you use your object in hashed collections
-	 * 	such as HashMap, HashSet, LinkedHashSet.
-	 *
-	 * @return	The result of computing the hash.
-	 */
-	@Override
-	public int hashCode()
-	{
-		int result = 5;
-		int prime = 31;
-		result = prime * result + neutral;
-		result = prime * result + symbol.hashCode();
-		result = prime * result + args.hashCode();
-		return result;
+	public void addMoreParams(List<Expression> params) {
+		args.addAll(params);
 	}
 
 	/**
-	 * Compute the result of the operation using the provided arguments.
-	 * @param evaluatedArgs The list of evaluated arguments.
-	 * @return The result of the operation.
-	 * @throws IllegalConstruction If the operation is not properly constructed.
+	 * Implements the Visitor pattern: delegates visiting to each argument, then visits itself.
+	 *
+	 * @param v the visitor object
+	 */
+	@Override
+	public void accept(Visitor v) {
+		for (Expression a : args) {
+			a.accept(v);
+		}
+		v.visit(this);
+	}
+
+	/**
+	 * Returns the depth of this expression.
+	 *
+	 * @return the maximum level of nested operations
+	 */
+	@Override
+	public final int countDepth() {
+		CountVisitor v = new CountVisitor();
+		v.visit(this);
+		return v.getDepthCount();
+	}
+
+	/**
+	 * Counts the number of operations in this expression tree.
+	 *
+	 * @return number of operations
+	 */
+	@Override
+	public final int countOps() {
+		CountVisitor v = new CountVisitor();
+		v.visit(this);
+		return v.getOpsCount();
+	}
+
+	/**
+	 * Counts the number of numeric operands (leaves) in this expression tree.
+	 *
+	 * @return number of numbers
+	 */
+	@Override
+	public final int countNbs() {
+		CountVisitor v = new CountVisitor();
+		v.visit(this);
+		return v.getNbCount();
+	}
+
+	/**
+	 * Converts the operation to a string using the default notation.
+	 *
+	 * @return string representation of the operation
+	 */
+	@Override
+	public final String toString() {
+		return toString(notation);
+	}
+
+	/**
+	 * Converts the operation to a string using the specified notation.
+	 *
+	 * @param n the notation to use (INFIX, PREFIX, POSTFIX)
+	 * @return string representation of the operation
+	 */
+	public final String toString(Notation n) {
+		OutputVisitor outputVisitor = new OutputVisitor();
+		accept(outputVisitor);
+		return outputVisitor.getOutput();
+	}
+
+	/**
+	 * Defines the actual binary arithmetic operation.
+	 * This method must be implemented by subclasses.
+	 *
+	 * @param l left operand
+	 * @param r right operand
+	 * @return result of the binary operation
+	 */
+	public abstract int op(int l, int r);
+
+	/**
+	 * Computes the result of the operation by evaluating each argument in order.
+	 * Applies the binary operator from left to right.
+	 *
+	 * @param evaluatedArgs list of already-evaluated expressions
+	 * @return the resulting value
+	 * @throws IllegalConstruction if arguments are invalid
 	 */
 	public MyNumber compute(List<Expression> evaluatedArgs) throws IllegalConstruction {
 		if (evaluatedArgs.size() < 2) {
-			return new RealNumber(0.0);
+			return new RealNumber(0.0);  // default fallback
 		}
-
 		MyNumber result = (MyNumber) evaluatedArgs.getFirst();
 		for (int i = 1; i < evaluatedArgs.size(); i++) {
 			MyNumber next = (MyNumber) evaluatedArgs.get(i);
@@ -218,12 +188,45 @@ public abstract class Operation implements Expression
 	}
 
 	/**
-	 * Compute the result of the operation for two arguments.
-	 * @param left The left operand.
-	 * @param right The right operand.
-	 * @return The result of the operation.
-	 * @throws IllegalConstruction If the operation is not properly constructed.
+	 * Computes the result of applying the operation to two numeric operands.
+	 * This method must be overridden by each concrete operation.
+	 *
+	 * @param left the left operand
+	 * @param right the right operand
+	 * @return the result of the operation
+	 * @throws IllegalConstruction if the operation is invalid
 	 */
 	public abstract MyNumber compute(MyNumber left, MyNumber right) throws IllegalConstruction;
 
+	/**
+	 * Compares this operation with another object for equality.
+	 * Operations are equal if they have the same class and argument list.
+	 *
+	 * @param o the object to compare
+	 * @return true if both represent the same operation
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		if (this == o) return true;
+		if (getClass() != o.getClass()) return false;
+
+		Operation other = (Operation) o;
+		return this.args.equals(other.getArgs());
+	}
+
+	/**
+	 * Computes a hash code consistent with {@link #equals(Object)}.
+	 *
+	 * @return hash code for this operation
+	 */
+	@Override
+	public int hashCode() {
+		int result = 5;
+		int prime = 31;
+		result = prime * result + neutral;
+		result = prime * result + symbol.hashCode();
+		result = prime * result + args.hashCode();
+		return result;
+	}
 }

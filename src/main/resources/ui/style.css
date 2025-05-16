@@ -3,21 +3,21 @@
     -fx-background-color: #1e1e2e;
 }
 
-/* Header de la calculatrice */
+/* Calculator header */
 .calculator-header {
     -fx-background-color: #181825;
     -fx-background-radius: 12px 12px 0 0;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
 }
 
-/* Corps de la calculatrice */
+/* Calculator body */
 .calculator-body {
     -fx-background-color: #181825;
     -fx-background-radius: 0 0 12px 12px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
 }
 
-/* Champ d'affichage */
+/* Display field */
 .display-field {
     -fx-background-color: #313244;
     -fx-text-fill: #cdd6f4;
@@ -30,7 +30,7 @@
     -fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
 }
 
-/* Mode Fraction Toggle */
+/* Fraction mode toggle */
 .mode-toggle {
     -fx-font-size: 14px;
     -fx-padding: 6 12;
@@ -57,7 +57,7 @@
     -fx-padding: 6 0;
 }
 
-/* Boutons numériques */
+/* Number buttons */
 .number-button {
     -fx-font-size: 20px;
     -fx-font-weight: 600;
@@ -83,12 +83,12 @@
     -fx-translate-y: 1px;
 }
 
-/* Bouton zéro spécial (plus large) */
+/* Special zero button (wider) */
 .number-button[text="0"] {
-    -fx-pref-width: 148px; /* Largeur pour couvrir 2 colonnes avec l'espace entre elles */
+    -fx-pref-width: 148px; /* Width to span 2 columns with spacing */
 }
 
-/* Opérateurs mathématiques */
+/* Operator buttons */
 .operator-button {
     -fx-font-size: 24px;
     -fx-font-weight: 600;
@@ -114,7 +114,7 @@
     -fx-translate-y: 1px;
 }
 
-/* Bouton égal */
+/* Equals button */
 .equals-button {
     -fx-font-size: 24px;
     -fx-font-weight: 600;
@@ -140,7 +140,7 @@
     -fx-translate-y: 1px;
 }
 
-/* Bouton Clear */
+/* Clear button */
 .clear-button {
     -fx-font-size: 20px;
     -fx-font-weight: 600;
@@ -166,7 +166,7 @@
     -fx-translate-y: 1px;
 }
 
-/* Boutons scientifiques et parenthèses */
+/* Scientific and parenthesis buttons */
 .scientific-button, .parenthesis-button {
     -fx-font-size: 18px;
     -fx-font-weight: 600;

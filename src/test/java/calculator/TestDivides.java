@@ -24,7 +24,7 @@ class TestDivides {
 		  	op = new Divides(params);
 			op.notation = Notation.INFIX; // reset the notation to infix (which is the default) before each test
 		  }
-		  catch(IllegalConstruction e) { fail(); }
+		  catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -39,7 +39,7 @@ class TestDivides {
 		// A Times expression should not be the same as a Divides expression
 		try {
 			assertNotSame(new Times(new ArrayList<>()), op);
-		} catch (IllegalConstruction e) {
+		} catch (IllegalConstruction _) {
 			fail();
 		}
 	}
@@ -53,7 +53,7 @@ class TestDivides {
 			Divides d = new Divides(p, Notation.INFIX);
 			assertEquals(op, d);
 		}
-		catch(IllegalConstruction e) { fail(); }
+		catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -70,7 +70,7 @@ class TestDivides {
 			Divides e = new Divides(p, Notation.INFIX);
 			assertEquals(e.hashCode(), op.hashCode());
 		}
-		catch(IllegalConstruction e) { fail(); }
+		catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class TestDivides {
 	        Calculator calc = new Calculator();
 	        RationalNumber result = (RationalNumber) calc.eval(divides);
 	        assertEquals("14/9", result.simplify().toString());
-	    } catch (IllegalConstruction e) {
+	    } catch (IllegalConstruction _) {
 	        fail();
 	    }
 	}
@@ -104,7 +104,7 @@ class TestDivides {
 	        Calculator calc = new Calculator();
 	        ComplexNumber result = (ComplexNumber) calc.eval(divides);
 	        assertEquals("47/26 + 6/13i", result.simplify().toString());
-	    } catch (IllegalConstruction e) {
+	    } catch (IllegalConstruction _) {
 	        fail();
 	    }
 	}
@@ -117,7 +117,7 @@ class TestDivides {
 	        Divides divides = new Divides(List.of(r1, r2));
 	        Calculator calc = new Calculator();
 	        assertEquals(new RealNumber(Double.NaN), calc.eval(divides));
-	    } catch (IllegalConstruction e) {
+	    } catch (IllegalConstruction _) {
 	        fail();
 	    }
 	}

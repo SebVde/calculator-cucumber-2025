@@ -4,29 +4,39 @@ import visitor.CountVisitor;
 import visitor.Visitor;
 
 /**
- * MyNumber is a concrete class that represents arithmetic numbers,
- * which are a special kind of Expressions, just like operations are.
+ * {@code MyNumber} is an abstract class representing a numeric value
+ * (e.g., real, rational, or complex) within an arithmetic expression.
+ * It is a concrete implementation of the {@link Expression} interface,
+ * and serves as a base class for numeric types like {@link RealNumber}, {@link RationalNumber}, and {@link ComplexNumber}.
+ *
+ * <p>Unlike composite expressions (like operations), a number is a leaf node in the expression tree.
  *
  * @see Expression
  * @see Operation
+ * @see RealNumber
+ * @see RationalNumber
+ * @see ComplexNumber
  */
 public abstract class MyNumber implements Expression {
+
     /**
-     * accept method to implement the visitor design pattern to traverse arithmetic expressions.
-     * Each number will pass itself to the visitor object to get processed by the visitor.
+     * Accepts a {@link Visitor} according to the Visitor design pattern.
+     * The visitor will process this numeric expression directly.
      *
-     * @param v The visitor object
+     * @param v the visitor that processes this number
      */
+    @Override
     public void accept(Visitor v) {
         v.visit(this);
     }
 
-
     /**
-     * The depth of a number expression is always 0
+     * The depth of a single number expression is always 0
+     * because it does not contain any sub-expressions.
      *
-     * @return The depth of a number expression
+     * @return {@code 0}, representing the depth
      */
+    @Override
     public int countDepth() {
         CountVisitor v = new CountVisitor();
         v.visit(this);
@@ -34,10 +44,11 @@ public abstract class MyNumber implements Expression {
     }
 
     /**
-     * The number of operations contained in a number expression is always 0
+     * A numeric value does not contain any operations.
      *
-     * @return The number of operations contained in a number expression
+     * @return {@code 0}, as no operations are present
      */
+    @Override
     public int countOps() {
         CountVisitor v = new CountVisitor();
         v.visit(this);
@@ -45,14 +56,14 @@ public abstract class MyNumber implements Expression {
     }
 
     /**
-     * The number of numbers contained in a number expression is always 1
+     * A numeric value counts as exactly one operand in an expression.
      *
-     * @return The number of numbers contained in  a number expression
+     * @return {@code 1}, representing a single number
      */
+    @Override
     public int countNbs() {
         CountVisitor v = new CountVisitor();
         v.visit(this);
         return v.getNbCount();
     }
 }
-

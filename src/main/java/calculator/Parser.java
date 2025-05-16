@@ -9,6 +9,11 @@ import java.util.regex.Pattern;
 
 import static java.lang.Character.isDigit;
 
+/**
+ * Parser class to convert a string representation of a mathematical expression
+ * into a structured {@link Expression} object, supporting infix, prefix, and postfix notation,
+ * as well as real, rational, and complex number formats.
+ */
 public class Parser {
     private static final String COMPLEX_PATTERN = "-?\\d+(\\.\\d+|/-?\\d+)?i|-?\\d+(\\.\\d+|/-?\\d+)?[+-](\\d+(\\.\\d+|/-?\\d+)?)?i|-?i";
     private static final String REAL_PATTERN = "-?\\d*\\.\\d+";
@@ -22,7 +27,15 @@ public class Parser {
             RATIONAL_PATTERN);
 
 
-    // Main method to parse an expression
+    /**
+     * Parses a prefix notation expression string recursively.
+     * For example, "+(1,2)" will be parsed as Plus(1,2).
+     *
+     * @param expression         the expression string
+     * @param preserveFractions whether to preserve rational form
+     * @return the constructed Expression tree
+     * @throws IllegalConstruction if structure is invalid
+     */
     public static Expression parse(String expression, boolean preserveFractions) throws IllegalConstruction {
         String cleaned = preprocessFunctions(expression).replaceAll("\\s+", "").replace("π", String.valueOf(Math.PI));
         if (cleaned.length() >= 6 && isOperator(cleaned.charAt(0)) && cleaned.charAt(1) == '('
@@ -89,6 +102,13 @@ public class Parser {
         return stack.pop();
     }
 
+    /**
+     * Preprocesses function calls like sqrt(...) by converting them to a special FUNC{...} format.
+     * This transformation simplifies parsing by allowing function arguments to be treated as tokens.
+     *
+     * @param expression the input string with potential functions
+     * @return the transformed expression with function calls tagged as FUNC{...}
+     */
     private static String preprocessFunctions(String expression) {
         Pattern pattern = Pattern.compile(FUNCTION_PATTERN);
         Matcher matcher = pattern.matcher(expression);
@@ -101,6 +121,13 @@ public class Parser {
         return sb.toString();
     }
 
+    /**
+     * Tokenizes an infix expression string into a list of {@link Token} objects,
+     * while accounting for negative values, parentheses, and embedded functions.
+     *
+     * @param expression the raw mathematical expression in infix form
+     * @return a list of typed tokens extracted from the input string
+     */
     private static List<Token> tokenizeInfix(String expression) {
         List<Token> tokens = new ArrayList<>();
         List<String> parts = splitKeepNumbers(expression);
@@ -201,6 +228,12 @@ public class Parser {
         return tokens;
     }
 
+    /**
+     * Splits the input string into meaningful parts while preserving number formats and operators.
+     *
+     * @param expression the original expression string
+     * @return a list of string parts including numbers, operators, and parentheses
+     */
     private static List<String> splitKeepNumbers(String expression) {
         List<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile("FUNC\\{[^}]+}|-?\\d+/\\d+|" + ANY_NUMBER + "|[+\\-*/()]");
@@ -224,7 +257,16 @@ public class Parser {
         return result;
     }
 
-    // Convert infix to postfix using Shunting Yard algorithm
+    /**
+     * Converts a list of infix tokens to postfix notation using the Shunting Yard algorithm.
+     * This step is required to transform human-readable infix expressions into a format
+     * easier to evaluate with a stack-based approach.
+     *
+     * @param infixTokens the list of tokens in infix order
+     * @return a list of tokens in postfix order
+     * @throws IllegalArgumentException if parentheses are mismatched
+     */
+
     private static List<Token> convertInfixToPostfix(List<Token> infixTokens) {
         List<Token> postfixTokens = new ArrayList<>();
         Stack<Token> operatorStack = new Stack<>();
@@ -280,6 +322,15 @@ public class Parser {
         return postfixTokens;
     }
 
+    /**
+     * Parses a prefix notation expression string recursively.
+     * For example, "+(1,2)" will be parsed as Plus(1,2).
+     *
+     * @param expression         the expression string
+     * @param preserveFractions whether to preserve rational form
+     * @return the constructed Expression tree
+     * @throws IllegalConstruction if structure is invalid
+     */
     private static Expression parsePrefixExpression(String expression, boolean preserveFractions) throws IllegalConstruction {
         // Base case if the expression is a simple number
         if (expression.matches(COMPLEX_PATTERN)) {
@@ -308,6 +359,15 @@ public class Parser {
         return createOperatorExpression(operator, parsedArgs);
     }
 
+    /**
+     * Parses a postfix notation expression string recursively.
+     * For example, "(1,2)+" will be parsed as Plus(1,2).
+     *
+     * @param expression         the expression string
+     * @param preserveFractions whether to preserve rational form
+     * @return the constructed Expression tree
+     * @throws IllegalConstruction if structure is invalid
+     */
     private static Expression parsePostfixExpression(String expression, boolean preserveFractions) throws IllegalConstruction {
         // Base case if the expression is a simple number
         if (expression.matches(COMPLEX_PATTERN)) {
@@ -337,7 +397,12 @@ public class Parser {
 
     }
 
-    // Helper method to split arguments by commas, accounting for nested expressions
+    /**
+     * Splits a string of comma-separated expressions, respecting nested parentheses.
+     *
+     * @param argsString the argument string
+     * @return list of argument substrings
+     */
     private static List<String> splitArguments(String argsString) {
         List<String> args = new ArrayList<>();
         int depth = 0;
@@ -369,7 +434,14 @@ public class Parser {
         return args;
     }
 
-    // Create an expression based on the operator and arguments
+    /**
+     * Creates an arithmetic expression from a given operator and list of sub-expressions.
+     *
+     * @param operator the character representing the operator
+     * @param args the list of operand expressions
+     * @return the constructed Expression
+     * @throws IllegalConstruction if the operation cannot be created
+     */
     private static Expression createOperatorExpression(char operator, List<Expression> args) throws IllegalConstruction {
         return switch (operator) {
             case '+' -> new Plus(args);
@@ -380,13 +452,28 @@ public class Parser {
         };
     }
 
-    // Create a number expression from a string
+    /**
+     * Creates a numeric expression from a string value and its token type.
+     *
+     * @param value the string value of the number
+     * @param type the token type (INTEGER, REAL, RATIONAL, COMPLEX)
+     * @param preserveFractions whether to preserve fraction representation
+     * @return the created {@link Expression} node
+     */
     private static Expression createNumberFromString(String value, TokenType type, boolean preserveFractions) {
         Token token = new Token(type, value);
         return createNumbers(token, preserveFractions);
     }
 
-    // Create a number node based on the token type
+    /**
+     * Creates a numerical {@link Expression} from a given {@link Token}, based on its {@link TokenType}.
+     * Handles integers, real numbers, rationals, and various formats of complex numbers.
+     *
+     * @param token the token representing the number
+     * @param preserveFractions whether to preserve rational numbers or convert to divisions
+     * @return the corresponding Expression (RealNumber, RationalNumber, or ComplexNumber)
+     * @throws IllegalArgumentException if the token value is invalid or unsupported
+     */
     private static Expression createNumbers(Token token, boolean preserveFractions) {
         switch (token.type) {
             case INTEGER, REAL:
@@ -475,7 +562,7 @@ public class Parser {
                     try {
                         return new Divides(List.of(num, den));
                     } catch (IllegalConstruction e) {
-                        throw new RuntimeException(e);
+                        throw new IllegalArgumentException(e);
                     }
                 }
 
@@ -484,11 +571,22 @@ public class Parser {
         }
     }
 
-
+    /**
+     * Determines whether the given character is a valid binary operator.
+     *
+     * @param c the character to check
+     * @return true if the character is one of +, -, *, /
+     */
     private static boolean isOperator(char c) {
         return c == '+' || c == '-' || c == '*' || c == '/';
     }
 
+    /**
+     * Returns the precedence of the given operator character.
+     *
+     * @param operator the operator character
+     * @return the precedence level (higher means stronger binding)
+     */
     private static int getPrecedence(char operator) {
         return switch (operator) {
             case '+', '-' -> 1;
@@ -497,12 +595,16 @@ public class Parser {
         };
     }
 
-
+    /**
+     * Token type enumeration for recognizing parts of an expression.
+     */
     private enum TokenType {
         INTEGER, REAL, COMPLEX, RATIONAL, OPERATOR, LEFT_PAREN, RIGHT_PAREN, FUNCTION
     }
 
-
+    /**
+     * Represents a token with type and value extracted from the input expression.
+     */
     private static class Token {
         TokenType type;
         String value;
