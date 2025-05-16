@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>calculator</groupId>
     <artifactId>calculator-cucumber</artifactId>
-    <version>0.5.7</version>
+    <version>0.5.8</version>
     <name>Calculator with JUnit5 and Cucumber tests</name>
 
     <properties>
