@@ -1,7 +1,7 @@
 package calculator;
 
 import org.junit.jupiter.api.Test;
-import ui.Parser;
+import calculator.Parser;
 import visitor.Evaluator;
 
 import static org.junit.jupiter.api.Assertions.*;

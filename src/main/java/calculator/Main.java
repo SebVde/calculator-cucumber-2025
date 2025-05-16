@@ -156,17 +156,17 @@ public class Main {
             c.eval(e);
 
             String inputPostfix = "((4,5,6)+,(7,(5,2,7)/)+,9)*";
-            e = Parser.parse(inputPostfix);
+            e = Parser.parse(inputPostfix, true);
             c.printExpressionDetails(e);
             c.eval(e);
 
             String inputPrefix = "*(+(4,5,6),+(7,/(5,2,7)),9)";
-            e = Parser.parse(inputPrefix);
+            e = Parser.parse(inputPrefix, true);
             c.printExpressionDetails(e);
             c.eval(e);
 
             String inputInfix = "(4 + 5 + 6) * (7 + (5 / 2 / 7)) * 9";
-            e = Parser.parse(inputInfix);
+            e = Parser.parse(inputInfix, true);
             c.printExpressionDetails(e);
             c.eval(e);
 
