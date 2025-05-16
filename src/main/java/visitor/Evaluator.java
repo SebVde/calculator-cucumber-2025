@@ -70,6 +70,13 @@ public class Evaluator extends Visitor {
                     }
                     result = new ComplexNumber(simplifiedReal, simplifiedImag);
                 }
+                case RealNumber r -> {
+                    if (preserveFractions) {
+                        result = new RationalNumber(r).simplify(true);
+                    } else {
+                        result = r;
+                    }
+                }
                 default -> result = computed;
             }
         } catch (Exception e) {

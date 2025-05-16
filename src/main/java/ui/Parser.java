@@ -472,7 +472,7 @@ public class Parser {
                 RealNumber num = new RealNumber(Double.parseDouble(parts[0]));
                 RealNumber den = new RealNumber(Double.parseDouble(parts[1]));
                 if (preserveFractions) {
-                    return new RationalNumber(num, den);
+                    return new RationalNumber(num, den).simplify();
                 } else {
                     try {
                         return new Divides(List.of(num, den));

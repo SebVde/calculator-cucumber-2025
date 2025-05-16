@@ -90,4 +90,114 @@ class ParserTest {
     void testPowerAsDuplication() throws IllegalConstruction {
         assertEvaluation("2*2", new RealNumber(4.0), false);
     }
+
+    @Test
+    void testAdditionAndMultiplicationPrecedence() throws IllegalConstruction {
+        assertEvaluation("1+2*3", new RealNumber(7.0), false);
+    }
+
+    @Test
+    void testParenthesesPrecedence() throws IllegalConstruction {
+        assertEvaluation("(1+2)*3", new RealNumber(9.0), false);
+    }
+
+    @Test
+    void testMixedFractionAndReal() throws IllegalConstruction {
+        assertEvaluation("1/2 + 1.5", new RealNumber(2.0), false);
+    }
+
+    @Test
+    void testMixedFractionAndRealPreserve() throws IllegalConstruction {
+        assertEvaluation("1/2 + 1.5", new RationalNumber(new RealNumber(2.0)), true);
+    }
+
+    @Test
+    void testFractionDivisionSimplified() throws IllegalConstruction {
+        assertEvaluation("10/4", new RationalNumber(new RealNumber(5.0), new RealNumber(2.0)), true);
+    }
+
+    @Test
+    void testExpressionEvaluatedAsFraction() throws IllegalConstruction {
+        assertEvaluation("(10-5)/2", new RationalNumber(new RealNumber(5.0), new RealNumber(2.0)), true);
+    }
+
+    @Test
+    void testNegativeFraction() throws IllegalConstruction {
+        assertEvaluation("-1/2", new RationalNumber(new RealNumber(-1.0), new RealNumber(2.0)), true);
+    }
+
+    @Test
+    void testAdditionOfComplexAndReal() throws IllegalConstruction {
+        assertEvaluation("1+2i+3", new ComplexNumber(
+                new RationalNumber(new RealNumber(4.0)),
+                new RationalNumber(new RealNumber(2.0))
+        ), true);
+    }
+
+    @Test
+    void testMultiplicationOfRationals() throws IllegalConstruction {
+        assertEvaluation("2/3*3/4", new RationalNumber(new RealNumber(1.0), new RealNumber(2.0)), true);
+    }
+
+    @Test
+    void testSubtractionResultingInNegativeFraction() throws IllegalConstruction {
+        assertEvaluation("1/4 - 1/2", new RationalNumber(new RealNumber(-1.0), new RealNumber(4.0)), true);
+    }
+
+    @Test
+    void testDivisionOfRealByFraction() throws IllegalConstruction {
+        assertEvaluation("2/(1/2)", new RealNumber(4.0), false);
+    }
+
+    @Test
+    void testDivisionOfRealByFractionPreserved() throws IllegalConstruction {
+        assertEvaluation("2/(1/2)", new RationalNumber(new RealNumber(4.0)), true);
+    }
+
+    @Test
+    void testDivisionOfFractionByRealPreserved() throws IllegalConstruction {
+        assertEvaluation("(1/2)/2", new RationalNumber(new RealNumber(1.0), new RealNumber(4.0)), true);
+    }
+
+    @Test
+    void testComplexWithFractionImaginary() throws IllegalConstruction {
+        assertEvaluation("3+1/2i", new ComplexNumber(
+                new RationalNumber(new RealNumber(3.0)),
+                new RationalNumber(new RealNumber(1.0), new RealNumber(2.0))
+        ), true);
+    }
+
+    @Test
+    void testExpressionWithMultipleOperators() throws IllegalConstruction {
+        assertEvaluation("1+2*3-4/2", new RealNumber(5.0), false);
+    }
+
+    @Test
+    void testNestedParenthesesFraction() throws IllegalConstruction {
+        assertEvaluation("((1/2)+(1/4))/2", new RationalNumber(new RealNumber(3.0), new RealNumber(8.0)), true);
+    }
+
+    @Test
+    void testMultipleFractionSimplification() throws IllegalConstruction {
+        assertEvaluation("6/9 + 2/3", new RationalNumber(new RealNumber(4.0), new RealNumber(3.0)), true);
+    }
+
+    @Test
+    void testExpressionStartingWithMinus() throws IllegalConstruction {
+        assertEvaluation("-2+4", new RealNumber(2.0), false);
+    }
+
+    @Test
+    void testExpressionWithPiAndFractions() throws IllegalConstruction {
+        assertEvaluation("π/2", new RealNumber(Math.PI / 2), false);
+    }
+
+    @Test
+    void testComplexMultiplication() throws IllegalConstruction {
+        assertEvaluation("i*i", new ComplexNumber(
+                new RationalNumber(new RealNumber(-1.0)),
+                new RationalNumber(new RealNumber(0.0))
+        ), true);
+    }
+
 }
