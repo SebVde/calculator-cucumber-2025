@@ -3,8 +3,14 @@ package calculator;
 import visitor.Visitor;
 
 /**
- * Expression is an abstract class that represents arithmetic expressions.
- * It has two concrete subclasses Operation and MyNumber.
+ * This interface represents any arithmetic expression that can be evaluated or analyzed.
+ * It is implemented by two main categories of expressions:
+ * <ul>
+ *   <li>{@link MyNumber} — for literal values (real, rational, complex)</li>
+ *   <li>{@link Operation} — for composite operations (e.g., addition, multiplication)</li>
+ * </ul>
+ *
+ * Implementations of this interface must support traversal using the Visitor design pattern.
  *
  * @see Operation
  * @see MyNumber
@@ -12,30 +18,34 @@ import visitor.Visitor;
 public interface Expression {
 
    /**
-    * accept is a method needed to implement the visitor design pattern
+    * Accepts a visitor that will perform an operation on the expression.
+    * This is a key part of the Visitor pattern implementation.
     *
-    * @param v The visitor object being passed as a parameter
+    * @param v the visitor object that visits this expression
     */
    void accept(Visitor v);
 
    /**
-    * Counts the depth of nested expressions in an arithmetic expression
+    * Computes the depth of nested expressions within this expression.
+    * For example, a flat sum has depth 1, while nested operations increase the depth.
     *
-    * @return The depth of an arithmetic expression
+    * @return the depth level of the expression tree
     */
    int countDepth();
 
    /**
-    * Counts the number of operations recursively contained in an arithmetic expression
+    * Counts the number of arithmetic operations contained in this expression,
+    * including nested ones.
     *
-    * @return The number of operations contained in an arithmetic expression
+    * @return the total number of operations
     */
    int countOps();
 
    /**
-    * Counts the number of values recursively contained in an arithmetic expression
+    * Counts the number of numerical values used in this expression,
+    * including those inside nested subexpressions.
     *
-    * @return The number of values contained in an arithmetic expression
+    * @return the total number of numerical values (operands)
     */
    int countNbs();
 }

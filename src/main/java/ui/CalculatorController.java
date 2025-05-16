@@ -1,40 +1,37 @@
 package ui;
 
 import calculator.*;
-import calculator.Parser;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import visitor.Evaluator;
 
 import java.util.Objects;
 
+/**
+ * JavaFX Controller for the calculator user interface.
+ * Handles user interaction, button events, keyboard input, and delegates
+ * parsing and evaluation logic to the core calculator engine.
+ */
 public class CalculatorController {
 
-    @FXML
-    private TextField inputField;
-
-    @FXML
-    private Button angleModeButton;
-
-    @FXML
-    private ToggleButton fractionModeToggle;
-
-    @FXML
-    private Label resultModeLabel;
+    @FXML private TextField inputField;
+    @FXML private Button angleModeButton;
+    @FXML private ToggleButton fractionModeToggle;
+    @FXML private Label resultModeLabel;
 
     private final StringBuilder currentInput = new StringBuilder();
     private final Calculator calculator = new Calculator();
 
     private boolean startNew = true;
-    private final boolean useDegrees = false;
     private boolean preserveFractions = false;
 
+    /**
+     * Initializes the controller, binding UI behavior (such as toggling fraction mode)
+     * and keyboard shortcuts.
+     */
     @FXML
     public void initialize() {
         inputField.setOnKeyPressed(this::handleKeyPress);
@@ -49,6 +46,12 @@ public class CalculatorController {
         }
     }
 
+    /**
+     * Handles clicks on digit and operator buttons.
+     * Updates the current expression accordingly.
+     *
+     * @param event the action event triggered by button press
+     */
     @FXML
     private void handleButtonPress(ActionEvent event) {
         String value = ((Button) event.getSource()).getText();
@@ -56,10 +59,16 @@ public class CalculatorController {
         processInput(value);
     }
 
+    /**
+     * Handles clicks on scientific operator buttons (sqrt, square, π).
+     *
+     * @param event the action event triggered by scientific button press
+     */
     @FXML
     private void handleScientific(ActionEvent event) {
         String value = ((Button) event.getSource()).getText();
-        switch (value) {            case "√" -> currentInput.append("sqrt(");
+        switch (value) {
+            case "√" -> currentInput.append("sqrt(");
             case "x²" -> {
                 if (!currentInput.isEmpty()) {
                     String expr = currentInput.toString();
@@ -68,11 +77,16 @@ public class CalculatorController {
                 }
             }
             case "π" -> currentInput.append("π");
+            default -> throw new IllegalArgumentException("Unknown scientific value: " + value);
         }
         inputField.setText(currentInput.toString());
         ((Button) event.getSource()).getParent().requestFocus();
     }
 
+    /**
+     * Evaluates the current expression in the input field and displays the result.
+     * Handles syntax errors and resets the input in case of exception.
+     */
     @FXML
     private void handleEvaluate() {
         if (currentInput.isEmpty()) return;
@@ -86,14 +100,17 @@ public class CalculatorController {
             currentInput.setLength(0);
             currentInput.append(result);
             startNew = true;
-        } catch (Exception e) {
-            inputField.setText("Erreur");
+        } catch (Exception _) {
+            inputField.setText("Error");
             currentInput.setLength(0);
             startNew = true;
         }
         inputField.requestFocus();
     }
 
+    /**
+     * Clears the current input field and resets the expression.
+     */
     @FXML
     private void handleClear() {
         currentInput.setLength(0);
@@ -101,6 +118,12 @@ public class CalculatorController {
         startNew = true;
     }
 
+    /**
+     * Processes button or key input and appends it to the current expression buffer.
+     * Handles special symbols (×, ÷, −) and replaces them with standard operators.
+     *
+     * @param value the character or symbol to process
+     */
     private void processInput(String value) {
         if (startNew) {
             String current = currentInput.toString();
@@ -121,6 +144,12 @@ public class CalculatorController {
         inputField.setText(currentInput.toString());
     }
 
+    /**
+     * Handles keyboard key presses while the input field is focused.
+     * Supports ENTER (evaluate), ESCAPE (clear), BACKSPACE, and basic input.
+     *
+     * @param event the key event triggered by user input
+     */
     void handleKeyPress(KeyEvent event) {
         KeyCode code = event.getCode();
         String text = event.getText();
@@ -133,6 +162,7 @@ public class CalculatorController {
         } else if (code == KeyCode.ESCAPE) {
             handleClear();
         } else if (Objects.equals(text, "²")) {
+            // Handle square character typed from keyboard
             if (!currentInput.isEmpty()) {
                 String expr = currentInput.toString();
                 currentInput.setLength(0);
@@ -147,6 +177,10 @@ public class CalculatorController {
         }
     }
 
+    /**
+     * Removes the last character from the current expression.
+     * Called on BACKSPACE key or button press.
+     */
     @FXML
     private void handleBackspace() {
         if (!currentInput.isEmpty()) {
@@ -155,5 +189,4 @@ public class CalculatorController {
             inputField.requestFocus();
         }
     }
-
 }

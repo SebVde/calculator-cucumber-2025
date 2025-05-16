@@ -20,7 +20,7 @@ class TestTimes {
 		  params = Arrays.asList(new RealNumber(Double.parseDouble(String.valueOf(value1))),
 				  new RealNumber(Double.parseDouble(String.valueOf(value2))));
 		  try { op = new Times(params); }
-		  catch(IllegalConstruction e) { fail(); }
+		  catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -34,7 +34,7 @@ class TestTimes {
 		// A Plus expression should not be the same as a Times expression
 		try {
 			assertNotSame(new Plus(new ArrayList<>()), op);
-		} catch (IllegalConstruction e) {
+		} catch (IllegalConstruction _) {
 			fail();
 		}
 	}
@@ -48,7 +48,7 @@ class TestTimes {
 			Times e = new Times(p, Notation.INFIX);
 			assertEquals(op, e);
 		}
-		catch(IllegalConstruction e) { fail(); }
+		catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class TestTimes {
 			Times e = new Times(p, Notation.INFIX);
 			assertEquals(e.hashCode(), op.hashCode());
 		}
-		catch(IllegalConstruction e) { fail(); }
+		catch(IllegalConstruction _) { fail(); }
 	}
 
 	@Test

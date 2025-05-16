@@ -34,7 +34,6 @@ class TestNotation {
 		MyNumber value1 = new RealNumber(8.0);
 		MyNumber value2 = new RealNumber(6.0);
 		Operation op = null;
-		//List<Expression> params = new ArrayList<>(Arrays.asList(new MyNumber(value1),new MyNumber(value2)));
 		List<Expression> params = Arrays.asList(new RealNumber(Double.parseDouble(String.valueOf(value1))),
 				new RealNumber(Double.parseDouble(String.valueOf(value2))));
 		try {
@@ -49,7 +48,7 @@ class TestNotation {
 				default		->	fail();
 			}
 
-		} catch (IllegalConstruction e) {
+		} catch (IllegalConstruction _) {
 			fail();
 		}
 		testNotations(symbol, value1, value2, op);
@@ -70,7 +69,7 @@ class TestNotation {
 				case "/" -> op = new Divides(params);
 				default -> fail();
 			}
-		} catch (IllegalConstruction e) {
+		} catch (IllegalConstruction _) {
 			fail();
 		}
 		testNotations(symbol, r1, r2, op);
@@ -93,7 +92,7 @@ class TestNotation {
 				case "/" -> op = new Divides(params);
 				default -> fail();
 			}
-		} catch (IllegalConstruction e) {
+		} catch (IllegalConstruction _) {
 			fail();
 		}
 		testNotations(symbol, c1, c2, op);

@@ -4,31 +4,31 @@ import visitor.Evaluator;
 
 /**
  * This class represents the core logic of a Calculator.
- * It can be used to print and evaluate artihmetic expressions.
+ * It can be used to print and evaluate arithmetic expressions.
+ * The calculator relies on the Visitor design pattern to evaluate expressions.
  *
  * @author tommens
  */
 public class Calculator {
 
     /**
-     * Default constructor of the class.
-     * Does nothing since the class does not have any variables that need to be initialised.
+     * Evaluator instance used to compute the result of expressions.
+     * The evaluator can be configured, e.g., to toggle between radians and degrees.
      */
-    public Calculator() {}
-
-    /*
-     For the moment the calculator only contains a print method and an eval method
-     It would be useful to complete this with a read method, so that we would be able
-     to implement a full REPL cycle (Read-Eval-Print loop) such as in Scheme, Python, R and other languages.
-     To do so would require to implement a method with the following signature, converting an input string
-     into an arithmetic expression:
-     public Expression read(String s)
-    */
+    private Evaluator evaluator = new Evaluator(false);
 
     /**
-     * Prints an arithmetic expression provided as input parameter.
-     * @param e the arithmetic Expression to be printed
-     * @see #printExpressionDetails(Expression) 
+     * Default constructor.
+     * Currently, does not require any initialization.
+     */
+    public Calculator() {
+        // No initialization needed for now
+    }
+
+    /**
+     * Prints an arithmetic expression and its evaluated result.
+     * @param e the arithmetic Expression to be printed and evaluated
+     * @see #printExpressionDetails(Expression)
      */
     public void print(Expression e) {
         System.out.println("The result of evaluating expression " + e);
@@ -37,8 +37,9 @@ public class Calculator {
     }
 
     /**
-     * Prints verbose details of an arithmetic expression provided as input parameter.
-     * @param e the arithmetic Expression to be printed
+     * Prints detailed information about an arithmetic expression,
+     * including its evaluation result, depth, number of operations, and number of operands.
+     * @param e the arithmetic Expression to be analyzed and printed
      * @see #print(Expression)
      */
     public void printExpressionDetails(Expression e) {
@@ -50,30 +51,41 @@ public class Calculator {
     }
 
     /**
-     * Evaluates an arithmetic expression and returns its result
+     * Evaluates an arithmetic expression using the configured Evaluator.
      * @param e the arithmetic Expression to be evaluated
      * @return The result of the evaluation
      */
     public Expression eval(Expression e) {
-        e.accept(evaluator); // ← c’est ça qui déclenche visit(FunctionWrapper)
+        e.accept(evaluator); // This triggers the visit of the expression by the evaluator
         return evaluator.getResult();
     }
 
-
-    private Evaluator evaluator = new Evaluator(false);
+    /**
+     * Returns the Evaluator used by this Calculator.
+     * @return the evaluator instance
+     */
     public Evaluator getEvaluator() {
         return evaluator;
     }
 
+    /**
+     * Sets a new Evaluator to be used by this Calculator.
+     * This can be useful for configuring different evaluation strategies.
+     * @param eval the Evaluator to use
+     */
     public void setEvaluator(Evaluator eval) {
         this.evaluator = eval;
     }
 
-
     /*
-     We could also have other methods, e.g. to verify whether an expression is syntactically correct
-     public Boolean validate(Expression e)
-     or to simplify some expression
-     public Expression simplify(Expression e)
-    */
+     * Potential additional methods for future implementation:
+     * - A read method to parse a String input into an Expression, enabling a full REPL (Read-Eval-Print Loop):
+     *   public Expression read(String s)
+     *
+     * - A validation method to verify syntactic correctness of expressions:
+     *   public Boolean validate(Expression e)
+     *
+     * - A simplification method for algebraic expressions:
+     *   public Expression simplify(Expression e)
+     */
 }
