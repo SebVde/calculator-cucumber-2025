@@ -105,6 +105,6 @@ public class Main {
 
     private static Expression evaluateExpression(String expression) throws IllegalConstruction {
         Calculator c = new Calculator();
-        return c.eval(Parser.parse(expression.replaceAll("\\s+", "")));
+        return c.eval(Parser.parse(expression.replaceAll("\\s+", ""), true));
     }
 }
