@@ -59,8 +59,7 @@ public class CalculatorController {
     @FXML
     private void handleScientific(ActionEvent event) {
         String value = ((Button) event.getSource()).getText();
-        switch (value) {
-            case "√" -> currentInput.append("sqrt(");
+        switch (value) {            case "√" -> currentInput.append("sqrt(");
             case "x²" -> {
                 if (!currentInput.isEmpty()) {
                     String expr = currentInput.toString();
