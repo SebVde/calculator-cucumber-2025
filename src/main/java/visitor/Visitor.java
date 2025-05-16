@@ -16,4 +16,7 @@ public abstract class Visitor {
     public abstract void visit(ComplexNumber n);
 
     public abstract void visit(Operation o);
+
+    public abstract void visit(FunctionWrapper f);
+
 }

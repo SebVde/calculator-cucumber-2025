@@ -13,13 +13,10 @@ import java.util.List;
 
 class TestCounting {
 
-    private int value1, value2;
     private Expression e;
 
     @BeforeEach
     void setUp() {
-        value1 = 8;
-        value2 = 6;
         e = null;
     }
 

@@ -67,7 +67,7 @@ public final class Divides extends Operation
             Times times = new Times(List.of());
             RealNumber numerator = (RealNumber) times.compute(l.getNominator(), r.getDenominator());
             RealNumber denominator = (RealNumber) times.compute(l.getDenominator(), r.getNominator());
-            return new RationalNumber(numerator, denominator).simplify();
+            return new RationalNumber(numerator, denominator);
         } else if (left instanceof RealNumber l && right instanceof RationalNumber r) {
             return compute(new RationalNumber(l), r);
         } else if (left instanceof RationalNumber l && right instanceof RealNumber r) {

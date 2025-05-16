@@ -3,7 +3,6 @@ package calculator;
 //Import Junit5 libraries for unit testing:
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.cucumber.java.eo.Do;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -57,7 +56,6 @@ class TestDivides {
 		catch(IllegalConstruction e) { fail(); }
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Test
 	void testNull() {
 		assertDoesNotThrow(() -> op==null); // Direct way to to test if the null case is handled.
@@ -105,7 +103,7 @@ class TestDivides {
 	        Divides divides = new Divides(List.of(c1, c2));
 	        Calculator calc = new Calculator();
 	        ComplexNumber result = (ComplexNumber) calc.eval(divides);
-	        assertEquals("47/26 + 6/13i", result.toString());
+	        assertEquals("47/26 + 6/13i", result.simplify().toString());
 	    } catch (IllegalConstruction e) {
 	        fail();
 	    }

@@ -52,4 +52,12 @@ public class OutputVisitor extends Visitor {
                     s.reduce((s1, s2) -> s1 + ", " + s2).get() + ")" + " " + o.getSymbol();
         };
     }
+
+    @Override
+    public void visit(FunctionWrapper f) {
+        OutputVisitor argVisitor = new OutputVisitor();
+        f.argument().accept(argVisitor);
+        output = f.functionName() + "(" + argVisitor.getOutput() + ")";
+    }
+
 }

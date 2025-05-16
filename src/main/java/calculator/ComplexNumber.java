@@ -54,6 +54,14 @@ public class ComplexNumber extends MyNumber {
     public int hashCode() {
         return Objects.hash(this.realPart, this.imaginaryPart);
     }
-    
+
+    public ComplexNumber simplify() {
+        return new ComplexNumber(
+                realPart.simplify(),
+                imaginaryPart.simplify()
+        );
+    }
+
+
 }
 

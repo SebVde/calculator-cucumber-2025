@@ -55,13 +55,20 @@ public class Calculator {
      * @return The result of the evaluation
      */
     public Expression eval(Expression e) {
-        // create a new visitor to evaluate expressions
-        Evaluator v = new Evaluator();
-        // and ask the expression to accept this visitor to start the evaluation process
-        e.accept(v);
-        // and return the result of the evaluation at the end of the process
-        return v.getResult();
+        e.accept(evaluator); // ← c’est ça qui déclenche visit(FunctionWrapper)
+        return evaluator.getResult();
     }
+
+
+    private Evaluator evaluator = new Evaluator(false);
+    public Evaluator getEvaluator() {
+        return evaluator;
+    }
+
+    public void setEvaluator(Evaluator eval) {
+        this.evaluator = eval;
+    }
+
 
     /*
      We could also have other methods, e.g. to verify whether an expression is syntactically correct

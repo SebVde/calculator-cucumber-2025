@@ -43,7 +43,9 @@ public class RationalNumber extends MyNumber{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RationalNumber that)) return false;
-        return Objects.equals(nominator, that.nominator) && Objects.equals(denominator, that.denominator);
+        RationalNumber a = this.simplify();
+        RationalNumber b = that.simplify();
+        return a.nominator.equals(b.nominator) && a.denominator.equals(b.denominator);
     }
 
     public boolean is_negative() {
@@ -94,4 +96,16 @@ public class RationalNumber extends MyNumber{
         }
         return a/Math.pow(10, max_decimals);
     }
+
+    public MyNumber simplify(boolean preserveFraction) {
+        RationalNumber simplified = this.simplify();
+        if (preserveFraction) {
+            return simplified;
+        } else if (simplified.getDenominator().equals(new RealNumber(1.0))) {
+            return simplified.getNominator();  // => RealNumber
+        } else {
+            return simplified;
+        }
+    }
+
 }

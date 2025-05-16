@@ -34,7 +34,7 @@ class TestMinus {
 	void testConstructor2() {
 		// A Times expression should not be the same as a Minus expression
 		try {
-			assertNotSame(op, new Times(new ArrayList<>()));
+			assertNotSame(new Times(new ArrayList<>()), op);
 		} catch (IllegalConstruction e) {
 			fail();
 		}
@@ -52,7 +52,6 @@ class TestMinus {
 		catch(IllegalConstruction e) { fail(); }
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Test
 	void testNull() {
 		assertDoesNotThrow(() -> op==null); // Direct way to to test if the null case is handled.
@@ -100,7 +99,7 @@ class TestMinus {
 	        Minus minus = new Minus(List.of(c1, c2));
 	        Calculator calc = new Calculator();
 	        ComplexNumber result = (ComplexNumber) calc.eval(minus);
-	        assertEquals("1/4 + 1/2i", result.toString());
+	        assertEquals("1/4 + 1/2i", result.simplify().toString());
 	    } catch (IllegalConstruction e) {
 	        fail();
 	    }

@@ -7,6 +7,15 @@ import java.util.ArrayList;
 public class Evaluator extends Visitor {
 
     private Expression result;
+    private boolean preserveFractions = false;
+
+    public Evaluator(boolean preserveFractions) {
+        this.preserveFractions = preserveFractions;
+    }
+
+    public void setPreserveFractions(boolean preserveFractions) {
+        this.preserveFractions = preserveFractions;
+    }
 
     public Expression getResult() {
         return result;
@@ -24,7 +33,7 @@ public class Evaluator extends Visitor {
 
     @Override
     public void visit(RationalNumber n) {
-        result = n;
+        result = preserveFractions ? n.simplify(true) : n.simplify(false);
     }
 
     @Override
@@ -40,9 +49,63 @@ public class Evaluator extends Visitor {
             evaluatedArgs.add(result);
         }
         try {
-            result = o.compute(evaluatedArgs);
+            MyNumber computed = o.compute(evaluatedArgs);
+            switch (computed) {
+                case RationalNumber r -> result = r.simplify(preserveFractions);
+                case ComplexNumber c -> {
+                    MyNumber simplifiedReal = c.getRealPart();
+                    MyNumber simplifiedImag = c.getImaginaryPart();
+                    if (simplifiedReal instanceof RationalNumber rr) {
+                        simplifiedReal = rr.simplify(preserveFractions);
+                    }
+                    if (simplifiedImag instanceof RationalNumber ri) {
+                        simplifiedImag = ri.simplify(preserveFractions);
+                    }
+
+                    if (simplifiedReal instanceof RealNumber) {
+                        simplifiedReal = new RationalNumber((RealNumber) simplifiedReal);
+                    }
+                    if (simplifiedImag instanceof RealNumber) {
+                        simplifiedImag = new RationalNumber((RealNumber) simplifiedImag);
+                    }
+                    result = new ComplexNumber(simplifiedReal, simplifiedImag);
+                }
+                case RealNumber r -> {
+                    if (preserveFractions) {
+                        result = new RationalNumber(r).simplify(true);
+                    } else {
+                        result = r;
+                    }
+                }
+                default -> result = computed;
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Error during evaluation: " + e.getMessage());
+            throw new IllegalArgumentException("Error during evaluation: " + e.getMessage());
         }
     }
+
+    @Override
+    public void visit(FunctionWrapper f) {
+        f.argument().accept(this);
+        Expression arg = result;
+
+        if (!(arg instanceof MyNumber value)) {
+            throw new IllegalArgumentException("Function argument must be a number");
+        }
+
+        String name = f.functionName();
+        double x;
+
+        switch (value) {
+            case RationalNumber r -> x = r.getNominator().getValue() / r.getDenominator().getValue();
+            case RealNumber r -> x = r.getValue();
+            default -> throw new IllegalArgumentException("Unsupported number type in function: " + value);
+        }
+
+        result = switch (name) {
+            case "sqrt" -> new RealNumber(Math.sqrt(x));
+            default -> throw new IllegalArgumentException("Unsupported function: " + name);
+        };
+    }
+
 }
